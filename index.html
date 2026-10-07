@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Практикум «Информационный менеджмент»</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;700&family=Unbounded:wght@500;700&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+/* Концепция: учётная карточка классификатора — коды ОКВЭД в моношрифте, стальная синь реестра, сигнальные отметки проверки */
+:root{
+ --bg:#eef1f4;--surface:#ffffff;--sunk:#e4e9ef;--fg:#172133;--muted:#566176;--line:#cbd3de;
+ --accent:#1f5f8b;--accent-soft:#dbe8f2;--ok:#0f7a5a;--warn:#9a6400;--bad:#b3261e;
+ --display:"Unbounded","Golos Text","Segoe UI",sans-serif;--body:"Golos Text","Segoe UI",Arial,sans-serif;--mono:"JetBrains Mono",Consolas,monospace;
+ color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#11161d;--surface:#18202a;--sunk:#1f2934;--fg:#e4e9f0;--muted:#9aa7b8;--line:#2e3b4b;
+ --accent:#6fb0de;--accent-soft:#1d3346;--ok:#45c49a;--warn:#e0aa4c;--bad:#f0776d;color-scheme:dark}}
+:root[data-theme="dark"]{
+ --bg:#11161d;--surface:#18202a;--sunk:#1f2934;--fg:#e4e9f0;--muted:#9aa7b8;--line:#2e3b4b;
+ --accent:#6fb0de;--accent-soft:#1d3346;--ok:#45c49a;--warn:#e0aa4c;--bad:#f0776d;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font:16px/1.55 var(--body);margin:0}
+main{max-width:1080px;margin:0 auto;padding-inline:16px;padding-block:24px 64px}
+h1,h2,h3{text-wrap:balance;line-height:1.2;margin:0}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(22px,3.6vw,34px);letter-spacing:-.01em}
+h2{font-family:var(--display);font-weight:500;font-size:clamp(18px,2.4vw,22px)}
+h3{font-size:17px;font-weight:700}
+p{margin:0}
+.eyebrow{font:500 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+header.top{display:grid;gap:10px;padding-block:8px 18px}
+.lead{max-width:72ch;color:var(--muted)}
+.student{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
+.field{display:grid;gap:4px;align-content:start}
+label,.lbl{font-size:13px;font-weight:500;color:var(--muted)}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 9px}
+input.n{width:130px;text-align:right;font-family:var(--mono);font-size:14px}
+textarea{width:100%;resize:vertical}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+nav.tabs{display:flex;gap:2px;overflow-x:auto;border-bottom:2px solid var(--fg);margin-top:14px}
+nav.tabs button{flex:0 0 auto;font:500 14px var(--body);color:var(--muted);background:none;border:0;padding:10px 11px;cursor:pointer;border-bottom:4px solid transparent;margin-bottom:-2px;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--fg);border-bottom-color:var(--accent)}
+nav.tabs button:disabled{opacity:.4;cursor:not-allowed}
+nav.tabs .pts{font:12px var(--mono);margin-left:4px;color:var(--ok)}
+section.panel{background:var(--surface);border:1px solid var(--line);border-top:0;padding:22px 18px;display:none}
+section.panel.active{display:grid;gap:18px}
+.theory{border-left:4px solid var(--accent);background:var(--accent-soft);padding:12px 14px;border-radius:0 6px 6px 0;display:grid;gap:8px;max-width:88ch}
+.theory p,.theory li{font-size:15px}
+.theory ul{margin:0;padding-left:20px}
+.formula{font-family:"Times New Roman",Georgia,serif;font-size:18px;padding:4px 0;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.formula .num{font-family:var(--body);font-size:14px;color:var(--muted);align-self:center}
+.task{display:grid;gap:6px;max-width:88ch}
+.wrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:var(--sunk);font-weight:500;font-size:13px;color:var(--muted)}
+td.r,th.r{text-align:right}
+td select{max-width:100%}
+.code{font-family:var(--mono)}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{font:500 15px var(--body);background:var(--accent);color:var(--surface);border:0;border-radius:6px;padding:9px 16px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.btn.danger{background:var(--bad)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+.chip{display:inline-block;font:500 12px var(--mono);padding:1px 7px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.fb{font-size:13px}
+.result{border:1px solid var(--line);border-radius:6px;padding:12px 14px;background:var(--sunk);display:grid;gap:6px}
+.kpi{font-family:var(--display);font-size:26px}
+.wheelzone{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:760px){.wheelzone{grid-template-columns:minmax(0,1fr)}}
+.wheelbox{position:relative;max-width:360px;width:100%;margin:0 auto}
+.wheelbox svg{width:100%;height:auto;display:block}
+#wheel{transform-origin:50% 50%}
+.sec{transition:filter .08s}
+.sec.hot{filter:brightness(1.55) saturate(1.2)}
+.sec.win{animation:winflash .32s steps(1) 5}
+@keyframes winflash{0%{filter:brightness(1.8) saturate(1.3)}50%{filter:brightness(.75)}}
+.bulb{fill:#f6c945;stroke:#7a5a00;stroke-width:.8}
+.bulb.off{fill:#5b4a14}
+.spinning .bulb{animation:bulb .22s steps(1) infinite}
+.spinning .bulb.alt{animation-delay:-.11s}
+@keyframes bulb{0%{fill:#fff3b0}50%{fill:#5b4a14}}
+.flip{font:700 30px var(--mono);color:var(--accent);min-height:1.2em}
+.flipname{min-height:3em}
+.pointer{position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:22px solid var(--fg)}
+.card{border:1px solid var(--line);border-radius:8px;padding:16px;display:grid;gap:10px;background:var(--surface)}
+.card .okved{font:700 30px var(--mono);color:var(--accent)}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:13px;background:var(--sunk);border-radius:4px;padding:3px 8px}
+td.cell{cursor:pointer;font-family:var(--mono);font-size:13px;white-space:nowrap}
+td.cell.flag{background:color-mix(in srgb,var(--warn) 22%,transparent);outline:2px solid var(--warn);outline-offset:-2px}
+td.cell.hit{background:color-mix(in srgb,var(--ok) 20%,transparent)}
+td.cell.miss{background:color-mix(in srgb,var(--bad) 20%,transparent)}
+td.cell.false{text-decoration:line-through}
+td.empty::after{content:"—";color:var(--muted)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px;align-items:start}
+.grid2 .field{min-width:0}
+.grid2 .field input,.grid2 .field select{width:100%;max-width:100%}
+.svgbox{overflow-x:auto}
+.svgbox svg{display:block;min-width:560px;width:100%;height:auto}
+svg text{fill:var(--fg);font-family:var(--body)}
+.q{border:0;padding:0;margin:0;display:grid;gap:4px}
+.q legend{font-weight:700;margin-bottom:4px}
+.q label{font-size:15px;color:var(--fg);font-weight:400;display:flex;gap:8px;align-items:flex-start}
+.confirm{border:1px solid var(--bad);border-radius:6px;padding:10px 12px;display:grid;gap:8px}
+.note{font-size:14px;color:var(--muted)}
+.cap{font-size:14px;color:var(--muted)}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.notice{border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:6px;padding:10px 12px;background:var(--surface);font-size:15px}
+.notice.ok{border-left-color:var(--ok)}.notice.bad{border-left-color:var(--bad)}
+.pointbox{border:1px solid var(--line);border-radius:8px;padding:14px;background:var(--surface);display:grid;gap:10px}
+.pointbox textarea{font:13px var(--mono);word-break:break-all}
+.savebar{margin-top:18px;border-top:2px solid var(--fg);padding-top:16px;display:grid;gap:12px}
+@media print{.toolbar,.savebar,.pointbox{display:none!important}}
+@media print{nav.tabs,.btn,.student input,.theory{display:none}section.panel{display:grid!important;border:0;page-break-inside:avoid}body{background:#fff;color:#000}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}#wheel{transition:none!important}}
+</style>
+
+</head>
+<body>
+<main>
+<header class="top">
+ <p class="eyebrow">Информационный менеджмент · 38.03.05 Бизнес-информатика · 2026/2027 уч. год</p>
+ <h1>Электронный практикум «Информационный менеджмент»</h1>
+ <p class="lead">Рулетка назначает отрасль по ОКВЭД 2. Вы выступаете руководителем ИТ-службы этой фирмы: сопоставляете процессы с информационными системами, выбираете систему по совокупной стоимости владения, контролируете уровень сервиса, оцениваете ценность информации для решений, формируете портфель ИТ-проектов, измеряете зрелость управления ИТ и качество данных.</p>
+ <div class="student">
+  <div class="field"><label for="fio">Студент</label><input id="fio" autocomplete="name" placeholder="Фамилия И. О."></div>
+  <div class="field"><label for="grp">Группа</label><input id="grp" placeholder="БИН-б-о-24-1"></div>
+  <div class="field"><span class="lbl">Итого баллов</span><span class="kpi" id="totalPts">0</span></div>
+ </div>
+ <div class="toolbar"><button class="btn ghost" id="loadBtn" aria-expanded="false" aria-controls="loadBox">Загрузить сохранённую точку практикума</button><button class="btn ghost" id="newBtn" aria-controls="newBox">Новый студент</button></div>
+ <div class="confirm" id="newBox" hidden><p>ФИО, группа, назначенный вариант и все ответы будут удалены, рулетку можно будет крутить заново. Сохранённая точка останется. Продолжить?</p><div class="btnrow"><button class="btn danger" id="newYes">Да, начать с нуля</button><button class="btn ghost" id="newNo">Отмена</button></div></div>
+ <div class="pointbox" id="loadBox" hidden>
+  <p id="loadLocalInfo"></p>
+  <div class="btnrow"><button class="btn" id="loadLocal">Загрузить точку из этого браузера</button></div>
+  <div class="field"><label for="loadCode">Или вставьте код точки, сохранённый на другом устройстве</label><textarea id="loadCode" rows="3" spellcheck="false"></textarea></div>
+  <div class="btnrow"><button class="btn ghost" id="loadCodeBtn">Загрузить по коду</button><button class="btn ghost" id="loadClose">Закрыть</button><span id="loadErr" class="bad" aria-live="polite"></span></div>
+ </div>
+ <p class="notice" id="notice" hidden aria-live="polite"></p>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Этапы практикума" id="tabs"></nav>
+
+<section class="panel" id="p0" role="tabpanel">
+ <div class="wheelzone">
+  <div>
+   <div class="wheelbox"><div class="pointer" aria-hidden="true"></div><svg viewBox="0 0 400 400" role="img" aria-label="Рулетка вариантов по кодам ОКВЭД 2"><g id="wheel"></g><circle cx="200" cy="200" r="34" fill="var(--surface)" stroke="var(--fg)" stroke-width="2"/><text x="200" y="205" text-anchor="middle" font-size="13" font-weight="700">ОКВЭД 2</text></svg></div>
+   <div class="btnrow" style="justify-content:center;margin-top:14px"><button class="btn" id="spinBtn">Крутить рулетку</button></div>
+   <p class="note" id="spinNote" style="text-align:center;margin-top:8px">Вариант назначается один раз и сохраняется в этом браузере.</p>
+  </div>
+  <div id="firmCard" class="card"><p class="eyebrow">Ваше предприятие</p><p>Введите фамилию и группу, затем крутите рулетку. Сектор под стрелкой определит отрасль, профиль фирмы и исходные данные всех работ.</p>
+   <p class="note">Виды деятельности соответствуют ОК 029-2014 (КДЕС Ред. 2). Фирмы, цифры и записи условные, совпадения с реальными организациями случайны.</p></div>
+ </div>
+</section>
+
+<section class="panel" id="p1" role="tabpanel">
+ <p class="eyebrow">Лабораторная работа 1 · 15 баллов</p>
+ <h2>Информационные потребности и архитектура прикладных систем</h2>
+ <div class="theory">
+  <p>Информационный менеджмент начинается с вопроса, какие системы нужны бизнесу. Каждый ключевой процесс должен поддерживаться прикладной системой подходящего класса. Процесс без системы ведётся вручную, в почте и таблицах; процесс, который обслуживают две системы, порождает двойной ввод и расхождения в данных.</p>
+  <ul>
+   <li><b>ERP</b> — учёт ресурсов, финансы, закупки, склад в целом; <b>CRM</b> — клиенты, продажи, обращения; <b>WMS/SCM</b> — склад и цепи поставок; <b>MES</b> — управление производством в цехе; <b>TMS</b> — планирование перевозок; <b>HRM</b> — кадры и расчёт заработной платы; <b>СЭД/ЭДО</b> — документооборот; <b>BI</b> — аналитика и управленческая отчётность; <b>отраслевая система</b> — специализированное решение (МИС, АБС, PMS гостиницы, BIM-среда и т. п.).</li>
+  </ul>
+  <div class="formula"><span><i>K</i><sub>покр</sub> = <i>N</i><sub>авт</sub> / <i>N</i><sub>проц</sub></span><span class="num">(1)</span></div>
+  <div class="formula"><span><i>L</i><sub>тт</sub> = <i>n</i>(<i>n</i> − 1) / 2,&nbsp;&nbsp; <i>L</i><sub>ш</sub> = <i>n</i>,&nbsp;&nbsp; Δ<i>L</i> = <i>L</i><sub>тт</sub> − <i>L</i><sub>ш</sub></span><span class="num">(2)</span></div>
+  <p><i>K</i><sub>покр</sub> — коэффициент автоматизации процессов; <i>N</i><sub>авт</sub> — число процессов, поддержанных хотя бы одной системой; <i>N</i><sub>проц</sub> — число ключевых процессов; <i>n</i> — число прикладных систем; <i>L</i><sub>тт</sub> — максимальное число интеграций «точка-точка», когда каждая система обменивается данными с каждой; <i>L</i><sub>ш</sub> — число подключений к интеграционной шине; Δ<i>L</i> — сокращение числа интерфейсов при переходе на шину.</p>
+ </div>
+ <div class="task"><h3>Задание А</h3><p>Для каждого ключевого процесса фирмы выберите класс прикладной системы, который должен его поддерживать.</p></div>
+ <div class="wrap"><table id="l1a"></table></div>
+ <div class="task"><h3>Задание Б</h3><p>Ниже — фактический ИТ-ландшафт фирмы: какие системы есть и какие процессы они закрывают. Рассчитайте показатели по формулам (1)–(2) и найдите дублирование.</p></div>
+ <div class="wrap"><table id="l1b"></table></div>
+ <div class="grid2" id="l1inputs"></div>
+ <div class="btnrow"><button class="btn" id="l1check">Проверить работу</button><span id="l1res" aria-live="polite"></span></div>
+ <div id="l1after"></div>
+</section>
+
+<section class="panel" id="p2" role="tabpanel">
+ <p class="eyebrow">Лабораторная работа 2 · 15 баллов</p>
+ <h2>Выбор информационной системы по совокупной стоимости владения</h2>
+ <div class="theory">
+  <p>Цена покупки системы — лишь часть затрат. Совокупная стоимость владения (TCO) включает единовременные затраты (лицензии, оборудование, внедрение, обучение) и ежегодные (подписка или техническая поддержка, сопровождение, инфраструктура, персонал) за весь срок использования. Ежегодные затраты приводят к сегодняшнему дню дисконтированием. Выбор между альтернативами делают не по одной цене, а по соотношению качества решения и TCO.</p>
+  <div class="formula"><span><i>TCO</i><sub><i>a</i></sub> = <i>CAPEX</i><sub><i>a</i></sub> + <i>OPEX</i><sub><i>a</i></sub> · <i>A</i>,&nbsp;&nbsp; <i>A</i> = (1 − (1 + <i>r</i>)<sup>−<i>T</i></sup>) / <i>r</i></span><span class="num">(3)</span></div>
+  <div class="formula"><span><i>S</i><sub><i>a</i></sub> = Σ<sub><i>k</i></sub> <i>w</i><sub><i>k</i></sub> · <i>s</i><sub><i>ak</i></sub>,&nbsp;&nbsp; <i>R</i><sub><i>a</i></sub> = <i>S</i><sub><i>a</i></sub> / <i>TCO</i><sub><i>a</i></sub></span><span class="num">(4)</span></div>
+  <p><i>CAPEX</i><sub><i>a</i></sub> — единовременные затраты альтернативы <i>a</i>, млн руб.; <i>OPEX</i><sub><i>a</i></sub> — ежегодные затраты, млн руб./год; <i>A</i> — коэффициент аннуитета; <i>r</i> = 0,15 — ставка дисконтирования; <i>T</i> = 5 лет — срок использования; <i>w</i><sub><i>k</i></sub> — вес критерия <i>k</i> (сумма весов равна 1); <i>s</i><sub><i>ak</i></sub> — оценка альтернативы по критерию от 1 до 5; <i>S</i><sub><i>a</i></sub> — интегральная оценка; <i>R</i><sub><i>a</i></sub> — баллы качества на 1 млн руб. TCO. При <i>r</i> = 0,15 и <i>T</i> = 5 коэффициент <i>A</i> ≈ 3,352.</p>
+ </div>
+ <div id="l2case" class="task"></div>
+ <div class="wrap"><table id="l2table"></table></div>
+ <div class="grid2" id="l2inputs"></div>
+ <div class="btnrow"><button class="btn" id="l2check">Проверить расчёт</button><span id="l2res" aria-live="polite"></span></div>
+ <div id="l2after"></div>
+ <div class="svgbox" id="l2chart"></div>
+</section>
+
+<section class="panel" id="p3" role="tabpanel">
+ <p class="eyebrow">Лабораторная работа 3 · 15 баллов</p>
+ <h2>ИТ-сервис, инциденты и соглашение об уровне сервиса</h2>
+ <div class="theory">
+  <p>ИТ-служба отвечает перед бизнесом за сервисы, а не за серверы. Соглашение об уровне сервиса (SLA) фиксирует целевую доступность и ответственность за её нарушение. Практики ITIL 4 «Управление инцидентами» и «Управление уровнем сервиса» задают порядок: каждое обращение классифицируют, инциденту присваивают приоритет по влиянию и срочности, а доступность считают за отчётный период.</p>
+  <p><b>Влияние</b> — масштаб последствий: высокое — затронуты все пользователи или вся деятельность; среднее — одно подразделение или одна функция; низкое — отдельный пользователь. <b>Срочность</b> — как быстро растёт ущерб: высокая — работа стоит прямо сейчас; средняя — ущерб наступит в течение смены или суток; низкая — есть обходной путь или время до конца недели. Приоритет: высокое+высокая — P1; высокое+средняя или среднее+высокая — P2; высокое+низкая, среднее+средняя, низкое+высокая — P3; среднее+низкая, низкое+средняя — P4; низкое+низкая — P5. Плановые работы в согласованное окно и запросы на обслуживание инцидентами не являются.</p>
+  <div class="formula"><span><i>A</i><sub>ф</sub> = (<i>T</i><sub>п</sub> − <i>D</i>) / <i>T</i><sub>п</sub> · 100 %</span><span class="num">(5)</span></div>
+  <div class="formula"><span><i>Ш</i> = <i>P</i> · min(30 %; 5 % · ⌊(<i>A</i><sub>ц</sub> − <i>A</i><sub>ф</sub>) / 0,1⌋)</span><span class="num">(6)</span></div>
+  <p><i>A</i><sub>ф</sub> — фактическая доступность сервиса, %; <i>T</i><sub>п</sub> — длительность периода, мин (30 суток = 43 200 мин); <i>D</i> — суммарное время полной недоступности сервиса по инцидентам, мин (плановые работы и частичные сбои отдельных функций не учитываются); <i>A</i><sub>ц</sub> — целевая доступность по SLA, %; <i>P</i> — ежемесячная плата за сервис, тыс. руб.; <i>Ш</i> — снижение платы (сервисный кредит) за каждые полные 0,1 п. п. недостижения цели, не более 30 %. Если <i>A</i><sub>ф</sub> ≥ <i>A</i><sub>ц</sub>, то <i>Ш</i> = 0.</p>
+ </div>
+ <div id="l3case" class="task"></div>
+ <div class="wrap"><table id="l3table"></table></div>
+ <div class="grid2" id="l3inputs"></div>
+ <div class="btnrow"><button class="btn" id="l3check">Проверить работу</button><span id="l3res" aria-live="polite"></span></div>
+ <div id="l3after"></div>
+</section>
+
+<section class="panel" id="p4" role="tabpanel">
+ <p class="eyebrow">Лабораторная работа 4 · 10 баллов</p>
+ <h2>Ценность информации для управленческого решения</h2>
+ <div class="theory">
+  <p>Информационное обеспечение управления оправдано, если сведения способны изменить решение. Теория ценности информации Р. Ховарда сравнивает ожидаемый результат без дополнительных сведений и при совершенном прогнозе.</p>
+  <div class="formula"><span><i>EMV</i><sub><i>a</i></sub> = Σ<sub><i>j</i></sub> <i>p</i><sub><i>j</i></sub> · <i>V</i><sub><i>aj</i></sub></span><span class="num">(7)</span></div>
+  <div class="formula"><span><i>EVwPI</i> = Σ<sub><i>j</i></sub> <i>p</i><sub><i>j</i></sub> · max<sub><i>a</i></sub> <i>V</i><sub><i>aj</i></sub></span><span class="num">(8)</span></div>
+  <div class="formula"><span><i>EVPI</i> = <i>EVwPI</i> − max<sub><i>a</i></sub> <i>EMV</i><sub><i>a</i></sub></span><span class="num">(9)</span></div>
+  <p><i>p</i><sub><i>j</i></sub> — вероятность состояния среды <i>j</i>; <i>V</i><sub><i>aj</i></sub> — результат альтернативы <i>a</i> в состоянии <i>j</i>, млн руб.; <i>EMV</i> — ожидаемая денежная ценность; <i>EVwPI</i> — ожидаемый результат при совершенной информации; <i>EVPI</i> — ожидаемая ценность совершенной информации. Реальный прогноз не бывает совершенным, поэтому <i>EVPI</i> — верхняя граница цены, которую разумно платить за сведения.</p>
+ </div>
+ <div id="l4case" class="task"></div>
+ <div class="wrap"><table id="l4table"></table></div>
+ <div class="grid2" id="l4inputs"></div>
+ <div class="btnrow"><button class="btn" id="l4check">Проверить расчёт</button><span id="l4res" aria-live="polite"></span></div>
+ <div id="l4after"></div>
+ <div class="svgbox" id="l4chart"></div>
+</section>
+
+<section class="panel" id="p5" role="tabpanel">
+ <p class="eyebrow">Лабораторная работа 5 · 15 баллов</p>
+ <h2>Портфель проектов информатизации</h2>
+ <div class="theory">
+  <p>Заявки подразделений всегда превышают бюджет на ИТ. Портфель формируют по ожидаемой приведённой отдаче с учётом вероятности успешного внедрения. Проекты, обязательные по закону, включают до любых расчётов: их обоснование — цена несоблюдения требований, а не прибыль.</p>
+  <div class="formula"><span><i>NV</i><sub><i>i</i></sub> = <i>p</i><sub><i>i</i></sub> · <i>E</i><sub><i>i</i></sub> · <i>A</i> − <i>C</i><sub><i>i</i></sub></span><span class="num">(10)</span></div>
+  <div class="formula"><span>max Σ<sub><i>i</i></sub> <i>x</i><sub><i>i</i></sub> · <i>NV</i><sub><i>i</i></sub>&nbsp; при&nbsp; Σ<sub><i>i</i></sub> <i>x</i><sub><i>i</i></sub> · <i>C</i><sub><i>i</i></sub> ≤ <i>B</i>,&nbsp; <i>x</i><sub><i>i</i></sub> ∈ {0; 1}</span><span class="num">(11)</span></div>
+  <p><i>p</i><sub><i>i</i></sub> — вероятность успешного внедрения проекта <i>i</i>; <i>E</i><sub><i>i</i></sub> — годовой эффект, млн руб.; <i>A</i> ≈ 3,352 — коэффициент аннуитета из формулы (3); <i>C</i><sub><i>i</i></sub> — затраты, млн руб.; <i>B</i> — бюджет; <i>x</i><sub><i>i</i></sub> — решение о включении проекта.</p>
+ </div>
+ <div id="l5case" class="task"></div>
+ <div class="wrap"><table id="l5table"></table></div>
+ <div class="result" id="l5sum"></div>
+ <div class="btnrow"><button class="btn" id="l5check">Проверить портфель</button><span id="l5res" aria-live="polite"></span></div>
+ <div id="l5after"></div>
+</section>
+
+<section class="panel" id="p6" role="tabpanel">
+ <p class="eyebrow">Лабораторная работа 6 · 10 баллов</p>
+ <h2>Зрелость управления ИТ по COBIT 2019</h2>
+ <div class="theory">
+  <p>COBIT 2019 оценивает процессы управления ИТ по уровням возможностей от 0 до 5. Уровень 0 — процесс не выполняется. 1 — цель достигается частично, разрозненными действиями. 2 — основные действия выполняются регулярно, но порядок не закреплён. 3 — процесс определён: регламент, роли, единый порядок. 4 — процесс измеряется показателями, отклонения анализируются. 5 — процесс непрерывно совершенствуется по результатам измерений.</p>
+  <div class="formula"><span><i>G</i><sub><i>k</i></sub> = max(0; <i>L</i><sup>ц</sup><sub><i>k</i></sub> − <i>L</i><sup>ф</sup><sub><i>k</i></sub>),&nbsp;&nbsp; <i>Pr</i><sub><i>k</i></sub> = <i>v</i><sub><i>k</i></sub> · <i>G</i><sub><i>k</i></sub></span><span class="num">(12)</span></div>
+  <p><i>L</i><sup>ф</sup><sub><i>k</i></sub> — фактический уровень процесса <i>k</i>; <i>L</i><sup>ц</sup><sub><i>k</i></sub> — целевой уровень, установленный руководством; <i>G</i><sub><i>k</i></sub> — разрыв; <i>v</i><sub><i>k</i></sub> — значимость процесса для бизнеса фирмы (1 — низкая, 3 — высокая); <i>Pr</i><sub><i>k</i></sub> — приоритет улучшения.</p>
+ </div>
+ <div class="task"><h3>Задание</h3><p>По описанию практики определите фактический уровень каждого процесса. Затем отметьте два процесса, которые нужно улучшать в первую очередь.</p></div>
+ <div class="wrap"><table id="l6table"></table></div>
+ <div class="btnrow"><button class="btn" id="l6check">Проверить оценку</button><span id="l6res" aria-live="polite"></span></div>
+ <div id="l6after"></div>
+</section>
+
+<section class="panel" id="p7" role="tabpanel">
+ <p class="eyebrow">Лабораторная работа 7 · 10 баллов</p>
+ <h2>Управление данными: аудит качества справочника контрагентов</h2>
+ <div class="theory">
+  <p>Данные — подсистема информационного менеджмента: одна запись о контрагенте живёт в ERP, CRM и бухгалтерии одновременно, и ни одна из систем за неё не отвечает. Качество данных измеряют по модели ISO/IEC 25012: полнота, уникальность, корректность. Выгрузка сделана 01.10.2026; дата договора позже этого дня — ошибка.</p>
+  <div class="formula"><span><i>K</i><sub>п</sub> = 1 − <i>N</i><sub>пуст</sub> / <i>N</i><sub>яч</sub></span><span class="num">(13)</span></div>
+  <div class="formula"><span><i>K</i><sub>у</sub> = 1 − <i>N</i><sub>дубл</sub> / <i>N</i><sub>стр</sub></span><span class="num">(14)</span></div>
+  <div class="formula"><span><i>K</i><sub>к</sub> = 1 − <i>N</i><sub>ош</sub> / (<i>N</i><sub>яч</sub> − <i>N</i><sub>пуст</sub>)</span><span class="num">(15)</span></div>
+  <div class="formula"><span><i>Q</i> = 0,3 · <i>K</i><sub>п</sub> + 0,3 · <i>K</i><sub>у</sub> + 0,4 · <i>K</i><sub>к</sub></span><span class="num">(16)</span></div>
+  <p><i>N</i><sub>яч</sub> — число ячеек в пяти полях (наименование, ИНН, телефон, e-mail, дата); <i>N</i><sub>пуст</sub> — незаполненные ячейки; <i>N</i><sub>стр</sub> — строки выгрузки; <i>N</i><sub>дубл</sub> — лишние строки-повторы (тот же ИНН и наименование, что выше); <i>N</i><sub>ош</sub> — заполненные ячейки с ошибкой: ИНН с неверной контрольной цифрой, e-mail без «@» или домена, дата позже выгрузки; <i>K</i><sub>п</sub>, <i>K</i><sub>у</sub>, <i>K</i><sub>к</sub> — коэффициенты полноты, уникальности и корректности; <i>Q</i> — интегральный показатель качества.</p>
+  <p>Контрольная цифра ИНН юридического лица: первые девять цифр умножают на веса 2, 4, 10, 3, 5, 9, 4, 6, 8, сумму делят на 11, остаток делят на 10; результат должен совпасть с десятой цифрой.</p>
+ </div>
+ <div class="task"><h3>Задание</h3><p>Шаг 1. Нажмите на каждую дефектную ячейку; для дубля отметьте номер строки-повтора. Шаг 2. Рассчитайте показатели (13)–(16) с точностью до трёх знаков.</p></div>
+ <div class="wrap"><table id="l7table"></table></div>
+ <div class="grid2">
+  <div class="result"><span class="lbl">Калькулятор контрольной цифры ИНН</span><div class="btnrow"><input id="innIn" inputmode="numeric" maxlength="10" placeholder="10 цифр" style="width:150px;font-family:var(--mono)"><button class="btn ghost" id="innBtn">Разобрать</button></div><p id="innOut" class="note" aria-live="polite">Калькулятор показывает расчёт по шагам; применять его к строкам реестра нужно самостоятельно.</p></div>
+  <div class="result"><span class="lbl">Ваши расчёты</span><div class="grid2" id="l7inputs"></div></div>
+ </div>
+ <div class="btnrow"><button class="btn" id="l7check">Проверить аудит</button><span id="l7res" aria-live="polite"></span></div>
+ <div class="svgbox" id="l7chart"></div>
+</section>
+
+<section class="panel" id="p8" role="tabpanel">
+ <p class="eyebrow">Итоговый тест · 10 баллов</p>
+ <h2>Проверка понимания</h2>
+ <div id="quiz" style="display:grid;gap:18px"></div>
+ <div class="btnrow"><button class="btn" id="quizCheck">Проверить ответы</button><span id="quizRes" aria-live="polite"></span></div>
+</section>
+
+<section class="panel" id="p9" role="tabpanel">
+ <p class="eyebrow">Отчёт</p>
+ <h2>Отчёт о выполнении практикума</h2>
+ <div id="report" style="display:grid;gap:14px"></div>
+ <div class="btnrow">
+  <button class="btn" id="copyBtn">Скопировать отчёт</button>
+  <button class="btn ghost" id="printBtn" hidden>Распечатать</button>
+  <button class="btn ghost" id="jsonBtn" hidden>Сохранить JSON</button>
+  <button class="btn ghost" id="resetAsk">Начать заново</button>
+  <span id="copyRes" aria-live="polite" class="note"></span>
+ </div>
+ <div id="resetBox" class="confirm" hidden><p>Все ответы и назначенный вариант будут удалены. Продолжить?</p><div class="btnrow"><button class="btn danger" id="resetYes">Да, удалить</button><button class="btn ghost" id="resetNo">Отмена</button></div></div>
+ <textarea id="reportText" rows="8" hidden aria-label="Текст отчёта для копирования"></textarea>
+</section>
+
+<div class="savebar">
+ <div class="btnrow"><button class="btn" id="saveBtn">Сохраниться на данной точке практикума</button><span class="note">Сохраняются вариант, все введённые ответы, баллы и выводы.</span></div>
+ <div class="pointbox" id="saveBox" hidden>
+  <p id="saveMsg" aria-live="polite"></p>
+  <div class="field"><label for="saveCode">Код точки: сохраните его, чтобы продолжить на другом компьютере или в другом браузере</label><textarea id="saveCode" rows="3" readonly spellcheck="false"></textarea></div>
+  <div class="btnrow"><button class="btn ghost" id="copyCode">Скопировать код</button><span id="copyCodeRes" class="note" aria-live="polite"></span></div>
+ </div>
+</div>
+</main>
+
+<script>
+/* ===================== ДАННЫЕ ПРАКТИКУМА ===================== */
+const CLS={ERP:'ERP',CRM:'CRM',SCM:'WMS/SCM',MES:'MES',TMS:'TMS',HRM:'HRM',ECM:'СЭД/ЭДО',BI:'BI',IND:'Отраслевая система'};
+const COBIT=[['APO02','Управляемая стратегия','доля ИТ-проектов, увязанных с целями бизнеса'],['APO06','Управляемые бюджет и затраты','отклонение фактических ИТ-затрат от бюджета'],['BAI03','Управляемые выявление и создание решений','доля требований, принятых без доработки'],['DSS02','Управляемые запросы на обслуживание и инциденты','доля инцидентов, решённых в срок SLA'],['APO14','Управляемые данные','интегральный показатель качества мастер-данных'],['DSS05','Управляемые службы безопасности','число инцидентов информационной безопасности']];
+const LVL=['не выполняется: ответственных нет, записей о работе нет, на вопрос «кто этим занимается» отвечают «никто».',
+ 'выполняется от случая к случаю силами отдельных энтузиастов; результат зависит от конкретного человека, документов нет.',
+ 'основные действия выполняются регулярно, однако порядок нигде не описан и в подразделениях различается.',
+ 'утверждён регламент, закреплены роли и ответственность, все подразделения работают одинаково; показатели не собираются.',
+ 'выполняется по регламенту, показатель «{kpi}» измеряется ежемесячно и сравнивается с целевым значением.',
+ 'показатель «{kpi}» анализируется ежеквартально, регламент пересматривается по результатам, эффект изменений измеряется.'];
+// arch.proc: [процесс, допустимые классы]; arch.land: [система, класс, покрываемые процессы]
+// tco: m — масштаб, s — множитель подписки SaaS, w — веса критериев, f3 — удорожание доработки 1С, d3 — снижение функц. оценки 1С
+// sla: сервис, модуль, плата тыс. руб./мес, цель %, операция; cobit: целевые уровни t и значимость v
+const IND=[
+{code:'01.11',sec:'A',secName:'Сельское, лесное хозяйство, охота, рыболовство',name:'Выращивание зерновых (кроме риса), зернобобовых культур и семян масличных культур',color:'#5d8a3a',
+ firm:'СПК «Колос Предгорья»',size:'120 работников, 9,2 тыс. га пашни, Ставропольский край',ind:'агроплатформа учёта полей и техники',
+ is:['1С:ERP АПК','Агросигнал (мониторинг техники)','1С:Зарплата и управление персоналом'],law:['149-ФЗ','152-ФЗ','402-ФЗ','187-ФЗ (при наличии объектов КИИ)'],
+ arch:{proc:[['Планирование севооборота и технологических карт',['IND']],['Мониторинг техники и расхода ГСМ',['IND']],['Бухгалтерский учёт и закупки',['ERP']],['Кадры и зарплата механизаторов',['HRM','ERP']],['Продажа зерна элеваторам и трейдерам',['CRM','ERP']],['Управленческая отчётность по себестоимости полей',['BI']]],
+  land:[['1С:ERP АПК','ERP',[2,3,4]],['Агросигнал','IND',[1]],['1С:Зарплата и управление персоналом','HRM',[3]]]},
+ tco:{m:1,s:0.8,w:[0.35,0.25,0.25,0.15],f3:1,d3:0},
+ sla:{svc:'1С:ERP АПК',mod:'модуль учёта зерна на току',fee:180,t:99.0,op:'приёмка зерна от комбайнов'},
+ cobit:{t:[3,3,3,3,3,3],v:[2,3,1,2,2,1]},
+ dec:{q:'Хозяйство выбирает структуру посевов на следующий сезон. Урожай зависит от влагообеспеченности, которую пока никто не знает.',
+  alts:['Озимая пшеница на 80 % площади','Пшеница 50 % + подсолнечник 30 %','Пшеница 40 % + нут 30 % (засухоустойчивая схема)'],
+  states:['Засушливый год','Нормальный год','Влажный год'],p:[0.35,0.45,0.20],v:[[18,62,74],[26,55,60],[38,47,50]],
+  info:'долгосрочный агрометеопрогноз и спутниковый мониторинг влагозапасов',cost:4.2,unit:'маржинальный доход, млн руб.'},
+ m:1,proj:[['Точное земледелие: карты урожайности и дифференцированное внесение',3.5,2.0,0.65,false],['Учёт ГСМ с датчиками уровня топлива',1.1,0.8,0.85,false]]},
+{code:'10.51',sec:'C',secName:'Обрабатывающие производства',name:'Производство молока (кроме сырого) и молочной продукции',color:'#3f7fa6',
+ firm:'АО «Молочная долина Юг»',size:'340 работников, 210 т молока в сутки, поставки в федеральные сети',ind:'лабораторная информационная система (ЛИМС)',
+ is:['1С:ERP Управление предприятием','ЛИМС лаборатории','Модуль обмена с ГИС МТ «Честный знак»'],law:['149-ФЗ','152-ФЗ','ТР ТС 033/2013','402-ФЗ'],
+ arch:{proc:[['Приёмка сырья и лабораторный контроль',['IND']],['Планирование и учёт производства по сменам',['MES','ERP']],['Закупки, склад, финансы',['ERP']],['Отгрузка и маркировка продукции',['SCM','ERP']],['Работа с торговыми сетями и заказами',['CRM']],['Анализ рентабельности SKU',['BI']]],
+  land:[['1С:ERP Управление предприятием','ERP',[1,2,3]],['ЛИМС','IND',[0]],['Модуль маркировки','SCM',[3]]]},
+ tco:{m:1.2,s:1.1,w:[0.3,0.3,0.25,0.15],f3:1,d3:0},
+ sla:{svc:'1С:ERP Управление предприятием',mod:'модуль маркировки',fee:320,t:99.5,op:'отгрузка продукции в торговые сети'},
+ cobit:{t:[3,3,3,3,3,3],v:[2,2,2,3,2,2]},
+ dec:{q:'Завод решает, как обеспечить выпуск творога в сезон высокого спроса.',
+  alts:['Сохранить текущую мощность','Купить вторую линию','Контрактный выпуск у партнёра'],
+  states:['Спрос падает','Спрос стабилен','Спрос растёт'],p:[0.25,0.5,0.25],v:[[10,14,16],[2,15,28],[8,13,20]],
+  info:'маркетинговое исследование спроса в сетях СКФО',cost:1.5,unit:'прибыль, млн руб.'},
+ m:1.2,proj:[['Электронный журнал ХАССП с датчиками температуры',1.6,1.0,0.85,false],['Обмен данными маркировки с ГИС МТ «Честный знак»',1.3,0.4,0.95,true]]},
+{code:'41.20',sec:'F',secName:'Строительство',name:'Строительство жилых и нежилых зданий',color:'#a0682c',
+ firm:'ООО «СтавСтройИнвест»',size:'260 работников, 3 жилых комплекса, долевое строительство',ind:'BIM-среда общих данных',
+ is:['Renga (BIM)','Гранд-Смета','CRM отдела продаж','1С:Бухгалтерия','1С:ЗУП'],law:['149-ФЗ','152-ФЗ','214-ФЗ','402-ФЗ'],
+ arch:{proc:[['Проектирование и среда общих данных',['IND']],['Сметное ценообразование',['IND']],['Строительный контроль и исполнительная документация',['IND','ECM']],['Продажи по ДДУ и работа с дольщиками',['CRM']],['Финансы и закупки материалов',['ERP']],['Кадры и охрана труда',['HRM']]],
+  land:[['Renga','IND',[0]],['Гранд-Смета','IND',[1]],['CRM отдела продаж','CRM',[3]],['1С:Бухгалтерия','ERP',[4]],['1С:ЗУП','HRM',[5]]]},
+ tco:{m:1.3,s:0.9,w:[0.4,0.3,0.15,0.15],f3:1,d3:0},
+ sla:{svc:'среда общих данных BIM',mod:'модуль исполнительной документации',fee:260,t:99.0,op:'выдача чертежей бригадам'},
+ cobit:{t:[3,3,3,3,3,3],v:[2,3,2,2,2,1]},
+ dec:{q:'Застройщик выбирает момент и способ продаж второй очереди комплекса. Спрос зависит от ставок по ипотеке.',
+  alts:['Старт продаж сейчас со скидкой','Старт продаж через 6 месяцев','Продажа блоком инвестору'],
+  states:['Ставки снижаются','Без изменений','Ставки растут'],p:[0.3,0.45,0.25],v:[[40,38,30],[55,36,18],[33,33,33]],
+  info:'аналитический прогноз рынка ипотеки и спроса на жильё',cost:2.0,unit:'выручка за вычетом затрат, млн руб.'},
+ m:1.3,proj:[['BIM-модель и среда общих данных для всех подрядчиков',4.0,2.2,0.6,false],['Мобильный стройконтроль с фотофиксацией дефектов',1.0,0.7,0.85,false]]},
+{code:'47.11',sec:'G',secName:'Торговля оптовая и розничная',name:'Торговля розничная преимущественно пищевыми продуктами в неспециализированных магазинах',color:'#c0573a',
+ firm:'ООО «Продмаркет-Юг»',size:'14 магазинов у дома, 410 работников',ind:'кассовая система с передачей данных в ОФД',
+ is:['1С:Розница','Кассовое ПО с ОФД','Сервис программы лояльности','1С:ЗУП'],law:['149-ФЗ','152-ФЗ','54-ФЗ','402-ФЗ'],
+ arch:{proc:[['Управление ассортиментом и ценами',['ERP']],['Автозаказ и складской учёт магазинов',['SCM','ERP']],['Кассовое обслуживание покупателей',['IND']],['Программа лояльности',['CRM']],['Учёт персонала магазинов',['HRM']],['Анализ продаж по магазинам',['BI']]],
+  land:[['1С:Розница','ERP',[0,1]],['Кассовое ПО','IND',[2]],['Сервис лояльности','CRM',[3]],['1С:ЗУП','HRM',[4]]]},
+ tco:{m:1,s:1.3,w:[0.3,0.35,0.2,0.15],f3:1,d3:0},
+ sla:{svc:'кассовое ПО и ОФД',mod:'модуль программы лояльности',fee:400,t:99.8,op:'продажа на кассах'},
+ cobit:{t:[3,3,3,3,3,3],v:[2,2,1,3,3,2]},
+ dec:{q:'Сеть формирует заказ скоропортящейся продукции к праздничным выходным. Непроданный товар списывается.',
+  alts:['Заказ 80 % от прошлого года','Заказ 100 %','Заказ 125 %'],
+  states:['Низкий трафик','Обычный трафик','Высокий трафик'],p:[0.2,0.5,0.3],v:[[3.2,3.6,3.8],[2.4,4.2,4.8],[1.2,3.8,5.9]],
+  info:'сервис прогнозирования спроса по погоде и чековым данным',cost:0.25,unit:'валовая прибыль, млн руб.'},
+ m:1,proj:[['Автозаказ товаров на основе прогноза продаж',2.2,1.6,0.7,false],['Электронные ценники во всех магазинах',2.8,0.6,0.9,false]]},
+{code:'47.91',sec:'G',secName:'Торговля оптовая и розничная',name:'Торговля розничная по почте или по информационно-коммуникационной сети Интернет',color:'#b0477a',
+ firm:'ООО «Уютный дом онлайн»',size:'интернет-магазин товаров для дома, 85 работников, 40 тыс. заказов в год',ind:'платформа интернет-магазина',
+ is:['CMS и личный кабинет','PIM-система каталога','1С:Управление торговлей','Help-desk','Веб-аналитика'],law:['149-ФЗ','152-ФЗ','Закон о защите прав потребителей','38-ФЗ «О рекламе»'],
+ arch:{proc:[['Каталог и карточки товаров',['IND']],['Приём и обработка заказов',['IND','ERP']],['Склад и комплектация',['SCM']],['Доставка и работа со службами доставки',['TMS','SCM']],['Поддержка покупателей',['CRM']],['Маркетинговая аналитика',['BI']]],
+  land:[['CMS интернет-магазина','IND',[0,1]],['PIM-система','IND',[0]],['1С:Управление торговлей','ERP',[1,2]],['Help-desk','CRM',[4]],['Веб-аналитика','BI',[5]]]},
+ tco:{m:0.8,s:0.7,w:[0.4,0.3,0.1,0.2],f3:1,d3:0},
+ sla:{svc:'сайт и личный кабинет',mod:'модуль онлайн-оплаты',fee:550,t:99.9,op:'приём заказов'},
+ cobit:{t:[3,3,3,4,4,3],v:[2,2,2,3,3,2]},
+ dec:{q:'Магазин выбирает основной канал продаж на сезон.',
+  alts:['Маркетплейсы','Собственный сайт с контекстной рекламой','Комбинированная схема'],
+  states:['Спрос низкий','Спрос средний','Спрос высокий'],p:[0.3,0.5,0.2],v:[[6,9,12],[2,10,18],[5,10,14]],
+  info:'A/B-тест и исследование целевой аудитории',cost:0.9,unit:'операционная прибыль, млн руб.'},
+ m:0.8,proj:[['Рекомендательная система на сайте',2.6,1.4,0.6,false],['Платформа данных о клиентах (CDP)',3.0,1.8,0.55,false]]},
+{code:'49.41',sec:'H',secName:'Транспортировка и хранение',name:'Деятельность автомобильного грузового транспорта',color:'#6b5aa6',
+ firm:'ООО «ЮгТрансЛогистик»',size:'60 тягачей, 140 работников, междугородние перевозки',ind:'система телематики и GPS-мониторинга',
+ is:['TMS собственной разработки','Телематика и GPS','1С:Управление автотранспортом','1С:Бухгалтерия'],law:['149-ФЗ','152-ФЗ','259-ФЗ (Устав автотранспорта)','402-ФЗ'],
+ arch:{proc:[['Планирование рейсов и маршрутов',['TMS']],['Мониторинг движения и расхода топлива',['IND']],['ТО и ремонт парка',['ERP','IND']],['Договоры и расчёты с клиентами',['CRM','ERP']],['Кадры и рабочее время водителей',['HRM']],['Анализ рентабельности рейсов',['BI']]],
+  land:[['TMS собственной разработки','TMS',[0]],['Телематика и GPS','IND',[1,2]],['1С:Управление автотранспортом','ERP',[2,4]],['1С:Бухгалтерия','ERP',[3]]]},
+ tco:{m:1,s:1.0,w:[0.35,0.3,0.15,0.2],f3:1,d3:0},
+ sla:{svc:'TMS',mod:'модуль путевых листов',fee:240,t:99.5,op:'выпуск машин в рейс'},
+ cobit:{t:[3,3,3,3,3,3],v:[2,3,1,3,2,1]},
+ dec:{q:'Компания решает, как наращивать провозную способность на ближайшие два года.',
+  alts:['Купить 10 новых тягачей','Взять 6 тягачей в лизинг','Привлекать наёмный транспорт'],
+  states:['Грузопоток растёт','Стабилен','Падает'],p:[0.35,0.4,0.25],v:[[48,20,-15],[34,22,2],[22,16,10]],
+  info:'отраслевое исследование грузопотока СКФО и предварительные контракты',cost:3.0,unit:'прибыль за 2 года, млн руб.'},
+ m:1,proj:[['TMS: оптимизация маршрутов и загрузки',3.0,2.1,0.7,false],['Предиктивное ТО по данным телематики',2.0,0.9,0.6,false]]},
+{code:'55.10',sec:'I',secName:'Деятельность гостиниц и предприятий общественного питания',name:'Деятельность гостиниц и прочих мест для временного проживания',color:'#2f8f8a',
+ firm:'Гостиница «Машук-Парк» (ООО)',size:'4 звезды, 180 номеров, Кавказские Минеральные Воды',ind:'система управления гостиницей (PMS)',
+ is:['PMS гостиницы','Channel manager','Модуль бронирования на сайте','1С:Бухгалтерия'],law:['149-ФЗ','152-ФЗ','Правила предоставления гостиничных услуг','Положение о классификации гостиниц'],
+ arch:{proc:[['Бронирование и размещение гостей',['IND']],['Каналы продаж и тарифы',['IND','CRM']],['Техническая эксплуатация номеров',['IND','ERP']],['Финансы и закупки',['ERP']],['Кадры и графики персонала',['HRM']],['Отчётность RevPAR и ADR',['BI','IND']]],
+  land:[['PMS гостиницы','IND',[0,2,5]],['Channel manager','IND',[1]],['Модуль бронирования на сайте','IND',[0]],['1С:Бухгалтерия','ERP',[3]]]},
+ tco:{m:0.7,s:0.6,w:[0.35,0.35,0.15,0.15],f3:1,d3:0},
+ sla:{svc:'PMS гостиницы',mod:'модуль онлайн-бронирования',fee:210,t:99.5,op:'заселение гостей'},
+ cobit:{t:[3,3,3,3,3,3],v:[2,2,1,3,2,2]},
+ dec:{q:'Отель выбирает тарифную стратегию на летний сезон.',
+  alts:['Повысить тарифы на 15 %','Сохранить тарифы','Пакеты с санаторно-курортными услугами'],
+  states:['Спрос ниже прошлого года','На уровне','Выше'],p:[0.25,0.45,0.3],v:[[8,21,30],[14,19,22],[12,20,26]],
+  info:'мониторинг цен конкурентов и прогноз спроса от ревенью-сервиса',cost:1.8,unit:'GOP за сезон, млн руб.'},
+ m:0.7,proj:[['Система управления доходами (RMS) и channel manager',2.0,1.7,0.7,false],['Онлайн-регистрация гостей и ключ в смартфоне',1.8,0.6,0.8,false]]},
+{code:'62.01',sec:'J',secName:'Деятельность в области информации и связи',name:'Разработка компьютерного программного обеспечения',color:'#3b5fc4',
+ firm:'ООО «Кодекс-Софт Юг»',size:'95 разработчиков, заказная разработка и собственный SaaS',ind:'платформа разработки (репозиторий, CI/CD, трекер)',
+ is:['GitLab','YouTrack','Grafana','ATS для подбора персонала'],law:['149-ФЗ','152-ФЗ','ГК РФ, ч. 4','98-ФЗ'],
+ arch:{proc:[['Разработка и хранение кода',['IND']],['Планирование задач и спринтов',['IND']],['Подбор персонала',['HRM']],['Учёт трудозатрат и выставление счетов клиентам',['ERP']],['Мониторинг работы сервисов',['IND']],['Портфельная отчётность по проектам',['BI']]],
+  land:[['GitLab','IND',[0,1]],['YouTrack','IND',[1,3]],['Grafana','IND',[4]],['ATS','HRM',[2]]]},
+ tco:{m:0.8,s:0.9,w:[0.3,0.4,0.1,0.2],f3:1,d3:0},
+ sla:{svc:'GitLab и CI/CD',mod:'реестр контейнеров',fee:300,t:99.5,op:'выпуск релизов'},
+ cobit:{t:[3,3,4,4,3,4],v:[2,1,3,3,2,3]},
+ dec:{q:'Компания выбирает архитектуру нового SaaS-продукта, не зная масштаба клиентской базы.',
+  alts:['Монолит для установки у заказчика','Микросервисы в облаке','Модульный монолит в облаке'],
+  states:['Клиентов мало','Средне','Много'],p:[0.4,0.4,0.2],v:[[9,12,8],[3,11,26],[8,13,18]],
+  info:'пилот с тремя заказчиками и глубинные интервью (custdev)',cost:1.0,unit:'NPV продукта, млн руб.'},
+ m:0.8,proj:[['Корпоративная база знаний и регламент документирования',0.8,0.6,0.8,false],['Сканер уязвимостей зависимостей в CI/CD',1.2,0.5,0.9,false]]},
+{code:'64.19',sec:'K',secName:'Деятельность финансовая и страховая',name:'Денежное посредничество прочее',color:'#1f6f56',
+ firm:'АО «Банк Ставрополье-Кредит»',size:'региональный банк, 22 офиса, 1 100 работников',ind:'автоматизированная банковская система (АБС)',
+ is:['АБС','Скоринговая платформа','Хранилище данных','Система ПОД/ФТ','1С:ЗУП'],law:['395-1 «О банках и банковской деятельности»','115-ФЗ','152-ФЗ','187-ФЗ'],
+ arch:{proc:[['Ведение счетов и операций клиентов',['IND']],['Кредитный конвейер и скоринг',['IND']],['Обслуживание клиентов и продажи продуктов',['CRM']],['Отчётность в Банк России',['BI','IND']],['Контроль ПОД/ФТ',['IND']],['Кадры',['HRM']]],
+  land:[['АБС','IND',[0,1,3]],['Скоринговая платформа','IND',[1]],['Хранилище данных','BI',[3]],['Система ПОД/ФТ','IND',[4]],['1С:ЗУП','HRM',[5]]]},
+ tco:{m:2,s:1.5,w:[0.25,0.2,0.4,0.15],f3:1.6,d3:1},
+ sla:{svc:'АБС',mod:'модуль межбанковских платежей',fee:1200,t:99.9,op:'обслуживание клиентов в офисах'},
+ cobit:{t:[3,4,3,4,4,4],v:[2,2,1,3,3,3]},
+ dec:{q:'Кредитный комитет определяет лимит кредитования малого бизнеса на год.',
+  alts:['Расширить портфель на 30 %','Сохранить объём','Сократить портфель, вложиться в ОФЗ'],
+  states:['Спад экономики','Стабильность','Рост'],p:[0.25,0.5,0.25],v:[[-20,35,60],[5,25,35],[18,18,18]],
+  info:'стресс-тест портфеля и отраслевые данные кредитного бюро',cost:3.5,unit:'чистый процентный доход за вычетом резервов, млн руб.'},
+ m:2,proj:[['Антифрод-система на машинном обучении',4.5,3.0,0.6,false],['Хранилище данных для отчётности в Банк России',5.0,1.2,0.8,false]]},
+{code:'69.20',sec:'M',secName:'Деятельность профессиональная, научная и техническая',name:'Деятельность по оказанию услуг в области бухгалтерского учета, по проведению финансового аудита, по налоговому консультированию',color:'#8a6d1f',
+ firm:'ООО «Учёт-Консалт Плюс»',size:'бухгалтерский аутсорсинг, 26 работников, 180 клиентов',ind:'сервис сдачи отчётности',
+ is:['1С:Бухгалтерия (облако)','Сервис сдачи отчётности','ЭДО'],law:['402-ФЗ','152-ФЗ','63-ФЗ «Об электронной подписи»','НК РФ'],
+ arch:{proc:[['Ведение учёта клиентов',['ERP']],['Расчёт зарплаты работников клиентов',['HRM','ERP']],['Сдача отчётности в ФНС и СФР',['IND']],['Обмен документами с клиентами',['ECM']],['Учёт договоров и счетов собственной фирмы',['ERP','CRM']],['Контроль загрузки бухгалтеров',['BI']]],
+  land:[['1С:Бухгалтерия (облако)','ERP',[0,1,4]],['Сервис сдачи отчётности','IND',[2]],['ЭДО','ECM',[3]]]},
+ tco:{m:0.6,s:0.7,w:[0.3,0.3,0.25,0.15],f3:1,d3:0},
+ sla:{svc:'облачная 1С',mod:'модуль сдачи отчётности',fee:150,t:99.5,op:'проведение документов клиентов'},
+ cobit:{t:[3,3,3,3,3,3],v:[2,2,1,2,3,3]},
+ dec:{q:'Фирма выбирает учётную платформу на ближайшие три года.',
+  alts:['Остаться на текущей платформе','Перейти в облачную 1С','Собственный клиентский портал и облако'],
+  states:['Клиентов становится меньше','Стабильно','Клиентская база растёт'],p:[0.2,0.5,0.3],v:[[6,7,7.5],[5,8,10],[2,8,14]],
+  info:'опрос клиентов и анализ рынка аутсорсинга',cost:0.9,unit:'прибыль за 3 года, млн руб.'},
+ m:0.6,proj:[['Распознавание и роботизированный ввод первичных документов (OCR + RPA)',1.5,1.1,0.7,false],['Защищённый портал обмена документами с клиентами',1.2,0.5,0.85,false]]},
+{code:'85.22',sec:'P',secName:'Образование',name:'Образование высшее',color:'#9c3b4f',
+ firm:'АНО ВО «Институт цифровой экономики Юга»',size:'2 400 студентов, 160 преподавателей',ind:'система управления вузом',
+ is:['Система управления вузом','LMS Moodle','Модуль приёмной кампании','1С:ЗУП'],law:['273-ФЗ «Об образовании в РФ»','149-ФЗ','152-ФЗ','402-ФЗ'],
+ arch:{proc:[['Приём абитуриентов',['IND']],['Учёт контингента и успеваемости',['IND']],['Электронное обучение',['IND']],['Расписание и нагрузка преподавателей',['IND','ERP']],['Кадры и заработная плата',['HRM']],['Мониторинг показателей аккредитации',['BI']]],
+  land:[['Система управления вузом','IND',[0,1,3]],['LMS Moodle','IND',[2]],['Модуль приёмной кампании','IND',[0]],['1С:ЗУП','HRM',[4]]]},
+ tco:{m:0.8,s:1.2,w:[0.3,0.25,0.3,0.15],f3:1,d3:0},
+ sla:{svc:'LMS Moodle',mod:'модуль электронной ведомости',fee:160,t:99.0,op:'проведение онлайн-занятий'},
+ cobit:{t:[3,3,3,3,3,3],v:[2,2,1,2,3,2]},
+ dec:{q:'Институт решает, открывать ли новую программу бакалавриата «Бизнес-информатика».',
+  alts:['Открыть очную форму','Открыть очно-заочную с ДОТ','Не открывать, развивать ДПО'],
+  states:['Набор низкий','Набор средний','Набор высокий'],p:[0.3,0.45,0.25],v:[[-6,4,12],[-2,5,9],[2,3,4]],
+  info:'исследование спроса абитуриентов и работодателей региона',cost:0.6,unit:'финансовый результат за 4 года, млн руб.'},
+ m:0.8,proj:[['Цифровое портфолио студента, интегрированное с LMS',1.4,0.7,0.8,false],['Предиктивная аналитика риска отчисления',1.0,0.9,0.55,false]]},
+{code:'86.10',sec:'Q',secName:'Деятельность в области здравоохранения и социальных услуг',name:'Деятельность больничных организаций',color:'#c23b3b',
+ firm:'ООО «Клиника Здоровье-Юг»',size:'многопрофильный стационар, 150 коек, ОМС и платные услуги',ind:'медицинская информационная система (МИС)',
+ is:['МИС','ЛИС лаборатории','Сайт онлайн-записи'],law:['323-ФЗ «Об основах охраны здоровья»','326-ФЗ «Об ОМС»','152-ФЗ','149-ФЗ'],
+ arch:{proc:[['Запись и регистрация пациентов',['IND','CRM']],['Ведение ЭМК и назначений',['IND']],['Лабораторные исследования',['IND']],['Выставление счетов в ТФОМС',['IND']],['Закупки и учёт медикаментов',['ERP','SCM']],['Анализ загрузки коек и экономики отделений',['BI']]],
+  land:[['МИС','IND',[0,1,3]],['ЛИС лаборатории','IND',[2]],['Сайт онлайн-записи','IND',[0]]]},
+ tco:{m:1.2,s:1.4,w:[0.3,0.2,0.35,0.15],f3:1.4,d3:1},
+ sla:{svc:'МИС',mod:'модуль электронных медицинских карт',fee:450,t:99.8,op:'приём пациентов'},
+ cobit:{t:[3,3,3,4,4,4],v:[1,2,1,3,3,3]},
+ dec:{q:'Клиника решает, как обеспечить пациентов исследованиями МРТ.',
+  alts:['Купить аппарат МРТ','Арендовать с оплатой за исследование','Направлять пациентов по договору в другую клинику'],
+  states:['Поток пациентов низкий','Средний','Высокий'],p:[0.3,0.45,0.25],v:[[-10,15,40],[3,12,22],[6,8,9]],
+  info:'анализ маршрутизации пациентов и статистики ТФОМС',cost:2.5,unit:'прибыль за 3 года, млн руб.'},
+ m:1.2,proj:[['Передача медицинских документов в ЕГИСЗ (323-ФЗ, ст. 91.1)',2.0,0.6,0.9,true],['Система поддержки принятия врачебных решений',2.5,1.4,0.55,false]]}
+];
+const CRIT=['Функциональное соответствие процессам','Интеграция с имеющимися системами','Соответствие требованиям (реестр российского ПО, 152-ФЗ, локализация данных)','Устойчивость поставщика и независимость от него'];
+const ALT=[['Коробочная {ind} на собственных серверах',5.0,0.9,[4,3,5,4]],['{Ind} по подписке (SaaS)',0.8,2.0,[4,4,3,3]],['Доработка имеющейся платформы 1С силами интегратора',2.8,1.3,[3,5,5,3]]];
+const COMMON=[['Единый справочник контрагентов и номенклатуры (MDM)',1.8,1.2,0.8,false],['BI-панель управленческой отчётности',2.4,1.5,0.7,false],['Электронный документооборот с контрагентами',1.2,0.9,0.9,false],['Приведение обработки ПДн в соответствие со 152-ФЗ',1.0,0.3,1,true]];
+const CE={'01.11':[0.9,1.1,0.8],'10.51':[1.1,0.9,1.0],'41.20':[0.8,1.0,1.1],'47.11':[1.3,1.0,1.0],'47.91':[1.0,1.3,0.6],'49.41':[0.9,1.0,1.2],'55.10':[0.8,1.2,0.7],'62.01':[0.7,1.1,0.9],'64.19':[1.2,1.0,0.9],'69.20':[1.0,0.9,1.4],'85.22':[0.8,1.2,0.9],'86.10':[1.0,1.1,0.8]};
+const BUDGET_SHARE=0.45, RATE=0.15, HOR=5, AF=(1-Math.pow(1+RATE,-HOR))/RATE;
+const QUIZ=[
+ {q:'Чем совокупная стоимость владения (TCO) отличается от цены покупки системы?',a:['Ничем, это синонимы','TCO включает ежегодные затраты на поддержку, инфраструктуру и персонал за весь срок использования','TCO учитывает только лицензии'],c:1,why:'У SaaS цена входа низкая, а подписка за пять лет может превысить стоимость коробочного решения; сравнивать нужно по формуле (3).'},
+ {q:'Сервис недоступен всем пользователям, но ночью, когда смена не работает; к утру его нужно восстановить. Приоритет по ITIL?',a:['P1','P2','P4'],c:1,why:'Влияние высокое (все пользователи), срочность средняя (ущерб наступит утром) — P2.'},
+ {q:'Целевая доступность 99,9 % за 30 суток. Сколько минут простоя допустимо?',a:['Около 43 минут','Около 4 часов','Около 7 часов'],c:0,why:'43 200 мин × 0,001 = 43,2 мин.'},
+ {q:'Процесс выполняется по утверждённому регламенту, роли закреплены, но показатели не собираются. Уровень по COBIT 2019?',a:['2','3','4'],c:1,why:'Уровень 4 требует измерения процесса показателями; регламент и роли без измерений — уровень 3.'},
+ {q:'EVPI решения равна 2 млн руб., исследование рынка стоит 1,5 млн руб. и даёт верный прогноз в 70 % случаев. Вывод?',a:['Исследование точно окупится','Окупаемость не гарантирована: EVPI — верхняя граница, неполная информация стоит меньше','Покупать нельзя, так как 1,5 < 2'],c:1,why:'Формула (9) даёт ценность совершенного прогноза; ценность прогноза с ошибками ниже.'},
+ {q:'Почему проект с наибольшим эффектом может не войти в оптимальный портфель?',a:['Из-за ошибки расчёта','Бюджет ограничен: важна суммарная отдача комбинации, а дорогой проект вытесняет несколько выгодных','Крупные проекты всегда рискованнее'],c:1,why:'Задача (11) — задача о рюкзаке; оптимум ищут по комбинации проектов.'},
+ {q:'Шесть систем обмениваются данными каждая с каждой. Сколько интерфейсов нужно поддерживать?',a:['6','12','15'],c:2,why:'По формуле (2): 6 × 5 / 2 = 15. При интеграционной шине — 6 подключений.'},
+ {q:'Какой стандарт задаёт принципы корпоративного руководства ИТ для высшего руководства организации?',a:['ISO/IEC 38500','ISO/IEC 25012','ISO 15489'],c:0,why:'ISO/IEC 38500 формулирует принципы руководства ИТ; ISO/IEC 25012 — модель качества данных; ISO 15489 — управление документами.'}
+];
+/* ===================== УТИЛИТЫ И СОСТОЯНИЕ ===================== */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const n3=x=>x.toLocaleString('ru-RU',{minimumFractionDigits:3,maximumFractionDigits:3});
+const n2=x=>x.toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2});
+const n0=x=>Math.round(x).toLocaleString('ru-RU');
+const num=v=>{if(v===undefined||v===null||v==='')return NaN;return parseFloat(String(v).replace(',','.').replace(/[\s%]/g,''));};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const KEY='im-praktikum-2026-v2';
+const blank=()=>({fio:'',grp:'',ind:null,seed:0,tab:0,rot:0,l1:{a:{},k:{}},l2:{},l3:{pr:{},k:{}},l4:{},l5:{sel:[]},l6:{lv:{},pick:[]},l7:{flags:{},k:{}},quiz:{},concl:{},pts:{}});
+let S=blank();
+function load(){try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(blank(),JSON.parse(r));}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function rng(seed){let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;};}
+const I=()=>IND[S.ind];
+const sel=(id,opts,val)=>`<select id="${id}"><option value="">—</option>${opts.map(([k,v])=>`<option value="${k}" ${val!==undefined&&val!==''&&String(val)===String(k)?'selected':''}>${esc(v)}</option>`).join('')}</select>`;
+const inp=(id,label,val)=>`<div class="field"><label for="${id}">${label}</label><input class="n" id="${id}" type="text" inputmode="decimal" value="${esc(val||'')}"><span class="fb" id="fb_${id}"></span></div>`;
+function bindInputs(obj,ids){ids.forEach(([id,key])=>{const el=$('#'+id);if(!el)return;const h=e=>{obj[key]=e.target.value;save();};el.oninput=h;el.onchange=h;});}
+function mark(id,ok,txt){const el=$('#fb_'+id);if(el)el.innerHTML=`<span class="${ok?'ok':'bad'}">${ok?'верно':esc(txt)}</span>`;}
+const close=(u,v,tol)=>Math.abs(num(u)-v)<=tol;
+/* ===================== ВКЛАДКИ ===================== */
+const TABS=['Вариант','ЛР 1. Архитектура','ЛР 2. Выбор ИС','ЛР 3. SLA','ЛР 4. Ценность','ЛР 5. Портфель','ЛР 6. COBIT','ЛР 7. Данные','Тест','Отчёт'];
+const PTS={1:'l1',2:'l2',3:'l3',4:'l4',5:'l5',6:'l6',7:'l7',8:'quiz'};
+function renderTabs(){
+ const nav=$('#tabs');nav.innerHTML='';
+ TABS.forEach((t,i)=>{const b=document.createElement('button');b.setAttribute('role','tab');b.setAttribute('aria-selected',String(i===S.tab));
+  b.disabled=i>0&&S.ind===null;const k=PTS[i];b.innerHTML=esc(t)+(k&&S.pts[k]!==undefined?`<span class="pts">${Math.round(S.pts[k])}</span>`:'');
+  b.onclick=()=>{S.tab=i;save();renderTabs();if(i===9)renderReport();};nav.appendChild(b);
+  $('#p'+i).classList.toggle('active',i===S.tab);});
+ $('#totalPts').textContent=Math.round(Object.values(S.pts).reduce((a,x)=>a+x,0));
+}
+/* ===================== РУЛЕТКА ===================== */
+function drawWheel(){
+ const g=$('#wheel'),N=IND.length,R=190,c=200;let s='';
+ IND.forEach((d,i)=>{const a0=(i/N)*2*Math.PI-Math.PI/2,a1=((i+1)/N)*2*Math.PI-Math.PI/2;
+  const x0=c+R*Math.cos(a0),y0=c+R*Math.sin(a0),x1=c+R*Math.cos(a1),y1=c+R*Math.sin(a1);
+  s+=`<path class="sec" id="sec${i}" d="M${c},${c} L${x0.toFixed(1)},${y0.toFixed(1)} A${R},${R} 0 0 1 ${x1.toFixed(1)},${y1.toFixed(1)} Z" fill="${d.color}" stroke="var(--surface)" stroke-width="2"/>`;
+  const am=(a0+a1)/2,deg=am*180/Math.PI,tx=c+122*Math.cos(am),ty=c+122*Math.sin(am);
+  s+=`<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" transform="rotate(${deg.toFixed(1)} ${tx.toFixed(1)} ${ty.toFixed(1)})" text-anchor="middle" dominant-baseline="middle" font-size="15" font-weight="700" style="fill:#fff;font-family:var(--mono)">${d.code}</text>`;
+  const sx=c+170*Math.cos(am),sy=c+170*Math.sin(am);
+  s+=`<text x="${sx.toFixed(1)}" y="${sy.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="12" style="fill:#fff">${d.sec}</text>`;});
+ for(let k=0;k<36;k++){const a=k/36*2*Math.PI;s+=`<circle class="bulb${k%2?' alt':''}" cx="${(c+193*Math.cos(a)).toFixed(1)}" cy="${(c+193*Math.sin(a)).toFixed(1)}" r="4"/>`;}
+ g.innerHTML=s;g.style.transform=`rotate(${S.rot}deg)`;
+}
+const SPIN_MS=5000;let audio=null;
+function tick(f,dur){try{if(!audio)audio=new (window.AudioContext||window.webkitAudioContext)();const o=audio.createOscillator(),g=audio.createGain();o.type='square';o.frequency.value=f;g.gain.setValueAtTime(0.05,audio.currentTime);g.gain.exponentialRampToValueAtTime(0.0001,audio.currentTime+dur);o.connect(g).connect(audio.destination);o.start();o.stop(audio.currentTime+dur);}catch(e){}}
+const secAt=rot=>{const N=IND.length,seg=360/N;return Math.floor((((-rot)%360+360)%360)/seg)%N;};
+function showFlip(i){const d=IND[i];$('#firmCard').innerHTML=`<p class="eyebrow">Рулетка крутится…</p><div class="flip" style="color:${d.color}">${d.code}</div><p class="flipname">${esc(d.name)}</p><p class="note">Раздел ${d.sec} · ${esc(d.secName)}</p>`;}
+function spin(){
+ if(S.ind!==null)return;
+ if(!S.fio.trim()||!S.grp.trim()){$('#spinNote').innerHTML='<span class="bad">Сначала укажите фамилию и группу: они попадут в отчёт и код варианта.</span>';return;}
+ const N=IND.length,idx=Math.floor(Math.random()*N),seg=360/N,start=((S.rot%360)+360)%360;
+ const target=360*9+(360-(idx+0.5)*seg)+(Math.random()-0.5)*seg*0.6;
+ S.rot=target;S.ind=idx;S.seed=Math.floor(Math.random()*1e9);save();
+ const g=$('#wheel'),box=document.querySelector('.wheelbox svg');$('#spinBtn').disabled=true;$('#spinNote').textContent='Крутим…';
+ if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){g.style.transform=`rotate(${target}deg)`;renderAll();return;}
+ box.classList.add('spinning');let last=-1,t0=null;
+ const step=ts=>{if(t0===null)t0=ts;const t=Math.min(1,(ts-t0)/SPIN_MS),e=1-Math.pow(1-t,4),rot=start+(target-start)*e;
+  g.style.transform=`rotate(${rot}deg)`;const cur=secAt(rot);
+  if(cur!==last){if(last>=0)$('#sec'+last).classList.remove('hot');$('#sec'+cur).classList.add('hot');showFlip(cur);tick(t<0.9?880:660,0.03);last=cur;}
+  if(t<1)requestAnimationFrame(step);else finish(cur);};
+ const finish=cur=>{box.classList.remove('spinning');$('#sec'+cur).classList.remove('hot');$('#sec'+idx).classList.add('win');
+  tick(523,0.12);setTimeout(()=>tick(659,0.12),130);setTimeout(()=>tick(784,0.25),260);
+  setTimeout(renderAll,1700);};
+ requestAnimationFrame(step);
+}
+function renderCard(){
+ $('#spinBtn').disabled=S.ind!==null;
+ if(S.ind===null)return;const d=I();
+ $('#spinNote').innerHTML='Код варианта: <span class="code">'+d.code+'-'+String(S.seed%10000).padStart(4,'0')+'</span><br>Другой студент за этим компьютером — кнопка «Новый студент» вверху.';
+ $('#firmCard').innerHTML=`<p class="eyebrow">Раздел ${d.sec} · ${esc(d.secName)}</p>
+ <div class="okved">${d.code}</div><h3>${esc(d.name)}</h3>
+ <p><b>${esc(d.firm)}</b>: ${esc(d.size)}.</p>
+ <div><span class="lbl">Ключевые процессы</span><div class="tags">${d.arch.proc.map(x=>`<span class="tag">${esc(x[0])}</span>`).join('')}</div></div>
+ <div><span class="lbl">Информационные системы</span><div class="tags">${d.is.map(x=>`<span class="tag">${esc(x)}</span>`).join('')}</div></div>
+ <div><span class="lbl">Нормативная база</span><div class="tags">${d.law.map(x=>`<span class="tag">${esc(x)}</span>`).join('')}</div></div>
+ <p>Вы назначены руководителем ИТ-службы. Директор ждёт ответа на три вопроса: какие системы нужны фирме, сколько они стоят и как ИТ-служба отвечает за результат. Работы 1–7 выполняются по порядку на данных этой фирмы.</p>
+ <p class="note">Данные условные.</p>`;
+}
+/* ===================== ЛР 1. Архитектура ===================== */
+function arch(){const a=I().arch;const cov=a.proc.map((_,i)=>a.land.filter(l=>l[2].includes(i)).length);const n=a.land.length;
+ return {Kp:cov.filter(c=>c>0).length/a.proc.length,dup:cov.filter(c=>c>1).length,gaps:cov.map((c,i)=>c===0?i:-1).filter(i=>i>=0),dups:cov.map((c,i)=>c>1?i:-1).filter(i=>i>=0),n,Ltt:n*(n-1)/2,dL:n*(n-1)/2-n};}
+function renderL1(){
+ const a=I().arch,opts=Object.entries(CLS).map(([k,v])=>[k,k==='IND'?'Отраслевая: '+I().ind:v]);
+ $('#l1a').innerHTML='<thead><tr><th>№</th><th>Ключевой процесс</th><th>Класс системы</th></tr></thead><tbody>'+a.proc.map((p,i)=>`<tr><td>П${i+1}</td><td>${esc(p[0])}<div class="fb" id="l1fb${i}"></div></td><td>${sel('l1a'+i,opts,S.l1.a[i])}</td></tr>`).join('')+'</tbody>';
+ a.proc.forEach((_,i)=>$('#l1a'+i).onchange=e=>{S.l1.a[i]=e.target.value;save();});
+ $('#l1b').innerHTML='<thead><tr><th>Система</th><th>Класс</th>'+a.proc.map((p,i)=>`<th class="r" title="${esc(p[0])}">П${i+1}</th>`).join('')+'</tr></thead><tbody>'+
+  a.land.map(l=>`<tr><td>${esc(l[0])}</td><td>${CLS[l[1]]}</td>${a.proc.map((_,i)=>`<td class="r code">${l[2].includes(i)?'●':''}</td>`).join('')}</tr>`).join('')+
+  `</tbody><caption class="cap" style="caption-side:bottom;text-align:left;padding:8px">● — система поддерживает процесс. П1–П${a.proc.length} — процессы из задания А.</caption>`;
+ $('#l1inputs').innerHTML=inp('l1Kp','<i>K</i><sub>покр</sub> (1), доля',S.l1.k.Kp)+inp('l1dup','Процессов с дублированием, шт.',S.l1.k.dup)+inp('l1Ltt','<i>L</i><sub>тт</sub> (2), шт.',S.l1.k.Ltt)+inp('l1dL','Δ<i>L</i> (2), шт.',S.l1.k.dL);
+ bindInputs(S.l1.k,[['l1Kp','Kp'],['l1dup','dup'],['l1Ltt','Ltt'],['l1dL','dL']]);
+}
+function checkL1(){
+ const a=I().arch,R=arch();let okA=0;
+ a.proc.forEach((p,i)=>{const g=p[1].includes(S.l1.a[i]);okA+=g;$('#l1fb'+i).innerHTML=`<span class="${g?'ok':'bad'}">${g?'верно':'подходит: '+p[1].map(k=>k==='IND'?'отраслевая система':CLS[k]).join(' или ')}</span>`;});
+ let okB=0;[['l1Kp',S.l1.k.Kp,R.Kp,0.005,n3(R.Kp)],['l1dup',S.l1.k.dup,R.dup,0.01,R.dup],['l1Ltt',S.l1.k.Ltt,R.Ltt,0.01,R.Ltt],['l1dL',S.l1.k.dL,R.dL,0.01,R.dL]].forEach(([id,u,v,t,s])=>{const g=close(u,v,t);okB+=g;mark(id,g,'расчёт: '+s);});
+ S.pts.l1=7*okA/a.proc.length+8*okB/4;save();
+ $('#l1res').innerHTML=`Задание А: ${okA} из ${a.proc.length}; задание Б: ${okB} из 4 · <b>${Math.round(S.pts.l1)} баллов</b>`;
+ $('#l1after').innerHTML=`<div class="result"><p>Не автоматизированы: ${R.gaps.length?R.gaps.map(i=>'П'+(i+1)+' «'+esc(a.proc[i][0])+'»').join(', '):'нет'}. Дублирование: ${R.dups.length?R.dups.map(i=>'П'+(i+1)+' «'+esc(a.proc[i][0])+'»').join(', '):'нет'}.</p>
+ <p>При ${R.n} системах прямые связи «каждая с каждой» дают до ${R.Ltt} интерфейсов, интеграционная шина — ${R.n} подключений. ${R.dL<=0?'При таком малом числе систем шина не даёт выигрыша и обычно не окупается.':'Выигрыш растёт квадратично с числом систем, поэтому с каждой новой системой вопрос об интеграционной платформе становится острее.'}</p></div>`;
+ renderTabs();
+}
+/* ===================== ЛР 2. Выбор ИС и TCO ===================== */
+function alts2(){const d=I(),t=d.tco;return ALT.map(([nm,c,o,sc],i)=>{const capx=+(c*t.m*(i===2?t.f3:1)).toFixed(2),opx=+(o*t.m*(i===1?t.s:1)*(i===2?t.f3:1)).toFixed(2);
+ const s=sc.slice();if(i===2&&t.d3)s[0]=Math.max(1,s[0]-t.d3);const tco=capx+opx*AF;const S2=s.reduce((a,x,k)=>a+x*t.w[k],0);
+ return {nm:nm.replace('{ind}',d.ind).replace('{Ind}',cap(d.ind)),capx,opx,s,tco,S:S2,R:S2/tco};});}
+function renderL2(){
+ const d=I(),A=alts2(),w=d.tco.w;
+ $('#l2case').innerHTML=`<h3>Ситуация</h3><p>${esc(d.firm)} заменяет устаревшую систему класса «${esc(d.ind)}». Отдел закупок собрал три предложения; веса критериев утвердил директор с учётом отрасли. Сначала оцените «на глаз», какая альтернатива выгоднее, затем рассчитайте показатели по формулам (3)–(4).</p>
+ <p>${A.map((a,i)=>'<b>A'+(i+1)+'</b> — '+esc(a.nm)).join('; ')}.</p>`;
+ $('#l2table').innerHTML='<thead><tr><th>Показатель</th><th class="r">Вес <i>w</i></th>'+A.map((a,i)=>`<th class="r">A${i+1}</th>`).join('')+'</tr></thead><tbody>'+
+  `<tr><td><i>CAPEX</i>, млн руб.</td><td></td>${A.map(a=>`<td class="r code">${n2(a.capx)}</td>`).join('')}</tr>`+
+  `<tr><td><i>OPEX</i>, млн руб./год</td><td></td>${A.map(a=>`<td class="r code">${n2(a.opx)}</td>`).join('')}</tr>`+
+  CRIT.map((c,k)=>`<tr><td>${esc(c)}</td><td class="r code">${n2(w[k])}</td>${A.map(a=>`<td class="r code">${a.s[k]}</td>`).join('')}</tr>`).join('')+'</tbody>';
+ const L=S.l2;
+ $('#l2inputs').innerHTML=`<div class="field"><label for="l2guess">Выгоднее «на глаз»</label>${sel('l2guess',A.map((a,i)=>[i,'A'+(i+1)]),L.guess)}</div>`+
+  A.map((a,i)=>inp('l2t'+i,`<i>TCO</i> A${i+1}, млн руб.`,L['t'+i])+inp('l2s'+i,`<i>S</i> A${i+1}, балл`,L['s'+i])).join('')+
+  `<div class="field"><label for="l2best">Выбор по <i>R</i> (4)</label>${sel('l2best',A.map((a,i)=>[i,'A'+(i+1)]),L.best)}<span class="fb" id="fb_l2best"></span></div>`;
+ const ids=[['l2guess','guess'],['l2best','best']];A.forEach((_,i)=>{ids.push(['l2t'+i,'t'+i],['l2s'+i,'s'+i]);});bindInputs(S.l2,ids);
+}
+function checkL2(){
+ const A=alts2(),L=S.l2;let ok=0;
+ A.forEach((a,i)=>{let g=close(L['t'+i],a.tco,0.05);ok+=g;mark('l2t'+i,g,'расчёт: '+n2(a.tco));g=close(L['s'+i],a.S,0.01);ok+=g;mark('l2s'+i,g,'расчёт: '+n2(a.S));});
+ const best=A.reduce((b,x,i)=>x.R>A[b].R?i:b,0),cheap=A.reduce((b,x,i)=>x.tco<A[b].tco?i:b,0),low=A.reduce((b,x,i)=>x.capx<A[b].capx?i:b,0);
+ const gb=L.best!==undefined&&L.best!==''&&+L.best===best;ok+=gb;mark('l2best',gb,'лучшая A'+(best+1));
+ S.pts.l2=15*ok/7;save();$('#l2res').innerHTML=`Верно ${ok} из 7 · <b>${Math.round(S.pts.l2)} баллов</b>`;
+ const g=L.guess===undefined||L.guess===''?null:+L.guess;
+ $('#l2after').innerHTML=`<div class="result"><p><i>R</i>: ${A.map((a,i)=>'A'+(i+1)+' = '+n3(a.R)).join('; ')} балла на 1 млн руб. Лучшее соотношение у A${best+1}.</p>
+ <p>Самый низкий порог входа (<i>CAPEX</i>) у A${low+1}, наименьшая TCO за ${HOR} лет — у A${cheap+1}. ${low!==cheap?'Дешёвый вход не означает дешёвого владения: ежегодные платежи за пять лет перевешивают разницу в начальных затратах.':'Здесь низкий порог входа совпал с наименьшей TCO.'} ${best!==cheap?'Лучшая по соотношению качества и затрат альтернатива не самая дешёвая: веса критериев в этой отрасли оправдывают доплату.':''} ${g===null?'':g===best?'Ваша оценка «на глаз» совпала с расчётом.':'Оценка «на глаз» указывала на A'+(g+1)+'.'}</p></div>`;
+ chartL2(A);renderTabs();
+}
+function chartL2(A){
+ const W=700,H=280,x0=60,x1=500,y0=230,y1=24;let mx=0;const cum=A.map(a=>{const r=[a.capx];for(let t=1;t<=HOR;t++)r.push(r[t-1]+a.opx/Math.pow(1+RATE,t));mx=Math.max(mx,r[HOR]);return r;});
+ mx=Math.ceil(mx);const X=t=>x0+(x1-x0)*t/HOR,Y=v=>y0-(y0-y1)*v/mx;const cols=['var(--accent)','var(--warn)','var(--ok)'];
+ let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Накопленная дисконтированная стоимость владения">`;
+ for(let k=0;k<=4;k++){const v=mx*k/4;s+=`<line x1="${x0}" x2="${x1}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${x0-6}" y="${Y(v)+4}" text-anchor="end" font-size="11">${n2(v)}</text>`;}
+ for(let t=0;t<=HOR;t++)s+=`<text x="${X(t)}" y="${y0+16}" text-anchor="middle" font-size="11">${t}</text>`;
+ s+=`<text x="${(x0+x1)/2}" y="${H-4}" text-anchor="middle" font-size="12">Год использования</text>`;
+ const ends=[];cum.forEach((r,i)=>{s+=`<polyline points="${r.map((v,t)=>X(t).toFixed(1)+','+Y(v).toFixed(1)).join(' ')}" fill="none" stroke="${cols[i]}" stroke-width="2.5"/>`;ends.push([i,Y(r[HOR]),r[HOR]]);});
+ ends.sort((a,b)=>a[1]-b[1]);let last=-99;ends.forEach(e=>{e[3]=Math.max(e[1],last+22);last=e[3];});
+ ends.forEach(([i,y,v,ly])=>{s+=`<line x1="${x1}" y1="${y}" x2="${x1+22}" y2="${ly}" stroke="var(--muted)"/><text x="${x1+26}" y="${ly+4}" font-size="12" font-weight="700" style="fill:${cols[i]}">A${i+1}: TCO ${n2(v)}</text>`;});
+ s+=`<line x1="${x0}" x2="${x1}" y1="${y0}" y2="${y0}" stroke="var(--fg)"/></svg>`;
+ $('#l2chart').innerHTML='<p class="cap">Рисунок 1 — Накопленная дисконтированная стоимость владения альтернатив, млн руб.</p>'+s;
+}
+/* ===================== ЛР 3. SLA ===================== */
+const PRI=[['P1','P1 — критический'],['P2','P2 — высокий'],['P3','P3 — средний'],['P4','P4 — низкий'],['P5','P5 — планируемый'],['NO','Не инцидент']];
+function genL3(){
+ const d=I(),sl=d.sla,r=rng(S.seed*3+S.ind*101);const Tp=43200,allow=Tp*(100-sl.t)/100;
+ const d1=Math.max(5,Math.round(allow*(0.25+0.9*r()))),d2=Math.max(5,Math.round(allow*(0.15+0.6*r()))),dc=Math.round(60+r()*240),dd=Math.round(30+r()*120),dp=Math.round(120+r()*120),dq=Math.round(10+r()*30);
+ const day=()=>String(1+Math.floor(r()*28)).padStart(2,'0')+'.09.2026';
+ let L=[
+  {t:`Полный отказ: ${sl.svc} недоступна всем пользователям, ${sl.op} остановлена.`,p:'P1',out:true,dur:d1},
+  {t:`Ночью отказал сервер баз данных: ${sl.svc} недоступна всем пользователям, ночная смена не работает, к началу рабочего дня систему нужно восстановить.`,p:'P2',out:true,dur:d2},
+  {t:`Ошибка: ${cap(sl.mod)} у всех пользователей не выполняет одну операцию, без которой сегодня нельзя завершить работу; остальные функции работают.`,p:'P2',out:false,dur:dd},
+  {t:`${cap(sl.mod)} не открывается у одного отдела; есть обходной путь — бумажный журнал до вечера пятницы.`,p:'P4',out:false,dur:dc},
+  {t:`Плановое обновление: ${sl.svc} недоступна в согласованное технологическое окно, пользователи уведомлены за трое суток.`,p:'NO',out:false,dur:dp},
+  {t:`Сотрудник просит добавить в отчёт новую колонку.`,p:'NO',out:false,dur:dq}];
+ L=L.map(x=>Object.assign(x,{date:day()}));for(let i=L.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[L[i],L[j]]=[L[j],L[i]];}
+ const D=L.filter(x=>x.out).reduce((a,x)=>a+x.dur,0),Af=(Tp-D)/Tp*100,sh=sl.t-Af,steps=sh>0?Math.floor(sh/0.1+1e-9):0,pct=Math.min(30,5*steps);
+ return {L,D,Af,pct,pen:sl.fee*pct/100,Tp,allow};
+}
+function renderL3(){
+ const sl=I().sla,G=genL3();
+ $('#l3case').innerHTML=`<h3>Ситуация</h3><p>Сервис «${esc(sl.svc)}» обеспечивает ${esc(sl.op)}. По SLA с подрядчиком целевая доступность <b>${n2(sl.t)} %</b> за месяц, плата <b>${n0(sl.fee)} тыс. руб./мес</b>. Ниже — журнал обращений за сентябрь 2026 г. (30 суток). Присвойте приоритет каждой записи, затем рассчитайте доступность и сервисный кредит.</p>`;
+ $('#l3table').innerHTML='<thead><tr><th>№</th><th>Дата</th><th>Описание обращения</th><th class="r">Длительность, мин</th><th>Приоритет</th></tr></thead><tbody>'+
+  G.L.map((x,i)=>`<tr><td>${i+1}</td><td class="code">${x.date}</td><td>${esc(x.t)}<div class="fb" id="l3fb${i}"></div></td><td class="r code">${x.dur}</td><td>${sel('l3p'+i,PRI,S.l3.pr[i])}</td></tr>`).join('')+'</tbody>';
+ G.L.forEach((_,i)=>$('#l3p'+i).onchange=e=>{S.l3.pr[i]=e.target.value;save();});
+ $('#l3inputs').innerHTML=inp('l3D','<i>D</i>, мин',S.l3.k.D)+inp('l3A','<i>A</i><sub>ф</sub> (5), %, три знака',S.l3.k.A)+inp('l3P','<i>Ш</i> (6), тыс. руб.',S.l3.k.P);
+ bindInputs(S.l3.k,[['l3D','D'],['l3A','A'],['l3P','P']]);
+}
+function checkL3(){
+ const G=genL3(),sl=I().sla;let okP=0;
+ G.L.forEach((x,i)=>{const g=S.l3.pr[i]===x.p;okP+=g;$('#l3fb'+i).innerHTML=`<span class="${g?'ok':'bad'}">${g?'верно':'ожидалось: '+PRI.find(p=>p[0]===x.p)[1]}</span>${x.out?' <span class="chip">полная недоступность — входит в D</span>':''}`;});
+ let okK=0;[['l3D',S.l3.k.D,G.D,0.5,n0(G.D)],['l3A',S.l3.k.A,G.Af,0.0015,n3(G.Af)],['l3P',S.l3.k.P,G.pen,0.05,n2(G.pen)]].forEach(([id,u,v,t,s])=>{const g=close(u,v,t);okK+=g;mark(id,g,'расчёт: '+s);});
+ S.pts.l3=7*okP/G.L.length+8*okK/3;save();
+ $('#l3res').innerHTML=`Приоритеты: ${okP} из ${G.L.length}; расчёт: ${okK} из 3 · <b>${Math.round(S.pts.l3)} баллов</b>`;
+ $('#l3after').innerHTML=`<div class="result"><p>Допустимый простой при цели ${n2(sl.t)} % — ${n0(G.allow)} мин в месяц; фактический — ${n0(G.D)} мин. ${G.pct?`Цель не достигнута на ${n3(sl.t-G.Af)} п. п., подрядчик снижает плату на ${G.pct} % (${n2(G.pen)} тыс. руб.).`:(G.Af<sl.t?'Цель не достигнута, но отставание меньше 0,1 п. п., поэтому сервисный кредит не начисляется.':'Цель SLA выполнена, сервисного кредита нет.')}</p>
+ <p class="note">Сервисный кредит почти никогда не покрывает потерь бизнеса от простоя. SLA — инструмент управления подрядчиком, а не страховка.</p></div>`;
+ renderTabs();
+}
+/* ===================== ЛР 4. Ценность информации ===================== */
+function solve4(dec){const emv=dec.v.map(row=>row.reduce((a,x,j)=>a+x*dec.p[j],0));const best=emv.indexOf(Math.max(...emv));
+ const evwpi=dec.p.reduce((a,p,j)=>a+p*Math.max(...dec.v.map(row=>row[j])),0);return {emv,best,emax:emv[best],evwpi,evpi:evwpi-emv[best]};}
+function renderL4(){
+ const dec=I().dec,L=S.l4;
+ $('#l4case').innerHTML=`<h3>Ситуация</h3><p>${esc(dec.q)} Можно купить сведения — ${esc(dec.info)} — за ${n2(dec.cost)} млн руб. В таблице результаты альтернатив (${esc(dec.unit)}); вероятности оценены по статистике прошлых лет.</p>`;
+ $('#l4table').innerHTML='<thead><tr><th>Альтернатива \\ состояние</th>'+dec.states.map((s,j)=>`<th class="r">${esc(s)}<br><span class="code">p = ${n2(dec.p[j])}</span></th>`).join('')+'</tr></thead><tbody>'+
+  dec.alts.map((a,i)=>`<tr><td>A${i+1}. ${esc(a)}</td>${dec.v[i].map(x=>`<td class="r code">${n2(x)}</td>`).join('')}</tr>`).join('')+'</tbody>';
+ $('#l4inputs').innerHTML=`<div class="field"><label for="l4guess">Прогноз «на глаз» до расчёта</label>${sel('l4guess',dec.alts.map((a,i)=>[i,'A'+(i+1)+'. '+a]),L.guess)}</div>`+
+  inp('l4emax','max <i>EMV</i>, млн руб. (7)',L.emax)+inp('l4evw','<i>EVwPI</i>, млн руб. (8)',L.evw)+inp('l4evpi','<i>EVPI</i>, млн руб. (9)',L.evpi)+
+  `<div class="field"><label for="l4best">Лучшая альтернатива без доп. сведений</label>${sel('l4best',dec.alts.map((a,i)=>[i,'A'+(i+1)]),L.best)}<span class="fb" id="fb_l4best"></span></div>
+  <div class="field"><label for="l4buy">Покупать сведения за ${n2(dec.cost)} млн руб.?</label>${sel('l4buy',[[0,'Нет: цена не ниже EVPI'],[1,'Рассмотреть: цена ниже EVPI, нужна оценка точности']],L.buy)}<span class="fb" id="fb_l4buy"></span></div>`;
+ bindInputs(S.l4,[['l4guess','guess'],['l4emax','emax'],['l4evw','evw'],['l4evpi','evpi'],['l4best','best'],['l4buy','buy']]);
+}
+function checkL4(){
+ const dec=I().dec,R=solve4(dec),L=S.l4;let ok=0;
+ [['l4emax',L.emax,R.emax],['l4evw',L.evw,R.evwpi],['l4evpi',L.evpi,R.evpi]].forEach(([id,u,v])=>{const g=close(u,v,0.05);ok+=g;mark(id,g,'расчёт: '+n2(v));});
+ let g=L.best!==undefined&&L.best!==''&&+L.best===R.best;ok+=g;mark('l4best',g,'лучшая A'+(R.best+1));
+ const buy=dec.cost<R.evpi?1:0;g=L.buy!==undefined&&L.buy!==''&&+L.buy===buy;ok+=g;mark('l4buy',g,buy?'цена ниже EVPI':'цена не ниже EVPI');
+ S.pts.l4=2*ok;save();$('#l4res').innerHTML=`Верно ${ok} из 5 · <b>${S.pts.l4} баллов</b>`;
+ const gg=L.guess===undefined||L.guess===''?null:+L.guess;
+ $('#l4after').innerHTML=`<div class="result"><p><i>EMV</i> альтернатив: ${R.emv.map((x,i)=>'A'+(i+1)+' = '+n2(x)).join('; ')} млн руб.</p>
+ <p>${gg===null?'Прогноз «на глаз» не сделан.':gg===R.best?'Интуитивный выбор совпал с расчётом.':`Интуиция указала на A${gg+1}, расчёт — на A${R.best+1}. Сравните, какие исходы вы переоценили.`}</p>
+ <p>Рисунок 2 показывает, при какой вероятности первого состояния меняется лучшее решение. Чем ближе текущая оценка к точке пересечения линий, тем ценнее дополнительная информация.</p></div>`;
+ chartL4(dec);renderTabs();
+}
+function chartL4(dec){
+ const W=680,H=300,x0=60,x1=520,y0=250,y1=20;const r23=dec.p[1]+dec.p[2]||1;
+ const emvAt=(i,p1)=>dec.v[i][0]*p1+dec.v[i][1]*(1-p1)*dec.p[1]/r23+dec.v[i][2]*(1-p1)*dec.p[2]/r23;
+ let mn=Infinity,mx=-Infinity;dec.v.forEach(row=>row.forEach(x=>{mn=Math.min(mn,x);mx=Math.max(mx,x);}));
+ const X=p=>x0+(x1-x0)*p,Y=v=>y0-(y0-y1)*(v-mn)/(mx-mn||1);const cols=['var(--accent)','var(--warn)','var(--ok)'];
+ let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Чувствительность EMV к вероятности первого состояния">`;
+ for(let k=0;k<=4;k++){const v=mn+(mx-mn)*k/4;s+=`<line x1="${x0}" x2="${x1}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${x0-6}" y="${Y(v)+4}" text-anchor="end" font-size="11">${n2(v)}</text>`;}
+ for(let k=0;k<=5;k++)s+=`<text x="${X(k/5)}" y="${y0+16}" text-anchor="middle" font-size="11">${n2(k/5)}</text>`;
+ s+=`<text x="${(x0+x1)/2}" y="${H-6}" text-anchor="middle" font-size="12">Вероятность состояния «${esc(dec.states[0])}»</text>`;
+ const ends=[];dec.v.forEach((_,i)=>{let pts='';for(let k=0;k<=50;k++){const p=k/50;pts+=`${X(p).toFixed(1)},${Y(emvAt(i,p)).toFixed(1)} `;}
+  s+=`<polyline points="${pts}" fill="none" stroke="${cols[i]}" stroke-width="2.5"/>`;ends.push([i,Y(emvAt(i,1))]);});
+ ends.sort((a,b)=>a[1]-b[1]);let last=-99;ends.forEach(e=>{e[2]=Math.max(e[1],last+22);last=e[2];});
+ ends.forEach(([i,y,ly])=>{s+=`<line x1="${x1}" y1="${y}" x2="${x1+24}" y2="${ly}" stroke="var(--muted)"/><text x="${x1+28}" y="${ly+4}" font-size="12" font-weight="700" style="fill:${cols[i]}">A${i+1}</text>`;});
+ s+=`<line x1="${X(dec.p[0])}" x2="${X(dec.p[0])}" y1="${y1}" y2="${y0}" stroke="var(--fg)" stroke-dasharray="4 3"/><text x="${X(dec.p[0])+6}" y="${y1+12}" font-size="11">текущая оценка ${n2(dec.p[0])}</text>`;
+ s+=`<line x1="${x0}" x2="${x1}" y1="${y0}" y2="${y0}" stroke="var(--fg)"/></svg>`;
+ $('#l4chart').innerHTML='<p class="cap">Рисунок 2 — Ожидаемая денежная ценность альтернатив при изменении вероятности первого состояния, млн руб.</p>'+s;
+}
+/* ===================== ЛР 5. Портфель ===================== */
+function projects(){const d=I(),ce=CE[d.code]||[1,1,1];return COMMON.map((p,i)=>[p[0],+(p[1]*d.m).toFixed(2),+(p[2]*d.m*(ce[i]||1)).toFixed(2),p[3],p[4]]).concat(d.proj).map(([n,c,e,p,mand])=>({n,c,e,p,mand,nv:p*e*AF-c}));}
+function budget(P){return +(P.reduce((a,x)=>a+x.c,0)*BUDGET_SHARE).toFixed(1);}
+function baseline(P){return P.reduce((a,x)=>a+(x.mand?x.nv:0),0);}
+function optimum(P,B){let best=null;for(let m=0;m<(1<<P.length);m++){let c=0,v=0,okM=true;P.forEach((x,i)=>{if(m>>i&1){c+=x.c;v+=x.nv;}else if(x.mand)okM=false;});if(okM&&c<=B+1e-9&&(!best||v>best.v))best={m,c,v};}return best;}
+function renderL5(){
+ const P=projects(),B=budget(P);
+ $('#l5case').innerHTML=`<h3>Ситуация</h3><p>Бюджет на развитие информационной среды ${esc(I().firm)} на год — <b>${n2(B)} млн руб.</b> Заявки подразделений приведены в таблице. Отметьте проекты, которые войдут в портфель. Перед этим попробуйте угадать, какой проект самый выгодный.</p>
+ <div class="field" style="max-width:520px"><label for="l5guess">Самый выгодный проект «на глаз»</label>${sel('l5guess',P.map((x,i)=>[i,'П'+(i+1)+'. '+x.n]),S.l5.guess)}</div>`;
+ $('#l5guess').onchange=e=>{S.l5.guess=e.target.value;save();};
+ $('#l5table').innerHTML='<thead><tr><th>В портфель</th><th>Проект</th><th class="r"><i>C</i>, млн руб.</th><th class="r"><i>E</i>, млн руб./год</th><th class="r"><i>p</i></th><th class="r"><i>NV</i> (10), млн руб.</th></tr></thead><tbody>'+
+  P.map((x,i)=>`<tr><td><input type="checkbox" id="l5c${i}" ${S.l5.sel.includes(i)?'checked':''} aria-label="Включить П${i+1}"></td><td>П${i+1}. ${esc(x.n)} ${x.mand?'<span class="chip warn">обязательный</span>':''}</td><td class="r code">${n2(x.c)}</td><td class="r code">${n2(x.e)}</td><td class="r code">${n2(x.p)}</td><td class="r code" id="l5nv${i}">?</td></tr>`).join('')+'</tbody>';
+ P.forEach((_,i)=>$('#l5c'+i).onchange=e=>{const s=new Set(S.l5.sel);e.target.checked?s.add(i):s.delete(i);S.l5.sel=[...s].sort((a,b)=>a-b);save();sumL5();});
+ sumL5();
+}
+function sumL5(){const P=projects(),B=budget(P);const c=S.l5.sel.reduce((a,i)=>a+P[i].c,0);
+ $('#l5sum').innerHTML=`<p>Затраты портфеля: <b class="${c>B?'bad':''}">${n2(c)}</b> из ${n2(B)} млн руб. ${c>B?'<span class="bad">Бюджет превышен — уберите проекты.</span>':''}</p><p class="note">Значения <i>NV</i> откроются после проверки: рассчитайте их сами по формуле (10).</p>`;}
+function checkL5(){
+ const P=projects(),B=budget(P),opt=optimum(P,B),sl=S.l5.sel;const c=sl.reduce((a,i)=>a+P[i].c,0),v=sl.reduce((a,i)=>a+P[i].nv,0);
+ const missM=P.map((x,i)=>x.mand&&!sl.includes(i)?i:-1).filter(i=>i>=0);
+ P.forEach((x,i)=>$('#l5nv'+i).innerHTML=`<span class="${x.nv>=0?'ok':'bad'}">${n2(x.nv)}</span>`);
+ let pts=0,msg='';
+ if(c>B+1e-9)msg='Бюджет превышен, портфель не может быть принят.';
+ else if(missM.length)msg='Не включён обязательный проект: '+missM.map(i=>'П'+(i+1)).join(', ')+'. Без него фирма нарушает закон, портфель не принимается.';
+ else{const b0=baseline(P),den=opt.v-b0;pts=den>1e-9?15*Math.min(1,Math.max(0,(v-b0)/den)):15;msg=`Ваш портфель даёт ${n2(v)} млн руб., оптимум — ${n2(opt.v)} млн руб. (${Math.round(pts/15*100)} % прироста, достижимого сверх обязательных проектов).`;}
+ S.pts.l5=pts;save();
+ const optSet=P.map((_,i)=>i).filter(i=>opt.m>>i&1),bestNV=P.reduce((b,x,i)=>x.nv>P[b].nv?i:b,0);
+ const g=S.l5.guess===undefined||S.l5.guess===''?null:+S.l5.guess;
+ $('#l5res').innerHTML=`<b>${Math.round(pts)} баллов</b>`;
+ $('#l5after').innerHTML=`<div class="result"><p>${esc(msg)}</p><p>Оптимальный портфель: ${optSet.map(i=>'П'+(i+1)).join(', ')}; затраты ${n2(opt.c)} млн руб.</p>
+ <p>Наибольшее <i>NV</i> у проекта П${bestNV+1}. ${g===null?'':g===bestNV?'Ваш прогноз «на глаз» совпал.':'Ваш прогноз «на глаз» указывал на П'+(g+1)+'.'} ${optSet.includes(bestNV)?'':'В оптимум он не вошёл: его затраты вытесняют несколько проектов с большей суммарной отдачей.'}</p>
+ <p class="note">Отрицательное <i>NV</i> обязательного проекта не делает его лишним: он оценивается по цене несоблюдения закона.</p></div>`;
+ renderTabs();
+}
+/* ===================== ЛР 6. COBIT ===================== */
+function genL6(){const r=rng(S.seed*7+S.ind*13),c=I().cobit;return COBIT.map((p,k)=>{let lv=Math.floor(r()*5);if(lv>c.t[k]+1)lv=c.t[k]-1+Math.floor(r()*2);lv=Math.max(0,Math.min(5,lv));
+ const g=Math.max(0,c.t[k]-lv);return {id:p[0],nm:p[1],lv,t:c.t[k],v:c.v[k],g,pr:c.v[k]*g,txt:'Процесс «'+p[1]+'» '+LVL[lv].replace('{kpi}',p[2])};});}
+function renderL6(){
+ const G=genL6();
+ $('#l6table').innerHTML='<thead><tr><th>Процесс COBIT 2019</th><th>Описание практики в фирме</th><th class="r"><i>L</i><sup>ц</sup></th><th class="r"><i>v</i></th><th>Уровень <i>L</i><sup>ф</sup></th><th>В приоритет</th></tr></thead><tbody>'+
+  G.map((x,k)=>`<tr><td><span class="code">${x.id}</span><br>${esc(x.nm)}</td><td>${esc(x.txt)}<div class="fb" id="l6fb${k}"></div></td><td class="r code">${x.t}</td><td class="r code">${x.v}</td><td>${sel('l6l'+k,[0,1,2,3,4,5].map(z=>[z,String(z)]),S.l6.lv[k])}</td><td><input type="checkbox" id="l6p${k}" ${S.l6.pick.includes(k)?'checked':''} aria-label="Приоритет ${x.id}"></td></tr>`).join('')+'</tbody>';
+ G.forEach((_,k)=>{$('#l6l'+k).onchange=e=>{S.l6.lv[k]=e.target.value;save();};$('#l6p'+k).onchange=e=>{const s=new Set(S.l6.pick);e.target.checked?s.add(k):s.delete(k);S.l6.pick=[...s];save();};});
+}
+function checkL6(){
+ const G=genL6();let lp=0;
+ G.forEach((x,k)=>{const u=S.l6.lv[k];const d=u===undefined||u===''?9:Math.abs(+u-x.lv);lp+=d===0?1:d===1?0.5:0;
+  $('#l6fb'+k).innerHTML=`<span class="${d===0?'ok':'bad'}">${d===0?'верно':'фактический уровень '+x.lv}</span> · разрыв <i>G</i> = ${x.g}, приоритет <i>Pr</i> = ${x.pr}`;});
+ const sorted=G.map((x,k)=>[k,x.pr]).sort((a,b)=>b[1]-a[1]),thr=sorted[1][1],pick=S.l6.pick;
+ const good=k=>G[k].pr>=thr&&G[k].pr>0;const okPick=pick.length===2&&pick.every(good);const pp=okPick?4:Math.min(3,pick.filter(good).length*1.5);
+ S.pts.l6=6*lp/G.length+pp;save();
+ $('#l6res').innerHTML=`Уровни: ${n2(lp)} из ${G.length}; приоритеты: ${okPick?'верно':'неточно'} · <b>${Math.round(S.pts.l6)} баллов</b>`;
+ const top=sorted.filter(s=>s[1]>=thr&&s[1]>0).map(s=>G[s[0]].id);
+ $('#l6after').innerHTML=`<div class="result"><p>Первоочередные процессы по формуле (12): ${top.join(', ')||'разрывов нет'}. Средний фактический уровень — ${n2(G.reduce((a,x)=>a+x.lv,0)/G.length)} при среднем целевом ${n2(G.reduce((a,x)=>a+x.t,0)/G.length)}.</p>
+ <p class="note">Перескочить через уровень нельзя: процесс без регламента (уровень 2) не станет измеряемым (уровень 4), пока его не определили.</p></div>`;
+ renderTabs();
+}
+/* ===================== ЛР 7. Качество данных ===================== */
+const NAMES=[['ООО «Агроресурс»','agroresurs'],['АО «Южный терминал»','yugterminal'],['ООО «Ставропольхимсервис»','stavchem'],['ООО «Кубань-Тара»','kubantara'],['СПК «Нива»','niva-coop'],['ООО «ТехноСнаб-Юг»','tehnosnab'],['АО «Кавказэнерготорг»','kavenergo'],['ООО «Светлоград Логистик»','svetlolog'],['ООО «Медтехника КМВ»','medtehkmv'],['ООО «Пищепром-Сервис»','pishcheprom'],['АО «СевКавСтрой»','sevkavstroy'],['ООО «Ресурс-Офис»','resoffice'],['ООО «Терек-Упаковка»','terekpack'],['ООО «Минводы-Транзит»','mvtranzit'],['АО «Ставропольский комбикорм»','stavkorm'],['ООО «Цифровые решения Юг»','digisouth']];
+const W10=[2,4,10,3,5,9,4,6,8];
+function makeInn(r){let s='26';for(let i=0;i<7;i++)s+=Math.floor(r()*10);const sum=W10.reduce((a,w,i)=>a+w*(+s[i]),0);return s+((sum%11)%10);}
+function genData(){
+ const r=rng(S.seed+S.ind*7919);const pool=NAMES.slice().sort(()=>r()-0.5);
+ const base=[];for(let i=0;i<11;i++){const [nm,sl]=pool[i];const dd=1+Math.floor(r()*28),mm=1+Math.floor(r()*12),yy=2024+Math.floor(r()*3);const yv=(yy===2026&&mm>=10)?2025:yy;
+  base.push({name:nm,inn:makeInn(r),tel:`+7 (8652) ${10+Math.floor(r()*89)}-${10+Math.floor(r()*89)}-${10+Math.floor(r()*89)}`,mail:['info','sales','buh','office'][Math.floor(r()*4)]+'@'+sl+'.ru',date:`${String(dd).padStart(2,'0')}.${String(mm).padStart(2,'0')}.${yv}`,dup:false});}
+ const defects={},used=new Set();const pick=()=>{let k;do{k=Math.floor(r()*base.length);}while(used.has(k));used.add(k);return k;};
+ const nInv=1+Math.floor(r()*2);for(let t=0;t<nInv;t++){const k=pick();const s=base[k].inn;base[k].inn=s.slice(0,9)+((+s[9]+1+Math.floor(r()*8))%10);defects[k+'_inn']='inv';}
+ {const k=pick();base[k].mail=r()<0.5?base[k].mail.replace('@','.'):base[k].mail.replace(/\.ru$/,'');defects[k+'_mail']='inv';}
+ {const k=pick();base[k].date=`${String(1+Math.floor(r()*28)).padStart(2,'0')}.${String(1+Math.floor(r()*12)).padStart(2,'0')}.2027`;defects[k+'_date']='inv';}
+ const nMiss=2+Math.floor(r()*2);for(let t=0;t<nMiss;t++){const k=pick();const f=['name','tel','mail','date'][Math.floor(r()*4)];base[k][f]='';defects[k+'_'+f]='miss';}
+ const clean=[...Array(base.length).keys()].filter(k=>!used.has(k));const nDup=1+Math.floor(r()*2);const rows=base.slice();
+ for(let t=0;t<nDup;t++){const src=clean[Math.floor(r()*clean.length)];const at=rows.indexOf(base[src]);const copy=Object.assign({},base[src],{dup:true,tel:r()<0.5?base[src].tel:base[src].tel.replace(/\d\d$/,String(10+Math.floor(r()*89)))});
+  rows.splice(at+1+Math.floor(r()*(rows.length-at)),0,copy);}
+ const def={},idx=[];rows.forEach((row,ri)=>{if(row.dup)def[ri+'_no']='dup';else idx.push(ri);});
+ Object.entries(defects).forEach(([k,v])=>{const [b,f]=k.split('_');def[idx[+b]+'_'+f]=v;});
+ const Ncell=rows.length*5,Nmiss=Object.values(def).filter(v=>v==='miss').length,Ninv=Object.values(def).filter(v=>v==='inv').length;
+ const Kp=1-Nmiss/Ncell,Ku=1-nDup/rows.length,Kk=1-Ninv/(Ncell-Nmiss);
+ return {rows,def,Ncell,Nmiss,Ninv,Ndup:nDup,Kp,Ku,Kk,Q:0.3*Kp+0.3*Ku+0.4*Kk};
+}
+let D7=null;
+function renderL7(reveal){
+ D7=genData();const {rows,def}=D7,fl=S.l7.flags;
+ const cls=k=>{let c='cell';if(fl[k])c+=' flag';if(reveal){if(def[k]&&fl[k])c+=' hit';else if(def[k])c+=' miss';else if(fl[k])c+=' false';}return c;};
+ let h='<thead><tr><th>№</th><th>Наименование</th><th>ИНН</th><th>Телефон</th><th>E-mail</th><th>Дата договора</th></tr></thead><tbody>';
+ rows.forEach((x,ri)=>{h+=`<tr><td class="${cls(ri+'_no')}" data-k="${ri}_no" tabindex="0">${ri+1}</td>`+['name','inn','tel','mail','date'].map(f=>`<td class="${cls(ri+'_'+f)}${x[f]?'':' empty'}" data-k="${ri}_${f}" tabindex="0">${esc(x[f])}</td>`).join('')+'</tr>';});
+ $('#l7table').innerHTML=h+`</tbody><caption class="cap" style="caption-side:bottom;text-align:left;padding:8px">Справочник контрагентов ${esc(I().firm)}, выгрузка 01.10.2026. ${reveal?'Зелёным — найденные дефекты, красным — пропущенные, зачёркнуто — ложные отметки.':'Нажмите на ячейку или выберите её клавишей Tab и нажмите Enter.'}</caption>`;
+ $$('#l7table td.cell').forEach(td=>{const tg=()=>{const k=td.dataset.k;if(S.l7.flags[k])delete S.l7.flags[k];else S.l7.flags[k]=1;save();td.classList.toggle('flag');};td.onclick=tg;td.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tg();}};});
+ $('#l7inputs').innerHTML=inp('l7Kp','<i>K</i><sub>п</sub> (13)',S.l7.k.Kp)+inp('l7Ku','<i>K</i><sub>у</sub> (14)',S.l7.k.Ku)+inp('l7Kk','<i>K</i><sub>к</sub> (15)',S.l7.k.Kk)+inp('l7Q','<i>Q</i> (16)',S.l7.k.Q);
+ bindInputs(S.l7.k,[['l7Kp','Kp'],['l7Ku','Ku'],['l7Kk','Kk'],['l7Q','Q']]);
+}
+function checkL7(){
+ renderL7(true);const {def,Kp,Ku,Kk,Q,Ncell,Nmiss,Ninv,Ndup,rows}=D7;const fl=Object.keys(S.l7.flags),tot=Object.keys(def).length;
+ const tp=fl.filter(k=>def[k]).length,fp=fl.length-tp,prec=fl.length?tp/fl.length:0,rec=tot?tp/tot:0,f1=prec+rec?2*prec*rec/(prec+rec):0;
+ let mok=0;[['l7Kp',Kp],['l7Ku',Ku],['l7Kk',Kk],['l7Q',Q]].forEach(([id,v])=>{const g=close($('#'+id).value,v,0.002);mok+=g;mark(id,g,'расчёт: '+n3(v));});
+ S.pts.l7=5*f1+5*mok/4;save();
+ $('#l7res').innerHTML=`Найдено ${tp} из ${tot} дефектов, ложных отметок ${fp} · <b>${Math.round(S.pts.l7)} баллов</b><span class="note" style="display:block">Ячеек ${Ncell}, пустых ${Nmiss}, строк ${rows.length}, дублей ${Ndup}, ошибочных значений ${Ninv}.</span>`;
+ chartL7({Kp,Ku,Kk,Q});renderTabs();
+}
+function chartL7(v){
+ const items=[['Полнота',v.Kp],['Уникальность',v.Ku],['Корректность',v.Kk],['Интегральный Q',v.Q]];
+ const W=640,H=250,x0=60,y0=200,y1=30,lo=0.8,bw=70,gap=75;const Y=p=>y0-(y0-y1)*Math.max(0,(p-lo)/(1-lo));const xe=x0+4*(bw+gap);
+ let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Показатели качества данных">`;
+ [0.8,0.85,0.9,0.95,1].forEach(p=>{s+=`<line x1="${x0}" x2="${xe}" y1="${Y(p)}" y2="${Y(p)}" stroke="var(--line)"/><text x="${x0-8}" y="${Y(p)+4}" text-anchor="end" font-size="11">${n2(p)}</text>`;});
+ s+=`<line x1="${x0}" x2="${xe}" y1="${Y(0.95)}" y2="${Y(0.95)}" stroke="var(--warn)" stroke-dasharray="6 4"/><text x="${xe-4}" y="${Y(0.95)-6}" text-anchor="end" font-size="11" style="fill:var(--warn)">целевой уровень 0,95</text>`;
+ items.forEach(([l,p],i)=>{const x=x0+20+i*(bw+gap),y=Y(p);const col=p>=0.95?'var(--ok)':p>=0.9?'var(--warn)':'var(--bad)';
+  s+=`<rect x="${x}" y="${y}" width="${bw}" height="${y0-y}" fill="${col}" opacity=".85"/>`;
+  const lx=x+bw+6,ly=Math.max(y1+10,y-14);s+=`<line x1="${x+bw/2}" y1="${y}" x2="${lx}" y2="${ly}" stroke="var(--muted)"/><text x="${lx+3}" y="${ly+4}" font-size="12" font-weight="700">${n3(p)}</text>`;
+  s+=`<text x="${x+bw/2}" y="${y0+18}" text-anchor="middle" font-size="12">${l}</text>`;});
+ s+=`<line x1="${x0}" x2="${xe}" y1="${y0}" y2="${y0}" stroke="var(--fg)"/></svg>`;
+ $('#l7chart').innerHTML='<p class="cap">Рисунок 3 — Профиль качества справочника контрагентов (ось начинается с 0,80)</p>'+s;
+}
+/* ===================== ТЕСТ ===================== */
+function renderQuiz(){
+ $('#quiz').innerHTML=QUIZ.map((q,i)=>`<fieldset class="q"><legend>${i+1}. ${esc(q.q)}</legend>${q.a.map((a,j)=>`<label><input type="radio" name="q${i}" value="${j}" ${S.quiz[i]===j?'checked':''}> <span>${esc(a)}</span></label>`).join('')}<div class="fb" id="qfb${i}" aria-live="polite"></div></fieldset>`).join('');
+ $$('#quiz input').forEach(r=>r.onchange=e=>{S.quiz[e.target.name.slice(1)]=+e.target.value;save();});
+}
+function checkQuiz(){let ok=0;QUIZ.forEach((q,i)=>{const a=S.quiz[i],g=a===q.c;ok+=g;
+ $('#qfb'+i).innerHTML=a===undefined?'<span class="bad">Ответ не выбран.</span>':`<span class="${g?'ok':'bad'}">${g?'Верно.':'Неверно.'}</span> ${esc(q.why)}`;});
+ S.pts.quiz=10*ok/QUIZ.length;save();$('#quizRes').innerHTML=`${ok} из ${QUIZ.length} · <b>${Math.round(S.pts.quiz)} баллов</b>`;renderTabs();}
+/* ===================== ОТЧЁТ ===================== */
+const LABS=[['l1','ЛР 1. Информационные потребности и архитектура ИС',15],['l2','ЛР 2. Выбор ИС по TCO',15],['l3','ЛР 3. ИТ-сервис и SLA',15],['l4','ЛР 4. Ценность информации',10],['l5','ЛР 5. Портфель проектов информатизации',15],['l6','ЛР 6. Зрелость управления ИТ (COBIT 2019)',10],['l7','ЛР 7. Качество данных',10],['quiz','Итоговый тест',10]];
+function hash(s){let h=2166136261;for(const ch of s){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>0).toString(16).toUpperCase().padStart(8,'0');}
+const grade=t=>t>=85?'отлично':t>=70?'хорошо':t>=55?'удовлетворительно':'не зачтено';
+function reportData(){const d=I(),tot=Object.values(S.pts).reduce((a,x)=>a+x,0);return {d,tot,code:hash([S.fio,S.grp,d.code,S.seed,Math.round(tot),JSON.stringify(S.pts)].join('|'))};}
+function renderReport(){
+ if(S.ind===null){$('#report').innerHTML='<p>Сначала получите вариант на вкладке «Вариант».</p>';return;}
+ const {d,tot,code}=reportData();
+ $('#report').innerHTML=`<p><b>${esc(S.fio||'ФИО не указано')}</b>, группа ${esc(S.grp||'—')}. Вариант: ОКВЭД ${d.code}, ${esc(d.firm)}. Дата: ${new Date().toLocaleDateString('ru-RU')}.</p>
+ <div class="wrap"><table><thead><tr><th>Этап</th><th class="r">Баллы</th><th class="r">Максимум</th></tr></thead><tbody>${LABS.map(([k,n,m])=>`<tr><td>${n}</td><td class="r code">${S.pts[k]===undefined?'не выполнено':Math.round(S.pts[k])}</td><td class="r code">${m}</td></tr>`).join('')}
+ <tr><td><b>Итого</b></td><td class="r code"><b>${Math.round(tot)}</b></td><td class="r code">100</td></tr></tbody></table></div>
+ <p>Оценка по шкале практикума: <b>${grade(tot)}</b>. Контрольный код для преподавателя: <span class="code">${code}</span>.</p>
+ ${LABS.slice(0,7).map(([k,n])=>`<div class="field"><label for="c_${k}">Вывод: ${n}</label><textarea id="c_${k}" rows="3" placeholder="Что установлено и какое управленческое решение вы предлагаете">${esc(S.concl[k]||'')}</textarea></div>`).join('')}`;
+ LABS.slice(0,7).forEach(([k])=>$('#c_'+k).oninput=e=>{S.concl[k]=e.target.value;save();});
+}
+function reportText(){const {d,tot,code}=reportData();
+ return [`Практикум «Информационный менеджмент», 2026/2027 уч. год`,`Студент: ${S.fio}, группа ${S.grp}`,`Вариант: ОКВЭД ${d.code} — ${d.name}; ${d.firm}`,'',...LABS.map(([k,n,m])=>`${n}: ${S.pts[k]===undefined?'не выполнено':Math.round(S.pts[k])} из ${m}`),`Итого: ${Math.round(tot)} из 100 (${grade(tot)})`,`Контрольный код: ${code}`,'',...LABS.slice(0,7).map(([k,n])=>`${n}. Вывод: ${S.concl[k]||'—'}`)].join('\n');}
+/* ===================== СБОРКА ===================== */
+function renderAll(){
+ $('#fio').value=S.fio;$('#grp').value=S.grp;drawWheel();renderCard();renderTabs();
+ if(S.ind!==null){renderL1();renderL2();renderL3();renderL4();renderL5();renderL6();renderL7(false);renderQuiz();renderReport();}
+}
+$('#fio').oninput=e=>{S.fio=e.target.value;save();};$('#grp').oninput=e=>{S.grp=e.target.value;save();};
+$('#spinBtn').onclick=spin;$('#l1check').onclick=checkL1;$('#l2check').onclick=checkL2;$('#l3check').onclick=checkL3;$('#l4check').onclick=checkL4;$('#l5check').onclick=checkL5;$('#l6check').onclick=checkL6;$('#l7check').onclick=checkL7;$('#quizCheck').onclick=checkQuiz;
+$('#innBtn').onclick=()=>{const s=$('#innIn').value.trim();if(!/^\d{10}$/.test(s)){$('#innOut').innerHTML='<span class="bad">Нужно ровно 10 цифр ИНН юридического лица.</span>';return;}
+ const sum=W10.reduce((a,w,i)=>a+w*(+s[i]),0),cd=(sum%11)%10;
+ $('#innOut').innerHTML=`Σ = ${W10.map((w,i)=>s[i]+'·'+w).join(' + ')} = ${sum}; ${sum} mod 11 = ${sum%11}; контрольная цифра ${cd}. Десятая цифра ${s[9]} — ИНН <b class="${cd===+s[9]?'ok':'bad'}">${cd===+s[9]?'корректен':'некорректен'}</b>.`;};
+$('#copyBtn').onclick=()=>{const t=reportText(),ta=$('#reportText');const fallback=()=>{ta.hidden=false;ta.value=t;ta.focus();ta.select();$('#copyRes').textContent='Текст выделен: нажмите Ctrl+C.';};
+ try{navigator.clipboard.writeText(t).then(()=>{$('#copyRes').textContent='Отчёт скопирован в буфер обмена.';},fallback);}catch(e){fallback();}};
+const standalone=(()=>{try{return window.self===window.top;}catch(e){return false;}})();
+if(standalone){$('#printBtn').hidden=false;$('#jsonBtn').hidden=false;}
+$('#printBtn').onclick=()=>window.print();
+$('#jsonBtn').onclick=()=>{const b=new Blob([JSON.stringify(Object.assign({practicum:KEY},S),null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`IM_${(S.fio||'student').replace(/\s+/g,'_')}.json`;a.click();};
+$('#resetAsk').onclick=()=>{$('#resetBox').hidden=false;};$('#resetNo').onclick=()=>{$('#resetBox').hidden=true;};
+function doReset(){try{localStorage.removeItem(KEY);}catch(e){}S=blank();$('#resetBox').hidden=true;$('#newBox').hidden=true;$('#notice').hidden=true;renderAll();
+ $('#firmCard').innerHTML='<p class="eyebrow">Ваше предприятие</p><p>Данные удалены. Введите фамилию и группу и крутите рулетку.</p>';$('#spinNote').textContent='Вариант назначается один раз и сохраняется в этом браузере.';$('#fio').focus();}
+$('#resetYes').onclick=doReset;$('#newYes').onclick=doReset;
+$('#newBtn').onclick=()=>{$('#newBox').hidden=false;$('#newYes').focus();};$('#newNo').onclick=()=>{$('#newBox').hidden=true;};
+/* ===================== ТОЧКИ СОХРАНЕНИЯ ===================== */
+const SNAP=KEY+':point';
+const encPoint=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+const decPoint=s=>JSON.parse(decodeURIComponent(escape(atob(s.replace(/\s+/g,'')))));
+function notice(html,cls){const n=$('#notice');n.innerHTML=html;n.className='notice '+(cls||'');n.hidden=false;}
+function pointInfo(p){const t=Object.values(p.S.pts||{}).reduce((a,x)=>a+x,0),v=p.S.ind!==null&&IND[p.S.ind]?'ОКВЭД '+IND[p.S.ind].code:'вариант не назначен';
+ return `${new Date(p.at).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})} · ${esc(p.S.fio||'ФИО не указано')} · ${v} · ${Math.round(t)} баллов`;}
+function readLocalPoint(){try{const p=JSON.parse(localStorage.getItem(SNAP));return p&&p.S?p:null;}catch(e){return null;}}
+$('#saveBtn').onclick=()=>{const p={v:KEY,at:Date.now(),S:JSON.parse(JSON.stringify(S))};let ok=false;try{localStorage.setItem(SNAP,JSON.stringify(p));ok=true;}catch(e){}
+ $('#saveCode').value=encPoint(p);$('#saveBox').hidden=false;$('#copyCodeRes').textContent='';
+ $('#saveMsg').innerHTML=(ok?'<b class="ok">Точка сохранена в этом браузере.</b> ':'<b class="bad">Браузер не разрешил сохранить точку, используйте код ниже.</b> ')+pointInfo(p)+'.';};
+$('#copyCode').onclick=()=>{const ta=$('#saveCode');const fb=()=>{ta.focus();ta.select();$('#copyCodeRes').textContent='Код выделен: нажмите Ctrl+C.';};
+ try{navigator.clipboard.writeText(ta.value).then(()=>{$('#copyCodeRes').textContent='Код скопирован.';},fb);}catch(e){fb();}};
+$('#loadBtn').onclick=()=>{const box=$('#loadBox'),open=box.hidden;box.hidden=!open;$('#loadBtn').setAttribute('aria-expanded',String(open));if(!open)return;
+ const p=readLocalPoint();$('#loadErr').textContent='';$('#loadLocal').disabled=!p;
+ $('#loadLocalInfo').innerHTML=p?'Последняя точка в этом браузере: '+pointInfo(p)+'. Текущие ответы будут заменены.':'В этом браузере сохранённой точки нет. Вставьте код точки ниже.';};
+$('#loadClose').onclick=()=>{$('#loadBox').hidden=true;$('#loadBtn').setAttribute('aria-expanded','false');};
+function applyPoint(p){if(!p||p.v!==KEY||!p.S)throw new Error('bad');S=Object.assign(blank(),p.S);save();
+ $('#wheel').style.transition='none';renderAll();requestAnimationFrame(()=>{$('#wheel').style.transition='';});
+ if(S.ind===null){$('#firmCard').innerHTML='<p class="eyebrow">Ваше предприятие</p><p>Вариант в этой точке ещё не назначен. Введите фамилию и группу и крутите рулетку.</p>';$('#spinNote').textContent='Вариант назначается один раз и сохраняется в этом браузере.';}
+ $('#loadBox').hidden=true;$('#loadBtn').setAttribute('aria-expanded','false');notice('<b>Точка загружена:</b> '+pointInfo(p)+'.','ok');}
+$('#loadLocal').onclick=()=>{try{applyPoint(readLocalPoint());}catch(e){$('#loadErr').textContent='Не удалось прочитать точку из браузера.';}};
+$('#loadCodeBtn').onclick=()=>{const v=$('#loadCode').value.trim();if(!v){$('#loadErr').textContent='Вставьте код точки.';return;}
+ try{applyPoint(decPoint(v));$('#loadCode').value='';}catch(e){$('#loadErr').textContent='Код не распознан: скопируйте его целиком.';}};
+/* ===================== КОД 0-0-0: заполнение ~75 % ответов ===================== */
+const SECRET='0-0-0';
+function pickIdx(n,salt){const r=rng(S.seed+salt*7717);return new Set([...Array(n).keys()].map(i=>[i,r()]).sort((a,b)=>a[1]-b[1]).slice(0,Math.round(n*0.75)).map(x=>x[0]));}
+const fx=(x,d)=>x.toFixed(d).replace('.',',');
+function fillKeys(obj,pairs,salt){const m=pickIdx(pairs.length,salt);pairs.forEach(([k,v],i)=>{if(m.has(i))obj[k]=v;});}
+function autofill(){
+ if(S.ind===null){notice('Код принят, но вариант ещё не назначен. Сначала крутите рулетку.','bad');return;}
+ const d=I();
+ let m=pickIdx(d.arch.proc.length,11);d.arch.proc.forEach((p,i)=>{if(m.has(i))S.l1.a[i]=p[1][0];});
+ const R=arch();fillKeys(S.l1.k,[['Kp',fx(R.Kp,3)],['dup',String(R.dup)],['Ltt',String(R.Ltt)],['dL',String(R.dL)]],12);
+ const A=alts2(),k2=[];A.forEach((a,i)=>{k2.push(['t'+i,fx(a.tco,2)],['s'+i,fx(a.S,2)]);});k2.push(['best',String(A.reduce((b,x,i)=>x.R>A[b].R?i:b,0))]);fillKeys(S.l2,k2,21);
+ const G=genL3();m=pickIdx(G.L.length,31);G.L.forEach((x,i)=>{if(m.has(i))S.l3.pr[i]=x.p;});
+ fillKeys(S.l3.k,[['D',String(G.D)],['A',fx(G.Af,3)],['P',fx(G.pen,2)]],32);
+ const R4=solve4(d.dec);fillKeys(S.l4,[['emax',fx(R4.emax,2)],['evw',fx(R4.evwpi,2)],['evpi',fx(R4.evpi,2)],['best',String(R4.best)],['buy',String(d.dec.cost<R4.evpi?1:0)]],41);
+ const P=projects(),B5=budget(P),o=optimum(P,B5),b0=baseline(P),den=o.v-b0;let bm=o.m,bd=9;
+ for(let mk=0;mk<(1<<P.length);mk++){let c=0,v=0,okM=true;P.forEach((x,i)=>{if(mk>>i&1){c+=x.c;v+=x.nv;}else if(x.mand)okM=false;});if(!okM||c>B5+1e-9)continue;const sh=den>1e-9?(v-b0)/den:1;if(Math.abs(sh-0.75)<bd){bd=Math.abs(sh-0.75);bm=mk;}}
+ S.l5.sel=P.map((_,i)=>i).filter(i=>bm>>i&1);
+ const C=genL6();m=pickIdx(C.length,61);C.forEach((x,k)=>{if(m.has(k))S.l6.lv[k]=String(x.lv);});S.l6.pick=[C.map((x,k)=>[k,x.pr]).sort((a,b)=>b[1]-a[1])[0][0]];
+ const D=genData(),keys=Object.keys(D.def);m=pickIdx(keys.length,71);keys.forEach((k,i)=>{if(m.has(i))S.l7.flags[k]=1;});
+ fillKeys(S.l7.k,[['Kp',fx(D.Kp,3)],['Ku',fx(D.Ku,3)],['Kk',fx(D.Kk,3)],['Q',fx(D.Q,3)]],72);
+ m=pickIdx(QUIZ.length,81);QUIZ.forEach((q,i)=>{if(m.has(i))S.quiz[i]=q.c;});
+ save();renderAll();
+ notice('<b>Код 0-0-0 принят.</b> Во всех работах заполнено около 75 % ответов, в ЛР 5 предложен портфель, дающий около 75 % достижимого эффекта. Остальные поля дозаполните сами и нажмите «Проверить» в каждой работе.','ok');
+}
+let keybuf='';
+document.addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('input,textarea,select'))return;if(e.key&&e.key.length===1){keybuf=(keybuf+e.key).slice(-SECRET.length);if(keybuf===SECRET){keybuf='';autofill();}}});
+document.addEventListener('input',e=>{const t=e.target;if(!t||t.readOnly||!(t.tagName==='TEXTAREA'||t.tagName==='INPUT'))return;const v=t.value||'';
+ if(v.trim().endsWith(SECRET)){t.value=v.trim().slice(0,-SECRET.length).trim();setTimeout(autofill,0);}},true);
+load();S.tab=0;renderAll();
+</script>
+
+</body>
+</html>

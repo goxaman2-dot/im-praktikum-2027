@@ -1,0 +1,54 @@
+{
+ "updated": "07.10.2026",
+ "note": "Библиотека знаний практикума «Информационный менеджмент». Меняйте только поле u (адрес) или t (название); ключи не трогайте.",
+ "links": {
+  "infostart-esb": {
+   "t": "Интеграционные шины — ключевой элемент качественной архитектуры (доклад, конференция Infostart, 2023)",
+   "u": "https://infostart.ru/1c/articles/2121800/"
+  },
+  "cnews-esb": {
+   "t": "Сервисная шина предприятия (ESB): определение и назначение. CNews",
+   "u": "https://cnews.ru/link/a21422"
+  },
+  "investfuture-tco": {
+   "t": "Общая стоимость владения (TCO): что это такое, составные части и как рассчитать. Инвестфьючер",
+   "u": "https://investfuture.ru/articles/obschaya-stoimost-vladeniya-tco-chto-eto-takoe-sostavnye-chasti-i-kak-rasschitat"
+  },
+  "consultant-1236": {
+   "t": "Запрет на допуск иностранного ПО: постановление Правительства РФ от 16.11.2015 № 1236. КонсультантПлюс",
+   "u": "https://www.consultant.ru/law/podborki/zapret_1236/"
+  },
+  "habr-itil": {
+   "t": "Управление инцидентами и управление проблемами в ITIL: в чём разница. Хабр, блог IT Guild",
+   "u": "https://habr.com/ru/companies/it-guild/articles/341928/"
+  },
+  "yhec-evpi": {
+   "t": "Expected Value of Perfect Information (EVPI). Глоссарий York Health Economics Consortium (англ.)",
+   "u": "https://www.yhec.co.uk/glossary-term/expected-value-of-perfect-information-evpi/"
+  },
+  "consultant-152": {
+   "t": "Федеральный закон от 27.07.2006 № 152-ФЗ «О персональных данных», ст. 18.1 и 19. КонсультантПлюс",
+   "u": "https://www.consultant.ru/document/cons_doc_LAW_61801/"
+  },
+  "consultant-koap": {
+   "t": "Ответственность за нарушения в области персональных данных, ст. 13.11 КоАП РФ (изменения 420-ФЗ). КонсультантПлюс",
+   "u": "https://www.consultant.ru/law/podborki/personalnye_dannye_koap/"
+  },
+  "cobit-levels": {
+   "t": "COBIT 2019: Capability Levels 0–5 (определения уровней по рис. 6.2 руководства, англ.)",
+   "u": "https://open-exam-prep.com/study-guides/cobit-2019/performance-management/capability-levels-0-5"
+  },
+  "isaca-cobit": {
+   "t": "Effective Capability and Maturity Assessment Using COBIT 2019. ISACA (англ.)",
+   "u": "https://www.isaca.org/resources/news-and-trends/industry-news/2020/effective-capability-and-maturity-assessment-using-cobit-2019"
+  },
+  "ppt-inn": {
+   "t": "ИНН юридического лица: структура номера и как проверить организацию. ppt.ru",
+   "u": "https://ppt.ru/art/inn/inn-yuridicheskogo-litsa"
+  },
+  "fns-egrul": {
+   "t": "Предоставление сведений из ЕГРЮЛ/ЕГРИП в электронном виде. Сервис ФНС России",
+   "u": "https://egrul.nalog.ru/index.html"
+  }
+ }
+}

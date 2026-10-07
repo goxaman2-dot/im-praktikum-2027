@@ -45,6 +45,9 @@ nav.tabs button:disabled{opacity:.4;cursor:not-allowed}
 nav.tabs .pts{font:12px var(--mono);margin-left:4px;color:var(--ok)}
 section.panel{background:var(--surface);border:1px solid var(--line);border-top:0;padding:22px 18px;display:none}
 section.panel.active{display:grid;gap:18px}
+section.panel.active>*{min-width:0}
+.task>*,.field,.field>*{min-width:0}
+select{max-width:100%}
 .theory{border-left:4px solid var(--accent);background:var(--accent-soft);padding:12px 14px;border-radius:0 6px 6px 0;display:grid;gap:8px;max-width:88ch}
 .theory p,.theory li{font-size:15px}
 .theory ul{margin:0;padding-left:20px}
@@ -116,7 +119,23 @@ svg text{fill:var(--fg);font-family:var(--body)}
 .savebar{margin-top:18px;border-top:2px solid var(--fg);padding-top:16px;display:grid;gap:12px}
 @media print{.toolbar,.savebar,.pointbox{display:none!important}}
 @media print{nav.tabs,.btn,.student input,.theory{display:none}section.panel{display:grid!important;border:0;page-break-inside:avoid}body{background:#fff;color:#000}}
-@media (prefers-reduced-motion:reduce){*:not(.bulb):not(.sec){transition:none!important;animation:none!important}}
+/* ловушки */
+.trap{border:2px solid var(--warn);border-radius:8px;padding:12px 14px;background:color-mix(in srgb,var(--warn) 9%,var(--surface));display:grid;gap:8px;max-width:92ch}
+.trap-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.trapflash{font:700 13px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:4px;background:var(--bad);color:#fff;animation:trapblink 1s steps(1) infinite}
+@keyframes trapblink{50%{background:#f6c945;color:#1a1a1a}}
+.trap.done .trapflash{animation:none;background:var(--muted);color:var(--surface)}
+.trap-title{font-weight:700}
+.trap-q{font-weight:500}
+.trap-src{display:grid;gap:4px;font-size:15px}
+.trap-src a{color:var(--accent);font-weight:500}
+.trap-src .dom{font:12px var(--mono);color:var(--muted)}
+.trap-gate{font-size:14px;color:var(--warn);font-weight:500}
+.trap fieldset{border:0;padding:0;margin:0;display:grid;gap:6px}
+.trap fieldset label{font-size:15px;color:var(--fg);font-weight:400;display:flex;gap:8px;align-items:flex-start}
+.trap fieldset:disabled label{opacity:.5}
+.libline{font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*:not(.bulb):not(.sec):not(.trapflash){transition:none!important;animation:none!important}}
 </style>
 
 </head>
@@ -126,6 +145,7 @@ svg text{fill:var(--fg);font-family:var(--body)}
  <p class="eyebrow">Информационный менеджмент · 38.03.05 Бизнес-информатика · 2026/2027 уч. год</p>
  <h1>Электронный практикум «Информационный менеджмент»</h1>
  <p class="lead">Рулетка назначает отрасль по ОКВЭД 2. Вы выступаете руководителем ИТ-службы этой фирмы: сопоставляете процессы с информационными системами, выбираете систему по совокупной стоимости владения, контролируете уровень сервиса, оцениваете ценность информации для решений, формируете портфель ИТ-проектов, измеряете зрелость управления ИТ и качество данных.</p>
+ <p class="libline" id="libStatus"></p>
  <div class="student">
   <div class="field"><label for="fio">Студент</label><input id="fio" autocomplete="name" placeholder="Фамилия И. О."></div>
   <div class="field"><label for="grp">Группа</label><input id="grp" placeholder="БИН-б-о-24-1"></div>
@@ -174,6 +194,7 @@ svg text{fill:var(--fg);font-family:var(--body)}
  <div class="task"><h3>Задание Б</h3><p>Ниже — фактический ИТ-ландшафт фирмы: какие системы есть и какие процессы они закрывают. Рассчитайте показатели по формулам (1)–(2) и найдите дублирование.</p></div>
  <div class="wrap"><table id="l1b"></table></div>
  <div class="grid2" id="l1inputs"></div>
+ <div class="trapwrap" id="trapwrap1" style="display:grid;gap:12px"></div>
  <div class="btnrow"><button class="btn" id="l1check">Проверить работу</button><span id="l1res" aria-live="polite"></span></div>
  <div id="l1after"></div>
 </section>
@@ -190,6 +211,7 @@ svg text{fill:var(--fg);font-family:var(--body)}
  <div id="l2case" class="task"></div>
  <div class="wrap"><table id="l2table"></table></div>
  <div class="grid2" id="l2inputs"></div>
+ <div class="trapwrap" id="trapwrap2" style="display:grid;gap:12px"></div>
  <div class="btnrow"><button class="btn" id="l2check">Проверить расчёт</button><span id="l2res" aria-live="polite"></span></div>
  <div id="l2after"></div>
  <div class="svgbox" id="l2chart"></div>
@@ -208,6 +230,7 @@ svg text{fill:var(--fg);font-family:var(--body)}
  <div id="l3case" class="task"></div>
  <div class="wrap"><table id="l3table"></table></div>
  <div class="grid2" id="l3inputs"></div>
+ <div class="trapwrap" id="trapwrap3" style="display:grid;gap:12px"></div>
  <div class="btnrow"><button class="btn" id="l3check">Проверить работу</button><span id="l3res" aria-live="polite"></span></div>
  <div id="l3after"></div>
 </section>
@@ -225,6 +248,7 @@ svg text{fill:var(--fg);font-family:var(--body)}
  <div id="l4case" class="task"></div>
  <div class="wrap"><table id="l4table"></table></div>
  <div class="grid2" id="l4inputs"></div>
+ <div class="trapwrap" id="trapwrap4" style="display:grid;gap:12px"></div>
  <div class="btnrow"><button class="btn" id="l4check">Проверить расчёт</button><span id="l4res" aria-live="polite"></span></div>
  <div id="l4after"></div>
  <div class="svgbox" id="l4chart"></div>
@@ -242,6 +266,7 @@ svg text{fill:var(--fg);font-family:var(--body)}
  <div id="l5case" class="task"></div>
  <div class="wrap"><table id="l5table"></table></div>
  <div class="result" id="l5sum"></div>
+ <div class="trapwrap" id="trapwrap5" style="display:grid;gap:12px"></div>
  <div class="btnrow"><button class="btn" id="l5check">Проверить портфель</button><span id="l5res" aria-live="polite"></span></div>
  <div id="l5after"></div>
 </section>
@@ -256,6 +281,7 @@ svg text{fill:var(--fg);font-family:var(--body)}
  </div>
  <div class="task"><h3>Задание</h3><p>По описанию практики определите фактический уровень каждого процесса. Затем отметьте два процесса, которые нужно улучшать в первую очередь.</p></div>
  <div class="wrap"><table id="l6table"></table></div>
+ <div class="trapwrap" id="trapwrap6" style="display:grid;gap:12px"></div>
  <div class="btnrow"><button class="btn" id="l6check">Проверить оценку</button><span id="l6res" aria-live="polite"></span></div>
  <div id="l6after"></div>
 </section>
@@ -278,6 +304,7 @@ svg text{fill:var(--fg);font-family:var(--body)}
   <div class="result"><span class="lbl">Калькулятор контрольной цифры ИНН</span><div class="btnrow"><input id="innIn" inputmode="numeric" maxlength="10" placeholder="10 цифр" style="width:150px;font-family:var(--mono)"><button class="btn ghost" id="innBtn">Разобрать</button></div><p id="innOut" class="note" aria-live="polite">Калькулятор показывает расчёт по шагам; применять его к строкам реестра нужно самостоятельно.</p></div>
   <div class="result"><span class="lbl">Ваши расчёты</span><div class="grid2" id="l7inputs"></div></div>
  </div>
+ <div class="trapwrap" id="trapwrap7" style="display:grid;gap:12px"></div>
  <div class="btnrow"><button class="btn" id="l7check">Проверить аудит</button><span id="l7res" aria-live="polite"></span></div>
  <div class="svgbox" id="l7chart"></div>
 </section>
@@ -300,6 +327,10 @@ svg text{fill:var(--fg);font-family:var(--body)}
   <button class="btn ghost" id="resetAsk">Начать заново</button>
   <span id="copyRes" aria-live="polite" class="note"></span>
  </div>
+ <details id="probeBox" hidden><summary class="note">Для преподавателя: проверить, открываются ли источники библиотеки знаний из этой сети</summary>
+  <div class="btnrow" style="margin-top:8px"><button class="btn ghost" id="probeBtn">Проверить доступность источников</button><span id="probeRes" class="note" aria-live="polite"></span></div>
+  <div id="probeList" class="note"></div>
+ </details>
  <div id="resetBox" class="confirm" hidden><p>Все ответы и назначенный вариант будут удалены. Продолжить?</p><div class="btnrow"><button class="btn danger" id="resetYes">Да, удалить</button><button class="btn ghost" id="resetNo">Отмена</button></div></div>
  <textarea id="reportText" rows="8" hidden aria-label="Текст отчёта для копирования"></textarea>
 </section>
@@ -511,7 +542,7 @@ const num=v=>{if(v===undefined||v===null||v==='')return NaN;return parseFloat(St
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
 const KEY='im-praktikum-2026-v2';
-const blank=()=>({fio:'',grp:'',ind:null,seed:0,tab:0,rot:0,l1:{a:{},k:{}},l2:{},l3:{pr:{},k:{}},l4:{},l5:{sel:[]},l6:{lv:{},pick:[]},l7:{flags:{},k:{}},quiz:{},concl:{},pts:{}});
+const blank=()=>({fio:'',grp:'',ind:null,seed:0,tab:0,rot:0,l1:{a:{},k:{}},l2:{},l3:{pr:{},k:{}},l4:{},l5:{sel:[]},l6:{lv:{},pick:[]},l7:{flags:{},k:{}},traps:{},quiz:{},concl:{},pts:{}});
 let S=blank();
 function load(){try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(blank(),JSON.parse(r));}catch(e){}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
@@ -597,7 +628,7 @@ function checkL1(){
  const a=I().arch,R=arch();let okA=0;
  a.proc.forEach((p,i)=>{const g=p[1].includes(S.l1.a[i]);okA+=g;$('#l1fb'+i).innerHTML=`<span class="${g?'ok':'bad'}">${g?'верно':'подходит: '+p[1].map(k=>k==='IND'?'отраслевая система':CLS[k]).join(' или ')}</span>`;});
  let okB=0;[['l1Kp',S.l1.k.Kp,R.Kp,0.005,n3(R.Kp)],['l1dup',S.l1.k.dup,R.dup,0.01,R.dup],['l1Ltt',S.l1.k.Ltt,R.Ltt,0.01,R.Ltt],['l1dL',S.l1.k.dL,R.dL,0.01,R.dL]].forEach(([id,u,v,t,s])=>{const g=close(u,v,t);okB+=g;mark(id,g,'расчёт: '+s);});
- S.pts.l1=7*okA/a.proc.length+8*okB/4;save();
+ S.pts.l1=withTrap(1,7*okA/a.proc.length+8*okB/4,15);save();
  $('#l1res').innerHTML=`Задание А: ${okA} из ${a.proc.length}; задание Б: ${okB} из 4 · <b>${Math.round(S.pts.l1)} баллов</b>`;
  $('#l1after').innerHTML=`<div class="result"><p>Не автоматизированы: ${R.gaps.length?R.gaps.map(i=>'П'+(i+1)+' «'+esc(a.proc[i][0])+'»').join(', '):'нет'}. Дублирование: ${R.dups.length?R.dups.map(i=>'П'+(i+1)+' «'+esc(a.proc[i][0])+'»').join(', '):'нет'}.</p>
  <p>При ${R.n} системах прямые связи «каждая с каждой» дают до ${R.Ltt} интерфейсов, интеграционная шина — ${R.n} подключений. ${R.dL<=0?'При таком малом числе систем шина не даёт выигрыша и обычно не окупается.':'Выигрыш растёт квадратично с числом систем, поэтому с каждой новой системой вопрос об интеграционной платформе становится острее.'}</p></div>`;
@@ -626,7 +657,7 @@ function checkL2(){
  A.forEach((a,i)=>{let g=close(L['t'+i],a.tco,0.05);ok+=g;mark('l2t'+i,g,'расчёт: '+n2(a.tco));g=close(L['s'+i],a.S,0.01);ok+=g;mark('l2s'+i,g,'расчёт: '+n2(a.S));});
  const best=A.reduce((b,x,i)=>x.R>A[b].R?i:b,0),cheap=A.reduce((b,x,i)=>x.tco<A[b].tco?i:b,0),low=A.reduce((b,x,i)=>x.capx<A[b].capx?i:b,0);
  const gb=L.best!==undefined&&L.best!==''&&+L.best===best;ok+=gb;mark('l2best',gb,'лучшая A'+(best+1));
- S.pts.l2=15*ok/7;save();$('#l2res').innerHTML=`Верно ${ok} из 7 · <b>${Math.round(S.pts.l2)} баллов</b>`;
+ S.pts.l2=withTrap(2,15*ok/7,15);save();$('#l2res').innerHTML=`Верно ${ok} из 7 · <b>${Math.round(S.pts.l2)} баллов</b>`;
  const g=L.guess===undefined||L.guess===''?null:+L.guess;
  $('#l2after').innerHTML=`<div class="result"><p><i>R</i>: ${A.map((a,i)=>'A'+(i+1)+' = '+n3(a.R)).join('; ')} балла на 1 млн руб. Лучшее соотношение у A${best+1}.</p>
  <p>Самый низкий порог входа (<i>CAPEX</i>) у A${low+1}, наименьшая TCO за ${HOR} лет — у A${cheap+1}. ${low!==cheap?'Дешёвый вход не означает дешёвого владения: ежегодные платежи за пять лет перевешивают разницу в начальных затратах.':'Здесь низкий порог входа совпал с наименьшей TCO.'} ${best!==cheap?'Лучшая по соотношению качества и затрат альтернатива не самая дешёвая: веса критериев в этой отрасли оправдывают доплату.':''} ${g===null?'':g===best?'Ваша оценка «на глаз» совпала с расчётом.':'Оценка «на глаз» указывала на A'+(g+1)+'.'}</p></div>`;
@@ -675,7 +706,7 @@ function checkL3(){
  const G=genL3(),sl=I().sla;let okP=0;
  G.L.forEach((x,i)=>{const g=S.l3.pr[i]===x.p;okP+=g;$('#l3fb'+i).innerHTML=`<span class="${g?'ok':'bad'}">${g?'верно':'ожидалось: '+PRI.find(p=>p[0]===x.p)[1]}</span>${x.out?' <span class="chip">полная недоступность — входит в D</span>':''}`;});
  let okK=0;[['l3D',S.l3.k.D,G.D,0.5,n0(G.D)],['l3A',S.l3.k.A,G.Af,0.0015,n3(G.Af)],['l3P',S.l3.k.P,G.pen,0.05,n2(G.pen)]].forEach(([id,u,v,t,s])=>{const g=close(u,v,t);okK+=g;mark(id,g,'расчёт: '+s);});
- S.pts.l3=7*okP/G.L.length+8*okK/3;save();
+ S.pts.l3=withTrap(3,7*okP/G.L.length+8*okK/3,15);save();
  $('#l3res').innerHTML=`Приоритеты: ${okP} из ${G.L.length}; расчёт: ${okK} из 3 · <b>${Math.round(S.pts.l3)} баллов</b>`;
  $('#l3after').innerHTML=`<div class="result"><p>Допустимый простой при цели ${n2(sl.t)} % — ${n0(G.allow)} мин в месяц; фактический — ${n0(G.D)} мин. ${G.pct?`Цель не достигнута на ${n3(sl.t-G.Af)} п. п., подрядчик снижает плату на ${G.pct} % (${n2(G.pen)} тыс. руб.).`:(G.Af<sl.t?'Цель не достигнута, но отставание меньше 0,1 п. п., поэтому сервисный кредит не начисляется.':'Цель SLA выполнена, сервисного кредита нет.')}</p>
  <p class="note">Сервисный кредит почти никогда не покрывает потерь бизнеса от простоя. SLA — инструмент управления подрядчиком, а не страховка.</p></div>`;
@@ -700,7 +731,7 @@ function checkL4(){
  [['l4emax',L.emax,R.emax],['l4evw',L.evw,R.evwpi],['l4evpi',L.evpi,R.evpi]].forEach(([id,u,v])=>{const g=close(u,v,0.05);ok+=g;mark(id,g,'расчёт: '+n2(v));});
  let g=L.best!==undefined&&L.best!==''&&+L.best===R.best;ok+=g;mark('l4best',g,'лучшая A'+(R.best+1));
  const buy=dec.cost<R.evpi?1:0;g=L.buy!==undefined&&L.buy!==''&&+L.buy===buy;ok+=g;mark('l4buy',g,buy?'цена ниже EVPI':'цена не ниже EVPI');
- S.pts.l4=2*ok;save();$('#l4res').innerHTML=`Верно ${ok} из 5 · <b>${S.pts.l4} баллов</b>`;
+ S.pts.l4=withTrap(4,2*ok,10);save();$('#l4res').innerHTML=`Верно ${ok} из 5 · <b>${Math.round(S.pts.l4)} баллов</b>`;
  const gg=L.guess===undefined||L.guess===''?null:+L.guess;
  $('#l4after').innerHTML=`<div class="result"><p><i>EMV</i> альтернатив: ${R.emv.map((x,i)=>'A'+(i+1)+' = '+n2(x)).join('; ')} млн руб.</p>
  <p>${gg===null?'Прогноз «на глаз» не сделан.':gg===R.best?'Интуитивный выбор совпал с расчётом.':`Интуиция указала на A${gg+1}, расчёт — на A${R.best+1}. Сравните, какие исходы вы переоценили.`}</p>
@@ -749,7 +780,7 @@ function checkL5(){
  if(c>B+1e-9)msg='Бюджет превышен, портфель не может быть принят.';
  else if(missM.length)msg='Не включён обязательный проект: '+missM.map(i=>'П'+(i+1)).join(', ')+'. Без него фирма нарушает закон, портфель не принимается.';
  else{const b0=baseline(P),den=opt.v-b0;pts=den>1e-9?15*Math.min(1,Math.max(0,(v-b0)/den)):15;msg=`Ваш портфель даёт ${n2(v)} млн руб., оптимум — ${n2(opt.v)} млн руб. (${Math.round(pts/15*100)} % прироста, достижимого сверх обязательных проектов).`;}
- S.pts.l5=pts;save();
+ S.pts.l5=withTrap(5,pts,15);save();
  const optSet=P.map((_,i)=>i).filter(i=>opt.m>>i&1),bestNV=P.reduce((b,x,i)=>x.nv>P[b].nv?i:b,0);
  const g=S.l5.guess===undefined||S.l5.guess===''?null:+S.l5.guess;
  $('#l5res').innerHTML=`<b>${Math.round(pts)} баллов</b>`;
@@ -773,7 +804,7 @@ function checkL6(){
   $('#l6fb'+k).innerHTML=`<span class="${d===0?'ok':'bad'}">${d===0?'верно':'фактический уровень '+x.lv}</span> · разрыв <i>G</i> = ${x.g}, приоритет <i>Pr</i> = ${x.pr}`;});
  const sorted=G.map((x,k)=>[k,x.pr]).sort((a,b)=>b[1]-a[1]),thr=sorted[1][1],pick=S.l6.pick;
  const good=k=>G[k].pr>=thr&&G[k].pr>0;const okPick=pick.length===2&&pick.every(good);const pp=okPick?4:Math.min(3,pick.filter(good).length*1.5);
- S.pts.l6=6*lp/G.length+pp;save();
+ S.pts.l6=withTrap(6,6*lp/G.length+pp,10);save();
  $('#l6res').innerHTML=`Уровни: ${n2(lp)} из ${G.length}; приоритеты: ${okPick?'верно':'неточно'} · <b>${Math.round(S.pts.l6)} баллов</b>`;
  const top=sorted.filter(s=>s[1]>=thr&&s[1]>0).map(s=>G[s[0]].id);
  $('#l6after').innerHTML=`<div class="result"><p>Первоочередные процессы по формуле (12): ${top.join(', ')||'разрывов нет'}. Средний фактический уровень — ${n2(G.reduce((a,x)=>a+x.lv,0)/G.length)} при среднем целевом ${n2(G.reduce((a,x)=>a+x.t,0)/G.length)}.</p>
@@ -817,7 +848,7 @@ function checkL7(){
  renderL7(true);const {def,Kp,Ku,Kk,Q,Ncell,Nmiss,Ninv,Ndup,rows}=D7;const fl=Object.keys(S.l7.flags),tot=Object.keys(def).length;
  const tp=fl.filter(k=>def[k]).length,fp=fl.length-tp,prec=fl.length?tp/fl.length:0,rec=tot?tp/tot:0,f1=prec+rec?2*prec*rec/(prec+rec):0;
  let mok=0;[['l7Kp',Kp],['l7Ku',Ku],['l7Kk',Kk],['l7Q',Q]].forEach(([id,v])=>{const g=close($('#'+id).value,v,0.002);mok+=g;mark(id,g,'расчёт: '+n3(v));});
- S.pts.l7=5*f1+5*mok/4;save();
+ S.pts.l7=withTrap(7,5*f1+5*mok/4,10);save();
  $('#l7res').innerHTML=`Найдено ${tp} из ${tot} дефектов, ложных отметок ${fp} · <b>${Math.round(S.pts.l7)} баллов</b><span class="note" style="display:block">Ячеек ${Ncell}, пустых ${Nmiss}, строк ${rows.length}, дублей ${Ndup}, ошибочных значений ${Ninv}.</span>`;
  chartL7({Kp,Ku,Kk,Q});renderTabs();
 }
@@ -853,16 +884,117 @@ function renderReport(){
  $('#report').innerHTML=`<p><b>${esc(S.fio||'ФИО не указано')}</b>, группа ${esc(S.grp||'—')}. Вариант: ОКВЭД ${d.code}, ${esc(d.firm)}. Дата: ${new Date().toLocaleDateString('ru-RU')}.</p>
  <div class="wrap"><table><thead><tr><th>Этап</th><th class="r">Баллы</th><th class="r">Максимум</th></tr></thead><tbody>${LABS.map(([k,n,m])=>`<tr><td>${n}</td><td class="r code">${S.pts[k]===undefined?'не выполнено':Math.round(S.pts[k])}</td><td class="r code">${m}</td></tr>`).join('')}
  <tr><td><b>Итого</b></td><td class="r code"><b>${Math.round(tot)}</b></td><td class="r code">100</td></tr></tbody></table></div>
+ <p>Ловушки: верно <b>${trapStats().ok} из ${TRAPS.length}</b>, источники изучены по ${trapStats().read} из ${TRAPS.length}.</p>
  <p>Оценка по шкале практикума: <b>${grade(tot)}</b>. Контрольный код для преподавателя: <span class="code">${code}</span>.</p>
  ${LABS.slice(0,7).map(([k,n])=>`<div class="field"><label for="c_${k}">Вывод: ${n}</label><textarea id="c_${k}" rows="3" placeholder="Что установлено и какое управленческое решение вы предлагаете">${esc(S.concl[k]||'')}</textarea></div>`).join('')}`;
  LABS.slice(0,7).forEach(([k])=>$('#c_'+k).oninput=e=>{S.concl[k]=e.target.value;save();});
 }
 function reportText(){const {d,tot,code}=reportData();
- return [`Практикум «Информационный менеджмент», 2026/2027 уч. год`,`Студент: ${S.fio}, группа ${S.grp}`,`Вариант: ОКВЭД ${d.code} — ${d.name}; ${d.firm}`,'',...LABS.map(([k,n,m])=>`${n}: ${S.pts[k]===undefined?'не выполнено':Math.round(S.pts[k])} из ${m}`),`Итого: ${Math.round(tot)} из 100 (${grade(tot)})`,`Контрольный код: ${code}`,'',...LABS.slice(0,7).map(([k,n])=>`${n}. Вывод: ${S.concl[k]||'—'}`)].join('\n');}
+ return [`Практикум «Информационный менеджмент», 2026/2027 уч. год`,`Студент: ${S.fio}, группа ${S.grp}`,`Вариант: ОКВЭД ${d.code} — ${d.name}; ${d.firm}`,'',...LABS.map(([k,n,m])=>`${n}: ${S.pts[k]===undefined?'не выполнено':Math.round(S.pts[k])} из ${m}`),`Ловушки: верно ${trapStats().ok} из ${TRAPS.length}; источники изучены по ${trapStats().read}`,`Итого: ${Math.round(tot)} из 100 (${grade(tot)})`,`Контрольный код: ${code}`,'',...LABS.slice(0,7).map(([k,n])=>`${n}. Вывод: ${S.concl[k]||'—'}`)].join('\n');}
+/* ===================== ЛОВУШКИ И БИБЛИОТЕКА ЗНАНИЙ ===================== */
+// Источник ссылок: встроенная копия LIB (проверена 07.10.2026). На GitHub Pages страница пытается
+// подгрузить свежий links.json из того же репозитория; при неудаче работает встроенная копия, без ошибки.
+const LIB_DATE='07.10.2026';
+const LIB={
+ 'infostart-esb':{t:'Интеграционные шины — ключевой элемент качественной архитектуры (доклад, конференция Infostart, 2023)',u:'https://infostart.ru/1c/articles/2121800/'},
+ 'cnews-esb':{t:'Сервисная шина предприятия (ESB): определение и назначение. CNews',u:'https://cnews.ru/link/a21422'},
+ 'investfuture-tco':{t:'Общая стоимость владения (TCO): что это такое, составные части и как рассчитать. Инвестфьючер',u:'https://investfuture.ru/articles/obschaya-stoimost-vladeniya-tco-chto-eto-takoe-sostavnye-chasti-i-kak-rasschitat'},
+ 'consultant-1236':{t:'Запрет на допуск иностранного ПО: постановление Правительства РФ от 16.11.2015 № 1236. КонсультантПлюс',u:'https://www.consultant.ru/law/podborki/zapret_1236/'},
+ 'habr-itil':{t:'Управление инцидентами и управление проблемами в ITIL: в чём разница. Хабр, блог IT Guild',u:'https://habr.com/ru/companies/it-guild/articles/341928/'},
+ 'yhec-evpi':{t:'Expected Value of Perfect Information (EVPI). Глоссарий York Health Economics Consortium (англ.)',u:'https://www.yhec.co.uk/glossary-term/expected-value-of-perfect-information-evpi/'},
+ 'consultant-152':{t:'Федеральный закон от 27.07.2006 № 152-ФЗ «О персональных данных», ст. 18.1 и 19. КонсультантПлюс',u:'https://www.consultant.ru/document/cons_doc_LAW_61801/'},
+ 'consultant-koap':{t:'Ответственность за нарушения в области персональных данных, ст. 13.11 КоАП РФ (изменения 420-ФЗ). КонсультантПлюс',u:'https://www.consultant.ru/law/podborki/personalnye_dannye_koap/'},
+ 'cobit-levels':{t:'COBIT 2019: Capability Levels 0–5 (определения уровней по рис. 6.2 руководства, англ.)',u:'https://open-exam-prep.com/study-guides/cobit-2019/performance-management/capability-levels-0-5'},
+ 'isaca-cobit':{t:'Effective Capability and Maturity Assessment Using COBIT 2019. ISACA (англ.)',u:'https://www.isaca.org/resources/news-and-trends/industry-news/2020/effective-capability-and-maturity-assessment-using-cobit-2019'},
+ 'ppt-inn':{t:'ИНН юридического лица: структура номера и как проверить организацию. ppt.ru',u:'https://ppt.ru/art/inn/inn-yuridicheskogo-litsa'},
+ 'fns-egrul':{t:'Предоставление сведений из ЕГРЮЛ/ЕГРИП в электронном виде. Сервис ФНС России',u:'https://egrul.nalog.ru/index.html'}
+};
+let libSource='встроенная копия';
+const TRAP_AWAY_MS=20000, TRAP_WAIT_MS=40000;
+const TRAPS=[
+ {id:'t1',lab:1,title:'Шина «на всякий случай»',
+  q:()=>'У фирмы три прикладные системы, и каждая обменивается данными с каждой. Консультант предлагает срочно купить интеграционную шину (ESB): «шина всегда сокращает число интеграций». Как поступить?',
+  opts:['Купить сейчас: шина уменьшает число интерфейсов при любом числе систем, а значит, снижает затраты на сопровождение интеграций.','Не спешить: при трёх системах прямых связей 3·2/2 = 3, к шине тоже 3 подключения, выигрыша нет, а шина — ещё одна система со своей TCO. К вопросу стоит вернуться, когда систем станет больше.','Купить, если системы от разных производителей: шина нужна прежде всего для совместимости форматов данных, а не для сокращения числа связей.'],c:1,
+  why:'По формуле (2) при n = 3 сокращение ΔL = 0. В докладе на Infostart подчёркнуто, что шина помогает, только если понятна причина сильной связности систем; по определению CNews её назначение — централизованно управлять интеграцией, а не экономить на числе связей при любом составе.',
+  src:['infostart-esb','cnews-esb']},
+ {id:'t2',lab:2,title:'Подписка «всё включено»',
+  q:()=>'Поставщик облачной системы говорит: «В подписку входит всё, других расходов у вас не будет». Какие затраты фирма всё равно должна включить в TCO?',
+  opts:['Никаких: при подписке поставщик берёт на себя сопровождение, обучение и интеграцию, поэтому TCO равна сумме платежей за подписку.','Обучение сотрудников, перенос и интеграцию данных, время собственного персонала на сопровождение системы.','Только налоги и банковские комиссии с платежей: остальные расходы поставщик уже заложил в цену подписки.'],c:1,
+  why:'TCO — не только платежи поставщику. В источнике отдельно выделены затраты на обучение и операционные расходы, причём обучение названо статьёй, которую чаще всего недооценивают.',
+  src:['investfuture-tco']},
+ {id:'t3',lab:2,title:'Иностранная система дешевле',
+  q:()=>'Государственное учреждение выбирает информационную систему. Иностранная по TCO на 15 % дешевле российской из реестра. Можно ли закупить иностранную систему для государственных нужд?',
+  opts:['Да: заказчик обязан выбрать вариант с наименьшей совокупной стоимостью владения, происхождение ПО при этом значения не имеет.','Нет: действует запрет на допуск иностранного ПО (постановление № 1236). Отступить от него можно, только если в реестре нет ПО нужного класса или оно не обладает нужной функциональностью, и это надо обосновать.','Да, если иностранный поставщик откроет российское юрлицо и выставит счёт в рублях: тогда его ПО считается отечественным.'],c:1,
+  why:'Постановление Правительства РФ от 16.11.2015 № 1236 запрещает допуск ПО, происходящего из иностранных государств, для государственных и муниципальных нужд. Исключение — отсутствие в реестре российского ПО нужного класса или нужной функциональности, с обоснованием.',
+  src:['consultant-1236']},
+ {id:'t4',lab:3,title:'Третий раз за месяц',
+  q:()=>`${cap(I().sla.mod)} падает третий раз за месяц. Каждый раз дежурный быстро восстанавливает работу перезагрузкой. Что должна сделать ИТ-служба по ITIL?`,
+  opts:['Каждый раз регистрировать и закрывать инцидент: работа восстановлена, а срок решения по SLA выдержан.','Восстанавливать работу в рамках управления инцидентами и открыть проблему, чтобы найти и устранить первопричину повторяющихся сбоев.','Поднять всем трём инцидентам приоритет до P1: высокий приоритет сам по себе устранит причину повторных сбоев.'],c:1,
+  why:'Цель управления инцидентами — скорейшее восстановление услуги, цель управления проблемами — предотвращение инцидентов в будущем. Закрытие инцидента без поиска первопричины даёт лишь временное облегчение.',
+  src:['habr-itil']},
+ {id:'t5',lab:4,title:'Сведения, которые ничего не меняют',
+  q:()=>'Одна из альтернатив даёт наибольший результат при ЛЮБОМ состоянии среды. Аналитики предлагают купить прогноз за 0,5 млн руб. Сколько стоит этот прогноз для данного решения?',
+  opts:['0,5 млн руб.: ценность информации для решения равна цене, которую за неё просит продавец.','Ноль: при любом прогнозе выбор останется прежним, поэтому EVwPI = max EMV и EVPI = 0.','Столько, сколько составляет разброс результатов лучшей альтернативы между худшим и лучшим состоянием среды.'],c:1,
+  why:'По формулам (8)–(9), если одна альтернатива лучшая в каждом состоянии, то max по альтернативам в каждом столбце — это она же, EVwPI совпадает с её EMV и EVPI = 0. EVPI — это цена, которую разумно заплатить за устранение неопределённости; если неопределённость не влияет на выбор, платить не за что.',
+  src:['yhec-evpi']},
+ {id:'t6',lab:5,title:'Отрицательный NV',
+  q:()=>'Проект «Приведение обработки ПДн в соответствие со 152-ФЗ» даёт отрицательный NV. Финансовый директор предлагает исключить его из портфеля. Согласны?',
+  opts:['Да: по задаче (11) в портфель включают только проекты с положительным NV, иначе общий эффект портфеля снижается.','Нет: меры по ст. 18.1 и 19 закона № 152-ФЗ — обязанность оператора, а после изменений 420-ФЗ (с 30.05.2025) штрафы по ст. 13.11 КоАП резко выросли. Цена неисполнения выше отрицательного NV.','Да, если персональных данных в фирме немного: закон № 152-ФЗ обязывает принимать меры защиты только крупных операторов.'],c:1,
+  why:'Статьи 18.1 и 19 закона № 152-ФЗ обязывают оператора принимать организационные и технические меры защиты. С 30.05.2025 по закону № 420-ФЗ штрафы по ст. 13.11 КоАП резко увеличены, за повторные утечки — в процентах от выручки. Обязательный проект оценивают по цене несоблюдения закона, а не по NV.',
+  src:['consultant-152','consultant-koap']},
+ {id:'t7',lab:6,title:'Метрики без регламента',
+  q:()=>'В отделе ежемесячно собирают показатели по инцидентам, но утверждённого регламента нет: каждый ведёт процесс по-своему. Аудитор-стажёр ставит уровень 4, «потому что есть метрики». Какой уровень верен?',
+  opts:['4: показатели процесса измеряются ежемесячно, а это и есть признак количественно управляемого процесса.','2: для уровня 4 процесс должен быть ещё и хорошо определён (это условие уровня 3). Пока нет единого регламента, измерения не поднимают уровень выше 2.','5: накопленных показателей достаточно, чтобы постоянно улучшать процесс на основе измерений.'],c:1,
+  why:'По определениям COBIT 2019 уровень 3 означает хорошо определённый процесс, а уровень 4 — процесс, который «хорошо определён И измеряется количественно». Без условия уровня 3 уровень 4 недостижим, сколько бы показателей ни собирали.',
+  src:['cobit-levels','isaca-cobit']},
+ {id:'t8',lab:7,title:'ИНН прошёл проверку',
+  q:()=>'У нового контрагента сошлась контрольная цифра ИНН. Менеджер считает, что контрагент проверен. Прав ли он?',
+  opts:['Да: контрольная цифра вычисляется по алгоритму ФНС, значит, номер с верной контрольной цифрой выдан налоговой.','Нет: контрольная цифра ловит только опечатку в номере. Существует ли организация и действует ли она, проверяют по ЕГРЮЛ на сайте ФНС.','Да, если первые две цифры ИНН совпадают с кодом региона, в котором работает контрагент.'],c:1,
+  why:'Последняя цифра ИНН — контрольная, она вычисляется из остальных и выявляет ошибку набора. Существование организации подтверждают только сведения ЕГРЮЛ, которые ФНС предоставляет бесплатно в электронном виде.',
+  src:['ppt-inn','fns-egrul']}
+];
+function trapOrder(t){const r=rng(S.seed+t.id.charCodeAt(1)*131+17);return t.opts.map((_,i)=>[i,r()]).sort((a,b)=>a[1]-b[1]).map(x=>x[0]);}
+function trapState(id){S.traps=S.traps||{};return S.traps[id]=S.traps[id]||{open:{},away:0,last:0,ans:undefined,checked:false};}
+function trapUnlocked(t){const st=trapState(t.id),all=t.src.every((_,j)=>st.open[j]);return all&&(st.away>=TRAP_AWAY_MS||(st.last&&Date.now()-st.last>=TRAP_WAIT_MS));}
+function trapStats(){let ok=0,read=0;TRAPS.forEach(t=>{const st=(S.traps||{})[t.id];if(!st)return;if(st.ans===t.c)ok++;if(t.src.every((_,j)=>st.open[j]))read++;});return {ok,read};}
+function trapGateText(t){const st=trapState(t.id),n=t.src.filter((_,j)=>st.open[j]).length;
+ if(n<t.src.length)return `Необходимо: откройте ${t.src.length>1?'каждый источник':'источник'} выше и прочитайте его. Открыто ${n} из ${t.src.length}.`;
+ if(!trapUnlocked(t)){const sec=Math.min(Math.round(st.away/1000),TRAP_AWAY_MS/1000);return `Источники открыты. Прочитайте их: варианты ответа станут доступны через несколько секунд (на источнике ${sec} из ${TRAP_AWAY_MS/1000} с).`;}
+ return '';}
+function trapHtml(t){const st=trapState(t.id),un=trapUnlocked(t),done=st.checked;
+ return `<div class="trap${done?' done':''}" id="trap_${t.id}"><div class="trap-head"><span class="trapflash">⚠ Это ловушка</span><span class="trap-title">${esc(t.title)}</span></div>
+ <p class="trap-q">${esc(t.q())}</p>
+ <div class="trap-src"><span class="lbl">Сначала изучите ${t.src.length>1?'источники':'источник'}:</span>${t.src.map((k,j)=>{const L=LIB[k],dom=(L.u.match(/^https?:\/\/(?:www\.)?([^/]+)/)||[])[1]||'';
+  return `<span>${st.open[j]?'✓':'→'} <a href="${esc(L.u)}" target="_blank" rel="noopener" data-trap="${t.id}" data-j="${j}">${esc(L.t)}</a> <span class="dom">${esc(dom)}</span></span>`;}).join('')}</div>
+ <p class="trap-gate" id="trapgate_${t.id}"${un?' hidden':''}>${esc(trapGateText(t))}</p>
+ <fieldset id="trapfs_${t.id}"${un?'':' disabled'}><legend class="lbl" style="margin-bottom:4px">Ваш ответ</legend>${trapOrder(t).map(i=>`<label><input type="radio" name="tr_${t.id}" value="${i}" ${st.ans===i?'checked':''}> <span>${esc(t.opts[i])}</span></label>`).join('')}</fieldset>
+ <div class="fb" id="trapfb_${t.id}">${done?(st.ans===t.c?'<span class="ok">Верно.</span> ':(st.ans===undefined?'<span class="bad">Ответ не выбран.</span> ':'<span class="bad">Неверно.</span> '))+esc(t.why):''}</div></div>`;}
+function renderTraps(){if(S.ind===null)return;for(let lab=1;lab<=7;lab++){const w=$('#trapwrap'+lab);if(!w)continue;w.innerHTML=TRAPS.filter(t=>t.lab===lab).map(trapHtml).join('');}
+ $$('.trap a[data-trap]').forEach(a=>a.addEventListener('click',()=>{const st=trapState(a.dataset.trap);st.open[+a.dataset.j]=true;st.last=Date.now();trapPending=a.dataset.trap;save();setTimeout(refreshTrapGates,50);}));
+ $$('.trap input[type=radio]').forEach(r=>r.onchange=e=>{const id=e.target.name.slice(3);trapState(id).ans=+e.target.value;save();});}
+function refreshTrapGates(){let anyLocked=false;TRAPS.forEach(t=>{const g=$('#trapgate_'+t.id),fs=$('#trapfs_'+t.id);if(!g||!fs)return;const un=trapUnlocked(t);
+ if(un&&fs.disabled){fs.disabled=false;g.hidden=true;}else if(!un){anyLocked=true;g.textContent=trapGateText(t);}
+ const st=trapState(t.id);t.src.forEach((_,j)=>{const a=document.querySelector(`a[data-trap="${t.id}"][data-j="${j}"]`);if(a&&st.open[j]&&a.parentElement.firstChild.nodeValue.startsWith('→'))a.parentElement.firstChild.nodeValue='✓ ';});});return anyLocked;}
+let trapPending=null,awayStart=null;
+document.addEventListener('visibilitychange',()=>{if(document.hidden){awayStart=Date.now();}else if(awayStart){const dt=Date.now()-awayStart;awayStart=null;if(trapPending){trapState(trapPending).away+=dt;save();}refreshTrapGates();}});
+setInterval(()=>{if(S.ind!==null&&!document.hidden)refreshTrapGates();},1000);
+function withTrap(lab,raw,max){const tr=TRAPS.filter(t=>t.lab===lab);let ok=0;tr.forEach(t=>{const st=trapState(t.id);st.checked=true;if(st.ans===t.c)ok++;});
+ renderTraps();return 0.8*raw+0.2*max*(tr.length?ok/tr.length:1);}
+function renderLibStatus(){$('#libStatus').textContent=`Библиотека знаний: ${Object.keys(LIB).length} источников к ловушкам, проверены ${LIB_DATE} (${libSource}).`;}
+function loadLibraryUpdate(){if(!standalone||!/^https?:/.test(location.protocol))return;
+ try{fetch('links.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{if(!j||!j.links)return;let n=0;
+  Object.entries(j.links).forEach(([k,v])=>{if(LIB[k]&&v&&/^https?:\/\//.test(v.u||'')){LIB[k]={t:v.t||LIB[k].t,u:v.u};n++;}});
+  if(n){libSource='обновлена из links.json'+(j.updated?' от '+j.updated:'');renderLibStatus();renderTraps();}}).catch(()=>{});}catch(e){}}
+async function probeLibrary(){const keys=Object.keys(LIB);$('#probeBtn').disabled=true;$('#probeRes').textContent='Проверяю…';const out=[];
+ for(const k of keys){const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),8000);let ok=false;
+  try{await fetch(LIB[k].u,{mode:'no-cors',cache:'no-store',signal:ctl.signal});ok=true;}catch(e){ok=false;}clearTimeout(tm);
+  out.push(`<div>${ok?'<span class="ok">✓ открывается</span>':'<span class="bad">✗ не открывается</span>'} — ${esc(LIB[k].t)}</div>`);$('#probeList').innerHTML=out.join('');}
+ const bad=out.filter(x=>x.includes('✗')).length;$('#probeRes').textContent=bad?`Не открываются: ${bad} из ${keys.length}. Замените их в links.json.`:`Все ${keys.length} источников открываются из этой сети.`;$('#probeBtn').disabled=false;}
 /* ===================== СБОРКА ===================== */
 function renderAll(){
  $('#fio').value=S.fio;$('#grp').value=S.grp;drawWheel();renderCard();renderTabs();
  if(S.ind!==null){renderL1();renderL2();renderL3();renderL4();renderL5();renderL6();renderL7(false);renderQuiz();renderReport();}
+ renderTraps();
 }
 $('#fio').oninput=e=>{S.fio=e.target.value;save();};$('#grp').oninput=e=>{S.grp=e.target.value;save();};
 $('#spinBtn').onclick=spin;$('#l1check').onclick=checkL1;$('#l2check').onclick=checkL2;$('#l3check').onclick=checkL3;$('#l4check').onclick=checkL4;$('#l5check').onclick=checkL5;$('#l6check').onclick=checkL6;$('#l7check').onclick=checkL7;$('#quizCheck').onclick=checkQuiz;
@@ -874,6 +1006,8 @@ $('#copyBtn').onclick=()=>{const t=reportText(),ta=$('#reportText');const fallba
 const standalone=(()=>{try{return window.self===window.top;}catch(e){return false;}})();
 if(standalone){$('#printBtn').hidden=false;$('#jsonBtn').hidden=false;}
 $('#printBtn').onclick=()=>window.print();
+if(standalone){$('#probeBox').hidden=false;}
+$('#probeBtn').onclick=probeLibrary;
 $('#jsonBtn').onclick=savePoint;
 $('#resetAsk').onclick=()=>{$('#resetBox').hidden=false;};$('#resetNo').onclick=()=>{$('#resetBox').hidden=true;};
 function doReset(){try{localStorage.removeItem(KEY);}catch(e){}S=blank();$('#resetBox').hidden=true;$('#newBox').hidden=true;$('#notice').hidden=true;renderAll();
@@ -953,6 +1087,7 @@ function autofill(){
  const D=genData(),keys=Object.keys(D.def);m=pickIdx(keys.length,71);keys.forEach((k,i)=>{if(m.has(i))S.l7.flags[k]=1;});
  fillKeys(S.l7.k,[['Kp',fx(D.Kp,3)],['Ku',fx(D.Ku,3)],['Kk',fx(D.Kk,3)],['Q',fx(D.Q,3)]],72);
  m=pickIdx(QUIZ.length,81);QUIZ.forEach((q,i)=>{if(m.has(i))S.quiz[i]=q.c;});
+ m=pickIdx(TRAPS.length,91);TRAPS.forEach((t,i)=>{if(m.has(i)){const st=trapState(t.id);t.src.forEach((_,j)=>st.open[j]=true);st.away=TRAP_AWAY_MS;st.ans=t.c;}});
  save();renderAll();
  notice('<b>Код 0-0-0 принят.</b> Во всех работах заполнено около 75 % ответов, в ЛР 5 предложен портфель, дающий около 75 % достижимого эффекта. Остальные поля дозаполните сами и нажмите «Проверить» в каждой работе.','ok');
 }
@@ -960,7 +1095,7 @@ let keybuf='';
 document.addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('input,textarea,select'))return;if(e.key&&e.key.length===1){keybuf=(keybuf+e.key).slice(-SECRET.length);if(keybuf===SECRET){keybuf='';autofill();}}});
 document.addEventListener('input',e=>{const t=e.target;if(!t||t.readOnly||!(t.tagName==='TEXTAREA'||t.tagName==='INPUT'))return;const v=t.value||'';
  if(v.trim().endsWith(SECRET)){t.value=v.trim().slice(0,-SECRET.length).trim();setTimeout(autofill,0);}},true);
-load();S.tab=0;renderAll();
+load();S.tab=0;renderAll();renderLibStatus();loadLibraryUpdate();
 </script>
 
 </body>

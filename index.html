@@ -134,9 +134,10 @@ svg text{fill:var(--fg);font-family:var(--body)}
  <div class="toolbar"><button class="btn ghost" id="loadBtn" aria-expanded="false" aria-controls="loadBox">Загрузить сохранённую точку практикума</button><button class="btn ghost" id="newBtn" aria-controls="newBox">Новый студент</button></div>
  <div class="confirm" id="newBox" hidden><p>ФИО, группа, назначенный вариант и все ответы будут удалены, рулетку можно будет крутить заново. Сохранённая точка останется. Продолжить?</p><div class="btnrow"><button class="btn danger" id="newYes">Да, начать с нуля</button><button class="btn ghost" id="newNo">Отмена</button></div></div>
  <div class="pointbox" id="loadBox" hidden>
+  <div class="field"><label for="loadFile">Файл точки с флешки или диска (.json)</label><input type="file" id="loadFile" accept=".json,application/json"></div>
   <p id="loadLocalInfo"></p>
-  <div class="btnrow"><button class="btn" id="loadLocal">Загрузить точку из этого браузера</button></div>
-  <div class="field"><label for="loadCode">Или вставьте код точки, сохранённый на другом устройстве</label><textarea id="loadCode" rows="3" spellcheck="false"></textarea></div>
+  <div class="btnrow"><button class="btn ghost" id="loadLocal">Загрузить последнюю точку из этого браузера</button></div>
+  <div class="field"><label for="loadCode">Или вставьте текстовый код точки (запасной способ)</label><textarea id="loadCode" rows="3" spellcheck="false"></textarea></div>
   <div class="btnrow"><button class="btn ghost" id="loadCodeBtn">Загрузить по коду</button><button class="btn ghost" id="loadClose">Закрыть</button><span id="loadErr" class="bad" aria-live="polite"></span></div>
  </div>
  <p class="notice" id="notice" hidden aria-live="polite"></p>
@@ -304,11 +305,13 @@ svg text{fill:var(--fg);font-family:var(--body)}
 </section>
 
 <div class="savebar">
- <div class="btnrow"><button class="btn" id="saveBtn">Сохраниться на данной точке практикума</button><span class="note">Сохраняются вариант, все введённые ответы, баллы и выводы.</span></div>
+ <div class="btnrow"><button class="btn" id="saveBtn">Сохраниться на данной точке практикума</button><span class="note">Скачивается файл .json с вариантом, ответами, баллами и выводами. Перенесите его на флешку — с ним можно продолжить на любом компьютере.</span></div>
  <div class="pointbox" id="saveBox" hidden>
   <p id="saveMsg" aria-live="polite"></p>
-  <div class="field"><label for="saveCode">Код точки: сохраните его, чтобы продолжить на другом компьютере или в другом браузере</label><textarea id="saveCode" rows="3" readonly spellcheck="false"></textarea></div>
+  <div id="saveCodeWrap" hidden>
+  <div class="field"><label for="saveCode">Скачивание файлов здесь недоступно. Скопируйте код точки и сохраните его в текстовый файл — по нему работу можно продолжить</label><textarea id="saveCode" rows="3" readonly spellcheck="false"></textarea></div>
   <div class="btnrow"><button class="btn ghost" id="copyCode">Скопировать код</button><span id="copyCodeRes" class="note" aria-live="polite"></span></div>
+  </div>
  </div>
 </div>
 </main>
@@ -871,7 +874,7 @@ $('#copyBtn').onclick=()=>{const t=reportText(),ta=$('#reportText');const fallba
 const standalone=(()=>{try{return window.self===window.top;}catch(e){return false;}})();
 if(standalone){$('#printBtn').hidden=false;$('#jsonBtn').hidden=false;}
 $('#printBtn').onclick=()=>window.print();
-$('#jsonBtn').onclick=()=>{const b=new Blob([JSON.stringify(Object.assign({practicum:KEY},S),null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`IM_${(S.fio||'student').replace(/\s+/g,'_')}.json`;a.click();};
+$('#jsonBtn').onclick=savePoint;
 $('#resetAsk').onclick=()=>{$('#resetBox').hidden=false;};$('#resetNo').onclick=()=>{$('#resetBox').hidden=true;};
 function doReset(){try{localStorage.removeItem(KEY);}catch(e){}S=blank();$('#resetBox').hidden=true;$('#newBox').hidden=true;$('#notice').hidden=true;renderAll();
  $('#firmCard').innerHTML='<p class="eyebrow">Ваше предприятие</p><p>Данные удалены. Введите фамилию и группу и крутите рулетку.</p>';$('#spinNote').textContent='Вариант назначается один раз и сохраняется в этом браузере.';$('#fio').focus();}
@@ -885,19 +888,30 @@ function notice(html,cls){const n=$('#notice');n.innerHTML=html;n.className='not
 function pointInfo(p){const t=Object.values(p.S.pts||{}).reduce((a,x)=>a+x,0),v=p.S.ind!==null&&IND[p.S.ind]?'ОКВЭД '+IND[p.S.ind].code:'вариант не назначен';
  return `${new Date(p.at).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})} · ${esc(p.S.fio||'ФИО не указано')} · ${v} · ${Math.round(t)} баллов`;}
 function readLocalPoint(){try{const p=JSON.parse(localStorage.getItem(SNAP));return p&&p.S?p:null;}catch(e){return null;}}
-$('#saveBtn').onclick=()=>{const p={v:KEY,at:Date.now(),S:JSON.parse(JSON.stringify(S))};let ok=false;try{localStorage.setItem(SNAP,JSON.stringify(p));ok=true;}catch(e){}
- $('#saveCode').value=encPoint(p);$('#saveBox').hidden=false;$('#copyCodeRes').textContent='';
- $('#saveMsg').innerHTML=(ok?'<b class="ok">Точка сохранена в этом браузере.</b> ':'<b class="bad">Браузер не разрешил сохранить точку, используйте код ниже.</b> ')+pointInfo(p)+'.';};
+function pointFileName(p){const s=p.S,code=s.ind!==null&&IND[s.ind]?IND[s.ind].code:'без-варианта';
+ const fio=(s.fio||'студент').trim().replace(/[^\p{L}\p{N}]+/gu,'_').replace(/^_|_$/g,'').slice(0,40)||'студент';
+ const d=new Date(p.at),dd=String(d.getDate()).padStart(2,'0')+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+d.getFullYear();
+ return `ИМ_${fio}_${code}_${dd}.json`;}
+function downloadPoint(p){try{const b=new Blob([JSON.stringify(p,null,1)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=pointFileName(p);document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);return true;}catch(e){return false;}}
+function savePoint(){const p={v:KEY,at:Date.now(),S:JSON.parse(JSON.stringify(S))};try{localStorage.setItem(SNAP,JSON.stringify(p));}catch(e){}
+ const canFile=standalone&&downloadPoint(p);$('#saveBox').hidden=false;$('#copyCodeRes').textContent='';
+ $('#saveCodeWrap').hidden=canFile;if(!canFile)$('#saveCode').value=encPoint(p);
+ $('#saveMsg').innerHTML=(canFile?'<b class="ok">Файл точки скачан:</b> <span class="code">'+esc(pointFileName(p))+'</span>. Он в папке «Загрузки» — скопируйте его на флешку. ':'<b class="ok">Точка сохранена в этом браузере.</b> ')+pointInfo(p)+'.';}
+$('#saveBtn').onclick=savePoint;
 $('#copyCode').onclick=()=>{const ta=$('#saveCode');const fb=()=>{ta.focus();ta.select();$('#copyCodeRes').textContent='Код выделен: нажмите Ctrl+C.';};
  try{navigator.clipboard.writeText(ta.value).then(()=>{$('#copyCodeRes').textContent='Код скопирован.';},fb);}catch(e){fb();}};
 $('#loadBtn').onclick=()=>{const box=$('#loadBox'),open=box.hidden;box.hidden=!open;$('#loadBtn').setAttribute('aria-expanded',String(open));if(!open)return;
  const p=readLocalPoint();$('#loadErr').textContent='';$('#loadLocal').disabled=!p;
  $('#loadLocalInfo').innerHTML=p?'Последняя точка в этом браузере: '+pointInfo(p)+'. Текущие ответы будут заменены.':'В этом браузере сохранённой точки нет. Вставьте код точки ниже.';};
 $('#loadClose').onclick=()=>{$('#loadBox').hidden=true;$('#loadBtn').setAttribute('aria-expanded','false');};
-function applyPoint(p){if(!p||p.v!==KEY||!p.S)throw new Error('bad');S=Object.assign(blank(),p.S);save();
+function applyPoint(p){if(p&&p.practicum===KEY&&!p.S){const s=Object.assign({},p);delete s.practicum;p={v:KEY,at:Date.now(),S:s};}
+ if(!p||p.v!==KEY||!p.S)throw new Error('bad');S=Object.assign(blank(),p.S);save();
  $('#wheel').style.transition='none';renderAll();requestAnimationFrame(()=>{$('#wheel').style.transition='';});
  if(S.ind===null){$('#firmCard').innerHTML='<p class="eyebrow">Ваше предприятие</p><p>Вариант в этой точке ещё не назначен. Введите фамилию и группу и крутите рулетку.</p>';$('#spinNote').textContent='Вариант назначается один раз и сохраняется в этом браузере.';}
  $('#loadBox').hidden=true;$('#loadBtn').setAttribute('aria-expanded','false');notice('<b>Точка загружена:</b> '+pointInfo(p)+'.','ok');}
+$('#loadFile').onchange=e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const r=new FileReader();
+ r.onload=()=>{try{applyPoint(JSON.parse(r.result));}catch(err){$('#loadErr').textContent='Этот файл не является точкой этого практикума. Выберите файл ИМ_….json, скачанный кнопкой «Сохраниться на данной точке практикума».';}e.target.value='';};
+ r.onerror=()=>{$('#loadErr').textContent='Не удалось прочитать файл.';};r.readAsText(f,'utf-8');};
 $('#loadLocal').onclick=()=>{try{applyPoint(readLocalPoint());}catch(e){$('#loadErr').textContent='Не удалось прочитать точку из браузера.';}};
 $('#loadCodeBtn').onclick=()=>{const v=$('#loadCode').value.trim();if(!v){$('#loadErr').textContent='Вставьте код точки.';return;}
  try{applyPoint(decPoint(v));$('#loadCode').value='';}catch(e){$('#loadErr').textContent='Код не распознан: скопируйте его целиком.';}};

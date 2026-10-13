@@ -60,6 +60,9 @@ th,td{border-bottom:1px solid var(--line);padding:7px 9px;text-align:left;vertic
 th{background:var(--sunk);font-weight:500;font-size:13px;color:var(--muted)}
 td.r,th.r{text-align:right}
 td select{max-width:100%}
+#l1v,#l6raci,#l7v{table-layout:fixed}
+#l1v select,#l6raci select,#l7v select{width:100%}
+#l6raci th:first-child{width:36%}
 .code{font-family:var(--mono)}
 .btnrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .btn{font:500 15px var(--body);background:var(--accent);color:var(--surface);border:0;border-radius:6px;padding:9px 16px;cursor:pointer}
@@ -201,6 +204,38 @@ section.panel{border-top:1px solid var(--line);border-radius:10px}
  .sp-ring{width:520px;right:-260px;top:-60px;opacity:.35}
 }
 @media (prefers-reduced-motion:reduce){*:not(.bulb):not(.sec):not(.trapflash){transition:none!important;animation:none!important}}
+
+/* подсказки-формулы */
+input.n{cursor:help}
+#fhTip{position:fixed;z-index:50;background:var(--surface);color:var(--fg);border:1px solid var(--accent);border-left:5px solid var(--accent);border-radius:6px;padding:9px 12px;box-shadow:0 6px 20px rgba(0,0,0,.18);display:grid;gap:5px;pointer-events:none}
+#fhTip .fh-f{font-family:"Times New Roman",Georgia,serif;font-size:18px;line-height:1.35;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+#fhTip .fh-n{font:13px var(--body);color:var(--muted);align-self:center}
+#fhTip .fh-h{font-size:13.5px;color:var(--muted);line-height:1.45}
+@media print{#fhTip{display:none!important}}
+
+/* таблицы подстановки */
+.subbox{border:1px solid var(--line);border-left:5px solid var(--ok);border-radius:8px;padding:12px 14px;background:color-mix(in srgb,var(--ok) 6%,var(--surface));display:grid;gap:8px;max-width:100%}
+.sub-title{font-weight:700;font-size:15px}
+.subt td,.subt th{font-size:14px}
+.subt td.sym{font-family:"Times New Roman",Georgia,serif;font-size:17px;white-space:nowrap}
+.subt td.r{white-space:nowrap}
+input.hv{width:96px;text-align:right;font-family:var(--mono);font-size:14px;padding:4px 7px;border-color:var(--ok)}
+.sub-note{font-size:13px;color:var(--muted)}
+.sub-lbl{font:700 12px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ok)}
+.sublines{display:grid;gap:2px}
+.subline{font-family:"Times New Roman",Georgia,serif;font-size:17px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px dashed var(--line);padding:3px 0}
+.subline .num{font:13px var(--body);color:var(--muted);align-self:center}
+@media (max-width:640px){.subt thead{display:none}.subt tr{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;padding:6px 0;border-bottom:1px solid var(--line)}.subt td{border:0;padding:2px 4px}.subt td.sym{grid-row:span 3}.subt td.r{text-align:left;white-space:normal}}
+
+/* пояснение ловушки */
+.trapflash{cursor:help}
+.trap-why{font:500 13px var(--body);color:var(--bad);background:transparent;border:1px dashed var(--bad);border-radius:999px;padding:2px 10px;cursor:pointer}
+.trap-why:hover{background:color-mix(in srgb,var(--bad) 10%,transparent)}
+#trapTip{position:fixed;z-index:60;pointer-events:none;background:var(--surface);color:var(--fg);border:2px solid var(--warn);border-radius:8px;padding:11px 14px;box-shadow:0 8px 24px rgba(0,0,0,.22);display:grid;gap:7px;font-size:14px;line-height:1.5}
+#trapTip p{margin:0}
+#trapTip .tt-h{font:700 13px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--bad)}
+#trapTip .tt-f{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:6px}
+@media print{#trapTip,.trap-why{display:none!important}}
 </style>
 
 </head>
@@ -232,7 +267,7 @@ section.panel{border-top:1px solid var(--line);border-radius:10px}
   <div class="sp-authors">
    <span class="sp-alabel">Авторы-разработчики</span>
    <div class="sp-author"><span class="nm">Буценко Людмила Сергеевна</span><span class="rk">доктор экономических наук, профессор кафедры цифровых бизнес-технологий и систем учёта</span><span class="in">Институт экономики и управления</span></div>
-   <div class="sp-author"><span class="nm">Мандрица Игорь Владимирович</span><span class="rk">профессор кафедры организации и технологии защиты информации</span><span class="in">Институт цифровых технологий и кибербезопасности</span></div>
+   <div class="sp-author"><span class="nm">Мандрица Игорь Владимирович</span><span class="rk">доктор экономических наук, профессор кафедры организации и технологии защиты информации</span><span class="in">Институт информационных технологий и кибербезопасности</span></div>
   </div>
   <p class="sp-foot">ФГАОУ ВО «Северо-Кавказский федеральный университет», г. Ставрополь. Фирмы и числовые данные практикума условные, совпадения с реальными организациями случайны.</p>
  </div>
@@ -292,12 +327,20 @@ section.panel{border-top:1px solid var(--line);border-radius:10px}
   <div class="formula"><span><i>K</i><sub>покр</sub> = <i>N</i><sub>авт</sub> / <i>N</i><sub>проц</sub></span><span class="num">(1)</span></div>
   <div class="formula"><span><i>L</i><sub>тт</sub> = <i>n</i>(<i>n</i> − 1) / 2,&nbsp;&nbsp; <i>L</i><sub>ш</sub> = <i>n</i>,&nbsp;&nbsp; Δ<i>L</i> = <i>L</i><sub>тт</sub> − <i>L</i><sub>ш</sub></span><span class="num">(2)</span></div>
   <p><i>K</i><sub>покр</sub> — коэффициент автоматизации процессов; <i>N</i><sub>авт</sub> — число процессов, поддержанных хотя бы одной системой; <i>N</i><sub>проц</sub> — число ключевых процессов; <i>n</i> — число прикладных систем; <i>L</i><sub>тт</sub> — максимальное число интеграций «точка-точка», когда каждая система обменивается данными с каждой; <i>L</i><sub>ш</sub> — число подключений к интеграционной шине; Δ<i>L</i> — сокращение числа интерфейсов при переходе на шину.</p>
+  <p><b>Эталонные (мастер-) данные.</b> Сведения о клиентах, номенклатуре и сотрудниках нужны сразу нескольким системам. Для каждой такой сущности назначают одну систему — источник эталонной записи: запись создают и исправляют только в ней, остальные системы получают копию. Источником выбирают систему, где запись возникает в ходе процесса и за которую отвечает владелец процесса. Аналитическая (BI) система источником не бывает: она лишь читает чужие данные. Если подходящей системы в ландшафте нет, это разрыв архитектуры, и назначать источником первую попавшуюся систему нельзя.</p>
+  <div class="formula"><span><i>n</i>′ = <i>n</i> + <i>N</i><sub>разр</sub>,&nbsp;&nbsp; <i>L</i>′<sub>тт</sub> = <i>n</i>′(<i>n</i>′ − 1) / 2,&nbsp;&nbsp; Δ<i>L</i>′ = <i>L</i>′<sub>тт</sub> − <i>n</i>′</span><span class="num">(2а)</span></div>
+  <p><i>N</i><sub>разр</sub> — число непокрытых процессов (каждый закрывается одной новой системой); <i>n</i>′ — число систем в целевой архитектуре; <i>L</i>′<sub>тт</sub> и Δ<i>L</i>′ — показатели формулы (2) для целевой архитектуры.</p>
  </div>
  <div class="task"><h3>Задание А</h3><p>Для каждого ключевого процесса фирмы выберите класс прикладной системы, который должен его поддерживать.</p></div>
  <div class="wrap"><table id="l1a"></table></div>
  <div class="task"><h3>Задание Б</h3><p>Ниже — фактический ИТ-ландшафт фирмы: какие системы есть и какие процессы они закрывают. Рассчитайте показатели по формулам (1)–(2) и найдите дублирование.</p></div>
  <div class="wrap"><table id="l1b"></table></div>
+ <div id="sub_l1b"></div>
  <div class="grid2" id="l1inputs"></div>
+ <div class="task"><h3>Задание В</h3><p>Шаг 1. Для каждой сущности укажите систему — источник эталонной записи. Если подходящей системы в ландшафте нет, так и отметьте. Шаг 2. Каждый непокрытый процесс из задания Б закрывается одной новой системой. Рассчитайте показатели целевой архитектуры по формуле (2а).</p></div>
+ <div class="wrap"><table id="l1v"></table></div>
+ <div id="sub_l1v"></div>
+ <div class="grid2" id="l1vinputs"></div>
  <div class="trapwrap" id="trapwrap1" style="display:grid;gap:12px"></div>
  <div class="btnrow"><button class="btn" id="l1check">Проверить работу</button><span id="l1res" aria-live="polite"></span></div>
  <div id="l1after"></div>
@@ -311,10 +354,17 @@ section.panel{border-top:1px solid var(--line);border-radius:10px}
   <div class="formula"><span><i>TCO</i><sub><i>a</i></sub> = <i>CAPEX</i><sub><i>a</i></sub> + <i>OPEX</i><sub><i>a</i></sub> · <i>A</i>,&nbsp;&nbsp; <i>A</i> = (1 − (1 + <i>r</i>)<sup>−<i>T</i></sup>) / <i>r</i></span><span class="num">(3)</span></div>
   <div class="formula"><span><i>S</i><sub><i>a</i></sub> = Σ<sub><i>k</i></sub> <i>w</i><sub><i>k</i></sub> · <i>s</i><sub><i>ak</i></sub>,&nbsp;&nbsp; <i>R</i><sub><i>a</i></sub> = <i>S</i><sub><i>a</i></sub> / <i>TCO</i><sub><i>a</i></sub></span><span class="num">(4)</span></div>
   <p><i>CAPEX</i><sub><i>a</i></sub> — единовременные затраты альтернативы <i>a</i>, млн руб.; <i>OPEX</i><sub><i>a</i></sub> — ежегодные затраты, млн руб./год; <i>A</i> — коэффициент аннуитета; <i>r</i> = 0,15 — ставка дисконтирования; <i>T</i> = 5 лет — срок использования; <i>w</i><sub><i>k</i></sub> — вес критерия <i>k</i> (сумма весов равна 1); <i>s</i><sub><i>ak</i></sub> — оценка альтернативы по критерию от 1 до 5; <i>S</i><sub><i>a</i></sub> — интегральная оценка; <i>R</i><sub><i>a</i></sub> — баллы качества на 1 млн руб. TCO. При <i>r</i> = 0,15 и <i>T</i> = 5 коэффициент <i>A</i> ≈ 3,352.</p>
+  <p><b>Устойчивость выбора.</b> Срок использования системы заранее известен лишь приблизительно. Выбор считают устойчивым, если лучшая по <i>R</i> альтернатива остаётся той же при сокращённом и продлённом сроке. Коэффициент аннуитета для другого срока считают по той же формуле:</p>
+  <div class="formula"><span><i>A</i><sub><i>T</i></sub> = (1 − (1 + <i>r</i>)<sup>−<i>T</i></sup>) / <i>r</i>,&nbsp;&nbsp; <i>TCO</i><sub><i>a</i>,<i>T</i></sub> = <i>CAPEX</i><sub><i>a</i></sub> + <i>OPEX</i><sub><i>a</i></sub> · <i>A</i><sub><i>T</i></sub>,&nbsp;&nbsp; <i>T</i> ∈ {3; 7}</span><span class="num">(3а)</span></div>
+  <p><i>A</i><sub><i>T</i></sub> — коэффициент аннуитета для срока <i>T</i> лет; <i>TCO</i><sub><i>a</i>,<i>T</i></sub> — совокупная стоимость владения альтернативой <i>a</i> за <i>T</i> лет. Оценки <i>S</i><sub><i>a</i></sub> от срока не зависят.</p>
  </div>
  <div id="l2case" class="task"></div>
  <div class="wrap"><table id="l2table"></table></div>
+ <div id="sub_l2"></div>
  <div class="grid2" id="l2inputs"></div>
+ <div class="task"><h3>Задание В</h3><p>Директор сомневается в пятилетнем сроке: система может проработать и три года, и семь лет. Рассчитайте коэффициенты аннуитета по формуле (3а), определите лучшую альтернативу по <i>R</i> для каждого срока и оцените, устойчив ли ваш выбор.</p></div>
+ <div id="sub_l2v"></div>
+ <div class="grid2" id="l2vinputs"></div>
  <div class="trapwrap" id="trapwrap2" style="display:grid;gap:12px"></div>
  <div class="btnrow"><button class="btn" id="l2check">Проверить расчёт</button><span id="l2res" aria-live="polite"></span></div>
  <div id="l2after"></div>
@@ -326,14 +376,23 @@ section.panel{border-top:1px solid var(--line);border-radius:10px}
  <h2>ИТ-сервис, инциденты и соглашение об уровне сервиса</h2>
  <div class="theory"><p class="theory-label">Теория для выполнения работы — прочитайте до расчётов</p>
   <p>ИТ-служба отвечает перед бизнесом за сервисы, а не за серверы. Соглашение об уровне сервиса (SLA) фиксирует целевую доступность и ответственность за её нарушение. Практики ITIL 4 «Управление инцидентами» и «Управление уровнем сервиса» задают порядок: каждое обращение классифицируют, инциденту присваивают приоритет по влиянию и срочности, а доступность считают за отчётный период.</p>
-  <p><b>Влияние</b> — масштаб последствий: высокое — затронуты все пользователи или вся деятельность; среднее — одно подразделение или одна функция; низкое — отдельный пользователь. <b>Срочность</b> — как быстро растёт ущерб: высокая — работа стоит прямо сейчас; средняя — ущерб наступит в течение смены или суток; низкая — есть обходной путь или время до конца недели. Приоритет: высокое+высокая — P1; высокое+средняя или среднее+высокая — P2; высокое+низкая, среднее+средняя, низкое+высокая — P3; среднее+низкая, низкое+средняя — P4; низкое+низкая — P5. Плановые работы в согласованное окно и запросы на обслуживание инцидентами не являются.</p>
+  <p><b>Влияние</b> — масштаб последствий: высокое — затронуты все пользователи или вся деятельность; среднее — одно подразделение или одна функция; низкое — отдельный пользователь. <b>Срочность</b> — как быстро растёт ущерб: высокая — работа стоит прямо сейчас; средняя — ущерб наступит в течение смены или суток; низкая — есть обходной путь или время до конца недели. Приоритет: высокое+высокая — P1; высокое+средняя или среднее+высокая — P2; высокое+низкая, среднее+средняя, низкое+высокая — P3; среднее+низкая, низкое+средняя — P4; низкое+низкая — P5. Плановые работы в согласованное окно и запросы на обслуживание (сброс пароля, выдача доступа, доработка отчёта) инцидентами не являются.</p>
   <div class="formula"><span><i>A</i><sub>ф</sub> = (<i>T</i><sub>п</sub> − <i>D</i>) / <i>T</i><sub>п</sub> · 100 %</span><span class="num">(5)</span></div>
   <div class="formula"><span><i>Ш</i> = <i>P</i> · min(30 %; 5 % · ⌊(<i>A</i><sub>ц</sub> − <i>A</i><sub>ф</sub>) / 0,1⌋)</span><span class="num">(6)</span></div>
   <p><i>A</i><sub>ф</sub> — фактическая доступность сервиса, %; <i>T</i><sub>п</sub> — длительность периода, мин (30 суток = 43 200 мин); <i>D</i> — суммарное время полной недоступности сервиса по инцидентам, мин (плановые работы и частичные сбои отдельных функций не учитываются); <i>A</i><sub>ц</sub> — целевая доступность по SLA, %; <i>P</i> — ежемесячная плата за сервис, тыс. руб.; <i>Ш</i> — снижение платы (сервисный кредит) за каждые полные 0,1 п. п. недостижения цели, не более 30 %. Если <i>A</i><sub>ф</sub> ≥ <i>A</i><sub>ц</sub>, то <i>Ш</i> = 0.</p>
+  <p><b>Надёжность и восстановление.</b> Одна и та же доступность складывается и из редких долгих отказов, и из частых коротких. Различить их помогают среднее время восстановления и среднее время между отказами:</p>
+  <div class="formula"><span><i>MTTR</i> = Σ<sub><i>i</i></sub> <i>t</i><sub><i>i</i></sub> / <i>N</i><sub>инц</sub></span><span class="num">(6а)</span></div>
+  <div class="formula"><span><i>MTBF</i> = (<i>T</i><sub>п</sub> − <i>D</i>) / (60 · <i>N</i><sub>отк</sub>)</span><span class="num">(6б)</span></div>
+  <div class="formula"><span><i>N</i><sub>доп</sub> = ⌊<i>D</i><sub>доп</sub> · <i>N</i><sub>отк</sub> / <i>D</i>⌋,&nbsp;&nbsp; <i>D</i><sub>доп</sub> = <i>T</i><sub>п</sub> · (100 − <i>A</i><sub>ц</sub>) / 100</span><span class="num">(6в)</span></div>
+  <p><i>t</i><sub><i>i</i></sub> — длительность инцидента <i>i</i>, мин; <i>N</i><sub>инц</sub> — число инцидентов всех приоритетов (P1–P5) в журнале; <i>MTTR</i> — среднее время восстановления, мин; <i>N</i><sub>отк</sub> — число инцидентов полной недоступности; <i>MTBF</i> — среднее время безотказной работы между полными отказами, ч; <i>D</i><sub>доп</sub> — допустимый по SLA простой за месяц, мин; <i>N</i><sub>доп</sub> — сколько полных отказов средней для этого месяца длительности (<i>D</i> / <i>N</i><sub>отк</sub>) укладывается в допустимый простой.</p>
  </div>
  <div id="l3case" class="task"></div>
  <div class="wrap"><table id="l3table"></table></div>
+ <div id="sub_l3"></div>
  <div class="grid2" id="l3inputs"></div>
+ <div class="task"><h3>Задание В</h3><p>По тому же журналу оцените надёжность сервиса по формулам (6а)–(6в): <i>MTTR</i> — с одним знаком после запятой, <i>MTBF</i> — в часах с одним знаком. В выводе укажите, что выгоднее бизнесу этого месяца: сокращать число отказов или время восстановления.</p></div>
+ <div id="sub_l3v"></div>
+ <div class="grid2" id="l3vinputs"></div>
  <div class="trapwrap" id="trapwrap3" style="display:grid;gap:12px"></div>
  <div class="btnrow"><button class="btn" id="l3check">Проверить работу</button><span id="l3res" aria-live="polite"></span></div>
  <div id="l3after"></div>
@@ -348,10 +407,21 @@ section.panel{border-top:1px solid var(--line);border-radius:10px}
   <div class="formula"><span><i>EVwPI</i> = Σ<sub><i>j</i></sub> <i>p</i><sub><i>j</i></sub> · max<sub><i>a</i></sub> <i>V</i><sub><i>aj</i></sub></span><span class="num">(8)</span></div>
   <div class="formula"><span><i>EVPI</i> = <i>EVwPI</i> − max<sub><i>a</i></sub> <i>EMV</i><sub><i>a</i></sub></span><span class="num">(9)</span></div>
   <p><i>p</i><sub><i>j</i></sub> — вероятность состояния среды <i>j</i>; <i>V</i><sub><i>aj</i></sub> — результат альтернативы <i>a</i> в состоянии <i>j</i>, млн руб.; <i>EMV</i> — ожидаемая денежная ценность; <i>EVwPI</i> — ожидаемый результат при совершенной информации; <i>EVPI</i> — ожидаемая ценность совершенной информации. Реальный прогноз не бывает совершенным, поэтому <i>EVPI</i> — верхняя граница цены, которую разумно платить за сведения.</p>
+  <p><b>Неполная информация.</b> Пусть прогноз называет истинное состояние с вероятностью <i>q</i> = 0,75, а каждое из двух других — с вероятностью (1 − <i>q</i>) / 2. По формуле Байеса для каждого прогноза <i>f</i> рассчитаны его вероятность <i>P</i>(<i>f</i>) и апостериорные вероятности состояний <i>P</i>(<i>j</i> | <i>f</i>); они даны в таблице задания В. Получив прогноз, руководитель выбирает альтернативу с наибольшим ожидаемым результатом при этих вероятностях.</p>
+  <div class="formula"><span><i>EVSI</i> = Σ<sub><i>f</i></sub> <i>P</i>(<i>f</i>) · max<sub><i>a</i></sub> Σ<sub><i>j</i></sub> <i>P</i>(<i>j</i> | <i>f</i>) · <i>V</i><sub><i>aj</i></sub> − max<sub><i>a</i></sub> <i>EMV</i><sub><i>a</i></sub></span><span class="num">(9а)</span></div>
+  <p><i>EVSI</i> — ожидаемая ценность неполной (выборочной) информации, млн руб.; она не превышает <i>EVPI</i>. Сведения стоит покупать, только если их цена ниже <i>EVSI</i>.</p>
+  <p><b>Решение без вероятностей.</b> Когда вероятностям состояний не доверяют, применяют критерии, которые их не используют:</p>
+  <div class="formula"><span>Вальд: max<sub><i>a</i></sub> min<sub><i>j</i></sub> <i>V</i><sub><i>aj</i></sub>;&nbsp;&nbsp; Сэвидж: min<sub><i>a</i></sub> max<sub><i>j</i></sub> (max<sub><i>a</i>′</sub> <i>V</i><sub><i>a</i>′<i>j</i></sub> − <i>V</i><sub><i>aj</i></sub>);&nbsp;&nbsp; Гурвиц: max<sub><i>a</i></sub> [α · max<sub><i>j</i></sub> <i>V</i><sub><i>aj</i></sub> + (1 − α) · min<sub><i>j</i></sub> <i>V</i><sub><i>aj</i></sub>]</span><span class="num">(9б)</span></div>
+  <p>Критерий Вальда выбирает лучший из худших исходов (крайняя осторожность). Критерий Сэвиджа сводит к минимуму наибольшее сожаление — недополученный результат по сравнению с лучшей альтернативой в том же состоянии. Критерий Гурвица взвешивает лучший и худший исходы; α = 0,4 — коэффициент оптимизма.</p>
  </div>
  <div id="l4case" class="task"></div>
  <div class="wrap"><table id="l4table"></table></div>
+ <div id="sub_l4"></div>
  <div class="grid2" id="l4inputs"></div>
+ <div class="task"><h3>Задание В</h3><p>Продавец сведений предупреждает, что прогноз верен в 75 % случаев. По таблице апостериорных вероятностей рассчитайте <i>EVSI</i> по формуле (9а) и решите, покупать ли такие сведения. Затем выберите альтернативу по каждому критерию (9б) и сравните с выбором по <i>EMV</i>.</p></div>
+ <div class="wrap"><table id="l4v"></table></div>
+ <div id="sub_l4v"></div>
+ <div class="grid2" id="l4vinputs"></div>
  <div class="trapwrap" id="trapwrap4" style="display:grid;gap:12px"></div>
  <div class="btnrow"><button class="btn" id="l4check">Проверить расчёт</button><span id="l4res" aria-live="polite"></span></div>
  <div id="l4after"></div>
@@ -366,10 +436,18 @@ section.panel{border-top:1px solid var(--line);border-radius:10px}
   <div class="formula"><span><i>NV</i><sub><i>i</i></sub> = <i>p</i><sub><i>i</i></sub> · <i>E</i><sub><i>i</i></sub> · <i>A</i> − <i>C</i><sub><i>i</i></sub></span><span class="num">(10)</span></div>
   <div class="formula"><span>max Σ<sub><i>i</i></sub> <i>x</i><sub><i>i</i></sub> · <i>NV</i><sub><i>i</i></sub>&nbsp; при&nbsp; Σ<sub><i>i</i></sub> <i>x</i><sub><i>i</i></sub> · <i>C</i><sub><i>i</i></sub> ≤ <i>B</i>,&nbsp; <i>x</i><sub><i>i</i></sub> ∈ {0; 1}</span><span class="num">(11)</span></div>
   <p><i>p</i><sub><i>i</i></sub> — вероятность успешного внедрения проекта <i>i</i>; <i>E</i><sub><i>i</i></sub> — годовой эффект, млн руб.; <i>A</i> ≈ 3,352 — коэффициент аннуитета из формулы (3); <i>C</i><sub><i>i</i></sub> — затраты, млн руб.; <i>B</i> — бюджет; <i>x</i><sub><i>i</i></sub> — решение о включении проекта.</p>
+  <p><b>Изменение условий.</b> Портфель пересобирают при каждом изменении ограничений, а не вычёркивают из старого самый дорогой проект. Технологическую зависимость записывают неравенством: проект <i>j</i> допустим только вместе с проектом <i>i</i>. В затраты <i>C</i><sub><i>i</i></sub> входят лишь будущие расходы: деньги, потраченные раньше, не возвращаются ни при каком решении.</p>
+  <div class="formula"><span><i>x</i><sub>2</sub> ≤ <i>x</i><sub>1</sub>,&nbsp;&nbsp; Σ<sub><i>i</i></sub> <i>x</i><sub><i>i</i></sub> · <i>C</i><sub><i>i</i></sub> ≤ 0,8 · <i>B</i>,&nbsp;&nbsp; Δ<i>V</i> = <i>V</i><sub>опт</sub> − <i>V</i>′<sub>опт</sub></span><span class="num">(11а)</span></div>
+  <p><i>x</i><sub>2</sub> ≤ <i>x</i><sub>1</sub> — BI-панель (П2) включают только вместе с единым справочником (П1); 0,8 · <i>B</i> — бюджет после сокращения на 20 %; <i>V</i><sub>опт</sub> — максимум суммарного <i>NV</i> в задаче (11); <i>V</i>′<sub>опт</sub> — максимум при новых условиях; Δ<i>V</i> — эффект, который фирма теряет из-за новых ограничений, млн руб.</p>
  </div>
  <div id="l5case" class="task"></div>
  <div class="wrap"><table id="l5table"></table></div>
+ <div id="sub_l5"></div>
  <div class="result" id="l5sum"></div>
+ <div class="task"><h3>Задание В</h3><p>В середине года бюджет сократили на 20 %. Кроме того, выяснилось, что BI-панель (П2) без единого справочника контрагентов (П1) показывает несопоставимые цифры. Сформируйте новый портфель по условиям (11а) и рассчитайте потерю эффекта Δ<i>V</i>.</p></div>
+ <div class="wrap"><table id="l5v"></table></div>
+ <div id="sub_l5v"></div>
+ <div class="result" id="l5vsum"></div>
  <div class="trapwrap" id="trapwrap5" style="display:grid;gap:12px"></div>
  <div class="btnrow"><button class="btn" id="l5check">Проверить портфель</button><span id="l5res" aria-live="polite"></span></div>
  <div id="l5after"></div>
@@ -382,9 +460,18 @@ section.panel{border-top:1px solid var(--line);border-radius:10px}
   <p>COBIT 2019 оценивает процессы управления ИТ по уровням возможностей от 0 до 5. Уровень 0 — процесс не выполняется. 1 — цель достигается частично, разрозненными действиями. 2 — основные действия выполняются регулярно, но порядок не закреплён. 3 — процесс определён: регламент, роли, единый порядок. 4 — процесс измеряется показателями, отклонения анализируются. 5 — процесс непрерывно совершенствуется по результатам измерений.</p>
   <div class="formula"><span><i>G</i><sub><i>k</i></sub> = max(0; <i>L</i><sup>ц</sup><sub><i>k</i></sub> − <i>L</i><sup>ф</sup><sub><i>k</i></sub>),&nbsp;&nbsp; <i>Pr</i><sub><i>k</i></sub> = <i>v</i><sub><i>k</i></sub> · <i>G</i><sub><i>k</i></sub></span><span class="num">(12)</span></div>
   <p><i>L</i><sup>ф</sup><sub><i>k</i></sub> — фактический уровень процесса <i>k</i>; <i>L</i><sup>ц</sup><sub><i>k</i></sub> — целевой уровень, установленный руководством; <i>G</i><sub><i>k</i></sub> — разрыв; <i>v</i><sub><i>k</i></sub> — значимость процесса для бизнеса фирмы (1 — низкая, 3 — высокая); <i>Pr</i><sub><i>k</i></sub> — приоритет улучшения.</p>
+  <p><b>Распределение ответственности (RACI).</b> Процесс не поднимется выше уровня 2, пока не закреплены роли. В матрице RACI R — тот, кто выполняет работу; A — тот, кто отвечает за результат и утверждает его; C — консультирует; I — получает информацию. У каждой работы ровно один A; R может совпадать с A. Решения, касающиеся всей организации (цели, бюджет), утверждает высшее руководство, а правила для бизнес-данных — владелец этих данных из бизнеса, а не ИТ-служба.</p>
+  <p><b>Дорожная карта.</b> Перескочить через уровень нельзя, поэтому за год процесс поднимается не более чем на один уровень. Одновременно ИТ-служба способна улучшать не более двух процессов.</p>
+  <div class="formula"><span><i>G</i><sub>Σ</sub> = Σ<sub><i>k</i></sub> <i>G</i><sub><i>k</i></sub>,&nbsp;&nbsp; <i>T</i><sub>мин</sub> = max(max<sub><i>k</i></sub> <i>G</i><sub><i>k</i></sub>; ⌈<i>G</i><sub>Σ</sub> / 2⌉)</span><span class="num">(12а)</span></div>
+  <p><i>G</i><sub>Σ</sub> — суммарный разрыв по всем процессам, уровней; <i>T</i><sub>мин</sub> — минимальный срок выхода всех процессов на целевой уровень, лет. Первое слагаемое ограничивает срок самым большим разрывом, второе — пропускной способностью ИТ-службы.</p>
  </div>
- <div class="task"><h3>Задание</h3><p>По описанию практики определите фактический уровень каждого процесса. Затем отметьте два процесса, которые нужно улучшать в первую очередь.</p></div>
+ <div class="task"><h3>Задание А</h3><p>По описанию практики определите фактический уровень каждого процесса. Затем отметьте два процесса, которые нужно улучшать в первую очередь.</p></div>
  <div class="wrap"><table id="l6table"></table></div>
+ <div class="task"><h3>Задание Б</h3><p>Уровень 3 требует закреплённых ролей. Распределите ответственность за ключевые работы процессов APO02, DSS02 и APO14: для каждой работы укажите, кто её выполняет (R) и кто отвечает за результат (A).</p></div>
+ <div class="wrap"><table id="l6raci"></table></div>
+ <div class="task"><h3>Задание В</h3><p>По фактическим уровням из задания А рассчитайте суммарный разрыв и минимальный срок выхода на целевые уровни по формуле (12а).</p></div>
+ <div id="sub_l6v"></div>
+ <div class="grid2" id="l6vinputs"></div>
  <div class="trapwrap" id="trapwrap6" style="display:grid;gap:12px"></div>
  <div class="btnrow"><button class="btn" id="l6check">Проверить оценку</button><span id="l6res" aria-live="polite"></span></div>
  <div id="l6after"></div>
@@ -401,13 +488,21 @@ section.panel{border-top:1px solid var(--line);border-radius:10px}
   <div class="formula"><span><i>Q</i> = 0,3 · <i>K</i><sub>п</sub> + 0,3 · <i>K</i><sub>у</sub> + 0,4 · <i>K</i><sub>к</sub></span><span class="num">(16)</span></div>
   <p><i>N</i><sub>яч</sub> — число ячеек в пяти полях (наименование, ИНН, телефон, e-mail, дата); <i>N</i><sub>пуст</sub> — незаполненные ячейки; <i>N</i><sub>стр</sub> — строки выгрузки; <i>N</i><sub>дубл</sub> — лишние строки-повторы (тот же ИНН и наименование, что выше); <i>N</i><sub>ош</sub> — заполненные ячейки с ошибкой: ИНН с неверной контрольной цифрой, e-mail без «@» или домена, дата позже выгрузки; <i>K</i><sub>п</sub>, <i>K</i><sub>у</sub>, <i>K</i><sub>к</sub> — коэффициенты полноты, уникальности и корректности; <i>Q</i> — интегральный показатель качества.</p>
   <p>Контрольная цифра ИНН юридического лица: первые девять цифр умножают на веса 2, 4, 10, 3, 5, 9, 4, 6, 8, сумму делят на 11, остаток делят на 10; результат должен совпасть с десятой цифрой.</p>
+  <p><b>Профилактика дефектов.</b> Исправлять найденные ошибки дороже, чем не пропускать их при вводе. Каждому типу дефекта соответствует свой контроль в форме ввода; правила контроля утверждает владелец данных. Дубль контрагента определяют по совпадению ИНН, КПП и наименования: у одной организации может быть несколько КПП, по числу обособленных подразделений.</p>
+  <div class="formula"><span><i>Q</i>′ = 0,3 · <i>K</i>′<sub>п</sub> + 0,3 + 0,4,&nbsp;&nbsp; <i>K</i>′<sub>п</sub> = 1 − <i>N</i><sub>пуст</sub> / (5 · (<i>N</i><sub>стр</sub> − <i>N</i><sub>дубл</sub>))</span><span class="num">(16а)</span></div>
+  <p><i>Q</i>′ — интегральный показатель после удаления дублей и исправления ошибочных значений, когда пустые ячейки ещё не заполнены (<i>K</i><sub>у</sub> = <i>K</i><sub>к</sub> = 1); <i>K</i>′<sub>п</sub> — полнота очищенного справочника.</p>
  </div>
  <div class="task"><h3>Задание</h3><p>Шаг 1. Нажмите на каждую дефектную ячейку; для дубля отметьте номер строки-повтора. Шаг 2. Рассчитайте показатели (13)–(16) с точностью до трёх знаков.</p></div>
  <div class="wrap"><table id="l7table"></table></div>
  <div class="grid2">
   <div class="result"><span class="lbl">Калькулятор контрольной цифры ИНН</span><div class="btnrow"><input id="innIn" inputmode="numeric" maxlength="10" placeholder="10 цифр" style="width:150px;font-family:var(--mono)"><button class="btn ghost" id="innBtn">Разобрать</button></div><p id="innOut" class="note" aria-live="polite">Калькулятор показывает расчёт по шагам; применять его к строкам реестра нужно самостоятельно.</p></div>
+  <div id="sub_l7"></div>
   <div class="result"><span class="lbl">Ваши расчёты</span><div class="grid2" id="l7inputs"></div></div>
  </div>
+ <div class="task"><h3>Задание В</h3><p>Чтобы дефекты не возвращались, для каждого типа дефекта выберите контроль, который предотвратит его при вводе. Затем рассчитайте, каким станет качество справочника после удаления дублей и исправления ошибок, по формуле (16а).</p></div>
+ <div class="wrap"><table id="l7v"></table></div>
+ <div id="sub_l7v"></div>
+ <div class="grid2" id="l7vinputs"></div>
  <div class="trapwrap" id="trapwrap7" style="display:grid;gap:12px"></div>
  <div class="btnrow"><button class="btn" id="l7check">Проверить аудит</button><span id="l7res" aria-live="polite"></span></div>
  <div class="svgbox" id="l7chart"></div>
@@ -628,6 +723,9 @@ const CRIT=['Функциональное соответствие процес�
 const ALT=[['Коробочная {ind} на собственных серверах',5.0,0.9,[4,3,5,4]],['{Ind} по подписке (SaaS)',0.8,2.0,[4,4,3,3]],['Доработка имеющейся платформы 1С силами интегратора',2.8,1.3,[3,5,5,3]]];
 const COMMON=[['Единый справочник контрагентов и номенклатуры (MDM)',1.8,1.2,0.8,false],['BI-панель управленческой отчётности',2.4,1.5,0.7,false],['Электронный документооборот с контрагентами',1.2,0.9,0.9,false],['Приведение обработки ПДн в соответствие со 152-ФЗ',1.0,0.3,1,true]];
 const CE={'01.11':[0.9,1.1,0.8],'10.51':[1.1,0.9,1.0],'41.20':[0.8,1.0,1.1],'47.11':[1.3,1.0,1.0],'47.91':[1.0,1.3,0.6],'49.41':[0.9,1.0,1.2],'55.10':[0.8,1.2,0.7],'62.01':[0.7,1.1,0.9],'64.19':[1.2,1.0,0.9],'69.20':[1.0,0.9,1.4],'85.22':[0.8,1.2,0.9],'86.10':[1.0,1.1,0.8]};
+// источники эталонных записей: индексы систем arch.land, −1 — подходящей системы нет
+const MDE=['Клиент (покупатель, гость, пациент, студент)','Номенклатура товаров, работ и услуг','Сотрудник'];
+const MD={'01.11':[[0],[0],[2]],'10.51':[[0],[0],[0]],'41.20':[[2],[3],[4]],'47.11':[[2],[0],[3]],'47.91':[[0],[1],[-1]],'49.41':[[3],[2,3],[2]],'55.10':[[0],[0],[-1]],'62.01':[[-1,1],[-1,1],[-1,3]],'64.19':[[0],[0],[4]],'69.20':[[0],[0],[0,-1]],'85.22':[[0],[0],[3]],'86.10':[[0],[0],[-1]]};
 const BUDGET_SHARE=0.45, RATE=0.15, HOR=5, AF=(1-Math.pow(1+RATE,-HOR))/RATE;
 const QUIZ=[
  {q:'Чем совокупная стоимость владения (TCO) отличается от цены покупки системы?',a:['Ничем, это синонимы','TCO включает ежегодные затраты на поддержку, инфраструктуру и персонал за весь срок использования','TCO учитывает только лицензии'],c:1,why:'У SaaS цена входа низкая, а подписка за пять лет может превысить стоимость коробочного решения; сравнивать нужно по формуле (3).'},
@@ -647,6 +745,7 @@ const n0=x=>Math.round(x).toLocaleString('ru-RU');
 const num=v=>{if(v===undefined||v===null||v==='')return NaN;return parseFloat(String(v).replace(',','.').replace(/[\s%]/g,''));};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const pl=(n,f)=>{const a=Math.abs(n)%100,b=a%10;return a>10&&a<20?f[2]:b===1?f[0]:b>=2&&b<=4?f[1]:f[2];};
 const KEY='im-praktikum-2026-v2';
 const blank=()=>({fio:'',grp:'',ind:null,seed:0,tab:0,rot:0,l1:{a:{},k:{}},l2:{},l3:{pr:{},k:{}},l4:{},l5:{sel:[]},l6:{lv:{},pick:[]},l7:{flags:{},k:{}},traps:{},quiz:{},concl:{},pts:{}});
 let S=blank();
@@ -732,15 +831,25 @@ function renderL1(){
   `</tbody><caption class="cap" style="caption-side:bottom;text-align:left;padding:8px">● — система поддерживает процесс. П1–П${a.proc.length} — процессы из задания А.</caption>`;
  $('#l1inputs').innerHTML=inp('l1Kp','<i>K</i><sub>покр</sub> (1), доля',S.l1.k.Kp)+inp('l1dup','Процессов с дублированием, шт.',S.l1.k.dup)+inp('l1Ltt','<i>L</i><sub>тт</sub> (2), шт.',S.l1.k.Ltt)+inp('l1dL','Δ<i>L</i> (2), шт.',S.l1.k.dL);
  bindInputs(S.l1.k,[['l1Kp','Kp'],['l1dup','dup'],['l1Ltt','Ltt'],['l1dL','dL']]);
+ const V=S.l1.v=S.l1.v||{},mopts=a.land.map((l,j)=>[j,l[0]+' ('+CLS[l[1]]+')']).concat([[-1,'Подходящей системы нет — это разрыв']]);
+ $('#l1v').innerHTML='<thead><tr><th>Сущность</th><th>Источник эталонной записи</th></tr></thead><tbody>'+MDE.map((e,k)=>`<tr><td>${esc(e)}<div class="fb" id="l1vfb${k}"></div></td><td>${sel('l1m'+k,mopts,V['m'+k])}</td></tr>`).join('')+'</tbody>';
+ $('#l1vinputs').innerHTML=inp('l1n2','<i>n</i>′ (2а), шт.',V.n2)+inp('l1L2','<i>L</i>′<sub>тт</sub> (2а), шт.',V.L2)+inp('l1d2','Δ<i>L</i>′ (2а), шт.',V.d2);
+ bindInputs(V,[['l1m0','m0'],['l1m1','m1'],['l1m2','m2'],['l1n2','n2'],['l1L2','L2'],['l1d2','d2']]);
 }
+function archV(){const R=arch(),n2=R.n+R.gaps.length;return {n2,L2:n2*(n2-1)/2,d2:n2*(n2-1)/2-n2,md:MD[I().code]};}
 function checkL1(){
  const a=I().arch,R=arch();let okA=0;
  a.proc.forEach((p,i)=>{const g=p[1].includes(S.l1.a[i]);okA+=g;$('#l1fb'+i).innerHTML=`<span class="${g?'ok':'bad'}">${g?'верно':'подходит: '+p[1].map(k=>k==='IND'?'отраслевая система':CLS[k]).join(' или ')}</span>`;});
  let okB=0;[['l1Kp',S.l1.k.Kp,R.Kp,0.005,n3(R.Kp)],['l1dup',S.l1.k.dup,R.dup,0.01,R.dup],['l1Ltt',S.l1.k.Ltt,R.Ltt,0.01,R.Ltt],['l1dL',S.l1.k.dL,R.dL,0.01,R.dL]].forEach(([id,u,v,t,s])=>{const g=close(u,v,t);okB+=g;mark(id,g,'расчёт: '+s);});
- S.pts.l1=withTrap(1,7*okA/a.proc.length+8*okB/4,15);save();
- $('#l1res').innerHTML=`Задание А: ${okA} из ${a.proc.length}; задание Б: ${okB} из 4 · <b>${Math.round(S.pts.l1)} баллов</b>`;
+ const V=S.l1.v=S.l1.v||{},RV=archV();let okV=0;
+ RV.md.forEach((acc,k)=>{const u=V['m'+k];const g=u!==undefined&&u!==''&&acc.includes(+u);okV+=g;
+  $('#l1vfb'+k).innerHTML=`<span class="${g?'ok':'bad'}">${g?'верно':'источник: '+acc.map(j=>j<0?'подходящей системы нет':a.land[j][0]).join(' или ')}</span>`;});
+ [['l1n2',V.n2,RV.n2],['l1L2',V.L2,RV.L2],['l1d2',V.d2,RV.d2]].forEach(([id,u,v])=>{const g=close(u,v,0.01);okV+=g;mark(id,g,'расчёт: '+v);});
+ S.pts.l1=withTrap(1,5*okA/a.proc.length+5*okB/4+5*okV/6,15);save();
+ $('#l1res').innerHTML=`Задание А: ${okA} из ${a.proc.length}; Б: ${okB} из 4; В: ${okV} из 6 · <b>${Math.round(S.pts.l1)} баллов</b>`;
  $('#l1after').innerHTML=`<div class="result"><p>Не автоматизированы: ${R.gaps.length?R.gaps.map(i=>'П'+(i+1)+' «'+esc(a.proc[i][0])+'»').join(', '):'нет'}. Дублирование: ${R.dups.length?R.dups.map(i=>'П'+(i+1)+' «'+esc(a.proc[i][0])+'»').join(', '):'нет'}.</p>
- <p>При ${R.n} системах прямые связи «каждая с каждой» дают до ${R.Ltt} интерфейсов, интеграционная шина — ${R.n} подключений. ${R.dL<=0?'При таком малом числе систем шина не даёт выигрыша и обычно не окупается.':'Выигрыш растёт квадратично с числом систем, поэтому с каждой новой системой вопрос об интеграционной платформе становится острее.'}</p></div>`;
+ <p>При ${R.n} системах прямые связи «каждая с каждой» дают до ${R.Ltt} интерфейсов, интеграционная шина — ${R.n} подключений. ${R.dL<=0?'При таком малом числе систем шина не даёт выигрыша и обычно не окупается.':'Выигрыш растёт квадратично с числом систем, поэтому с каждой новой системой вопрос об интеграционной платформе становится острее.'}</p>
+ <p>После закрытия разрывов систем станет ${RV.n2}: прямых связей — до ${RV.L2}, при шине — ${RV.n2} подключений${RV.d2>0?`, выигрыш ${RV.d2}`:''}. ${RV.md.some(x=>x.length===1&&x[0]<0)?'Для части сущностей источника эталонных данных в ландшафте нет: это такой же разрыв, как непокрытый процесс.':'Источники эталонных данных есть для всех трёх сущностей; остаётся закрепить правило, что запись правят только там.'}</p></div>`;
  renderTabs();
 }
 /* ===================== ЛР 2. Выбор ИС и TCO ===================== */
@@ -760,16 +869,29 @@ function renderL2(){
   A.map((a,i)=>inp('l2t'+i,`<i>TCO</i> A${i+1}, млн руб.`,L['t'+i])+inp('l2s'+i,`<i>S</i> A${i+1}, балл`,L['s'+i])).join('')+
   `<div class="field"><label for="l2best">Выбор по <i>R</i> (4)</label>${sel('l2best',A.map((a,i)=>[i,'A'+(i+1)]),L.best)}<span class="fb" id="fb_l2best"></span></div>`;
  const ids=[['l2guess','guess'],['l2best','best']];A.forEach((_,i)=>{ids.push(['l2t'+i,'t'+i],['l2s'+i,'s'+i]);});bindInputs(S.l2,ids);
+ const ao=A.map((a,i)=>[i,'A'+(i+1)]);
+ $('#l2vinputs').innerHTML=inp('l2A3','<i>A</i><sub>3</sub> (3а), три знака',L.A3)+inp('l2A7','<i>A</i><sub>7</sub> (3а), три знака',L.A7)+
+  `<div class="field"><label for="l2b3">Лучшая по <i>R</i> при <i>T</i> = 3</label>${sel('l2b3',ao,L.b3)}<span class="fb" id="fb_l2b3"></span></div>`+
+  `<div class="field"><label for="l2b7">Лучшая по <i>R</i> при <i>T</i> = 7</label>${sel('l2b7',ao,L.b7)}<span class="fb" id="fb_l2b7"></span></div>`+
+  `<div class="field"><label for="l2st">Вывод об устойчивости</label>${sel('l2st',[[1,'Выбор устойчив: лучшая альтернатива при 3, 5 и 7 годах одна'],[0,'Выбор зависит от срока: прежде чем подписывать договор, нужно уточнить срок']],L.st)}<span class="fb" id="fb_l2st"></span></div>`;
+ bindInputs(S.l2,[['l2A3','A3'],['l2A7','A7'],['l2b3','b3'],['l2b7','b7'],['l2st','st']]);
 }
+const annu=T=>(1-Math.pow(1+RATE,-T))/RATE;
+function sens2(){const A=alts2(),bestAt=T=>{const k=annu(T);const R=A.map(a=>a.S/(a.capx+a.opx*k));return R.indexOf(Math.max(...R));};
+ const b3=bestAt(3),b5=bestAt(5),b7=bestAt(7);return {A3:annu(3),A7:annu(7),b3,b5,b7,st:(b3===b5&&b5===b7)?1:0};}
 function checkL2(){
  const A=alts2(),L=S.l2;let ok=0;
  A.forEach((a,i)=>{let g=close(L['t'+i],a.tco,0.05);ok+=g;mark('l2t'+i,g,'расчёт: '+n2(a.tco));g=close(L['s'+i],a.S,0.01);ok+=g;mark('l2s'+i,g,'расчёт: '+n2(a.S));});
  const best=A.reduce((b,x,i)=>x.R>A[b].R?i:b,0),cheap=A.reduce((b,x,i)=>x.tco<A[b].tco?i:b,0),low=A.reduce((b,x,i)=>x.capx<A[b].capx?i:b,0);
  const gb=L.best!==undefined&&L.best!==''&&+L.best===best;ok+=gb;mark('l2best',gb,'лучшая A'+(best+1));
- S.pts.l2=withTrap(2,15*ok/7,15);save();$('#l2res').innerHTML=`Верно ${ok} из 7 · <b>${Math.round(S.pts.l2)} баллов</b>`;
+ const SV=sens2();let okV=0;
+ [['l2A3',L.A3,SV.A3],['l2A7',L.A7,SV.A7]].forEach(([id,u,v])=>{const g=close(u,v,0.002);okV+=g;mark(id,g,'расчёт: '+n3(v));});
+ [['l2b3',L.b3,SV.b3,'лучшая A'+(SV.b3+1)],['l2b7',L.b7,SV.b7,'лучшая A'+(SV.b7+1)],['l2st',L.st,SV.st,SV.st?'выбор устойчив':'выбор зависит от срока']].forEach(([id,u,v,t])=>{const g=u!==undefined&&u!==''&&+u===v;okV+=g;mark(id,g,t);});
+ S.pts.l2=withTrap(2,10*ok/7+5*okV/5,15);save();$('#l2res').innerHTML=`Задания А–Б: ${ok} из 7; В: ${okV} из 5 · <b>${Math.round(S.pts.l2)} баллов</b>`;
  const g=L.guess===undefined||L.guess===''?null:+L.guess;
  $('#l2after').innerHTML=`<div class="result"><p><i>R</i>: ${A.map((a,i)=>'A'+(i+1)+' = '+n3(a.R)).join('; ')} балла на 1 млн руб. Лучшее соотношение у A${best+1}.</p>
- <p>Самый низкий порог входа (<i>CAPEX</i>) у A${low+1}, наименьшая TCO за ${HOR} лет — у A${cheap+1}. ${low!==cheap?'Дешёвый вход не означает дешёвого владения: ежегодные платежи за пять лет перевешивают разницу в начальных затратах.':'Здесь низкий порог входа совпал с наименьшей TCO.'} ${best!==cheap?'Лучшая по соотношению качества и затрат альтернатива не самая дешёвая: веса критериев в этой отрасли оправдывают доплату.':''} ${g===null?'':g===best?'Ваша оценка «на глаз» совпала с расчётом.':'Оценка «на глаз» указывала на A'+(g+1)+'.'}</p></div>`;
+ <p>Самый низкий порог входа (<i>CAPEX</i>) у A${low+1}, наименьшая TCO за ${HOR} лет — у A${cheap+1}. ${low!==cheap?'Дешёвый вход не означает дешёвого владения: ежегодные платежи за пять лет перевешивают разницу в начальных затратах.':'Здесь низкий порог входа совпал с наименьшей TCO.'} ${best!==cheap?'Лучшая по соотношению качества и затрат альтернатива не самая дешёвая: веса критериев в этой отрасли оправдывают доплату.':''} ${g===null?'':g===best?'Ваша оценка «на глаз» совпала с расчётом.':'Оценка «на глаз» указывала на A'+(g+1)+'.'}</p>
+ <p>Лучшая альтернатива при сроке 3, 5 и 7 лет: A${SV.b3+1}, A${SV.b5+1}, A${SV.b7+1}. ${SV.st?'Выбор не зависит от срока, его можно обосновывать перед директором без оговорок.':'Короткий срок выгоднее альтернативе с низким CAPEX, длинный — с низким OPEX. Срок использования нужно согласовать до подписания договора и записать в обоснование.'}</p></div>`;
  chartL2(A);renderTabs();
 }
 function chartL2(A){
@@ -798,9 +920,18 @@ function genL3(){
   {t:`${cap(sl.mod)} не открывается у одного отдела; есть обходной путь — бумажный журнал до вечера пятницы.`,p:'P4',out:false,dur:dc},
   {t:`Плановое обновление: ${sl.svc} недоступна в согласованное технологическое окно, пользователи уведомлены за трое суток.`,p:'NO',out:false,dur:dp},
   {t:`Сотрудник просит добавить в отчёт новую колонку.`,p:'NO',out:false,dur:dq}];
+ const d3=Math.max(3,Math.round(allow*(0.05+0.2*r()))),d5=Math.round(20+r()*60),d6=Math.round(90+r()*200),d7=Math.round(30+r()*90),d8=Math.round(10+r()*30);
+ L.push(
+  {t:`Отказ основного канала связи в рабочее время: ${sl.svc} недоступна всем пользователям; работу восстановили переключением на резервный канал.`,p:'P1',out:true,dur:d3},
+  {t:`Пользователь забыл пароль и просит сбросить его.`,p:'NO',out:false,dur:d8},
+  {t:`Один бухгалтер сообщает, что отчёт формируется медленнее обычного; отчёт нужен к концу следующей недели.`,p:'P5',out:false,dur:d6},
+  {t:`У одного менеджера не запускается ${sl.mod}; клиент ждёт, работа менеджера стоит прямо сейчас, коллеги работают.`,p:'P3',out:false,dur:d5},
+  {t:`${cap(sl.mod)} не формирует сменный отчёт одного подразделения; отчёт нужно сдать до конца смены.`,p:'P3',out:false,dur:d7});
  L=L.map(x=>Object.assign(x,{date:day()}));for(let i=L.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[L[i],L[j]]=[L[j],L[i]];}
  const D=L.filter(x=>x.out).reduce((a,x)=>a+x.dur,0),Af=(Tp-D)/Tp*100,sh=sl.t-Af,steps=sh>0?Math.floor(sh/0.1+1e-9):0,pct=Math.min(30,5*steps);
- return {L,D,Af,pct,pen:sl.fee*pct/100,Tp,allow};
+ const inc=L.filter(x=>x.p!=='NO'),nOut=L.filter(x=>x.out).length;
+ const mttr=inc.reduce((a,x)=>a+x.dur,0)/inc.length,mtbf=(Tp-D)/(60*nOut),ndop=Math.floor(allow*nOut/D+1e-9);
+ return {L,D,Af,pct,pen:sl.fee*pct/100,Tp,allow,mttr,mtbf,ndop,nOut,nInc:inc.length};
 }
 function renderL3(){
  const sl=I().sla,G=genL3();
@@ -810,14 +941,20 @@ function renderL3(){
  G.L.forEach((_,i)=>$('#l3p'+i).onchange=e=>{S.l3.pr[i]=e.target.value;save();});
  $('#l3inputs').innerHTML=inp('l3D','<i>D</i>, мин',S.l3.k.D)+inp('l3A','<i>A</i><sub>ф</sub> (5), %, три знака',S.l3.k.A)+inp('l3P','<i>Ш</i> (6), тыс. руб.',S.l3.k.P);
  bindInputs(S.l3.k,[['l3D','D'],['l3A','A'],['l3P','P']]);
+ const V=S.l3.v=S.l3.v||{};
+ $('#l3vinputs').innerHTML=inp('l3mttr','<i>MTTR</i> (6а), мин',V.mttr)+inp('l3mtbf','<i>MTBF</i> (6б), ч',V.mtbf)+inp('l3ndop','<i>N</i><sub>доп</sub> (6в), шт.',V.ndop);
+ bindInputs(V,[['l3mttr','mttr'],['l3mtbf','mtbf'],['l3ndop','ndop']]);
 }
 function checkL3(){
  const G=genL3(),sl=I().sla;let okP=0;
  G.L.forEach((x,i)=>{const g=S.l3.pr[i]===x.p;okP+=g;$('#l3fb'+i).innerHTML=`<span class="${g?'ok':'bad'}">${g?'верно':'ожидалось: '+PRI.find(p=>p[0]===x.p)[1]}</span>${x.out?' <span class="chip">полная недоступность — входит в D</span>':''}`;});
  let okK=0;[['l3D',S.l3.k.D,G.D,0.5,n0(G.D)],['l3A',S.l3.k.A,G.Af,0.0015,n3(G.Af)],['l3P',S.l3.k.P,G.pen,0.05,n2(G.pen)]].forEach(([id,u,v,t,s])=>{const g=close(u,v,t);okK+=g;mark(id,g,'расчёт: '+s);});
- S.pts.l3=withTrap(3,7*okP/G.L.length+8*okK/3,15);save();
- $('#l3res').innerHTML=`Приоритеты: ${okP} из ${G.L.length}; расчёт: ${okK} из 3 · <b>${Math.round(S.pts.l3)} баллов</b>`;
+ const V=S.l3.v=S.l3.v||{};let okV=0;
+ [['l3mttr',V.mttr,G.mttr,0.06,n2(G.mttr)],['l3mtbf',V.mtbf,G.mtbf,0.06,n2(G.mtbf)],['l3ndop',V.ndop,G.ndop,0.01,G.ndop]].forEach(([id,u,v,t,s])=>{const g=close(u,v,t);okV+=g;mark(id,g,'расчёт: '+s);});
+ S.pts.l3=withTrap(3,5*okP/G.L.length+6*okK/3+4*okV/3,15);save();
+ $('#l3res').innerHTML=`Приоритеты: ${okP} из ${G.L.length}; расчёт: ${okK} из 3; надёжность: ${okV} из 3 · <b>${Math.round(S.pts.l3)} баллов</b>`;
  $('#l3after').innerHTML=`<div class="result"><p>Допустимый простой при цели ${n2(sl.t)} % — ${n0(G.allow)} мин в месяц; фактический — ${n0(G.D)} мин. ${G.pct?`Цель не достигнута на ${n3(sl.t-G.Af)} п. п., подрядчик снижает плату на ${G.pct} % (${n2(G.pen)} тыс. руб.).`:(G.Af<sl.t?'Цель не достигнута, но отставание меньше 0,1 п. п., поэтому сервисный кредит не начисляется.':'Цель SLA выполнена, сервисного кредита нет.')}</p>
+ <p>Полных отказов за месяц — ${G.nOut}, средняя длительность — ${n2(G.D/G.nOut)} мин, между отказами в среднем ${n2(G.mtbf)} ч. При такой длительности SLA выдерживает ${G.ndop} ${pl(G.ndop,['полный отказ','полных отказа','полных отказов'])} в месяц. ${G.ndop<G.nOut?'Отказов больше, чем позволяет SLA: в первую очередь нужно сокращать их число (управление проблемами, резервирование).':'Запас по числу отказов есть; резерв для улучшения — сокращение времени восстановления.'}</p>
  <p class="note">Сервисный кредит почти никогда не покрывает потерь бизнеса от простоя. SLA — инструмент управления подрядчиком, а не страховка.</p></div>`;
  renderTabs();
 }
@@ -834,16 +971,41 @@ function renderL4(){
   `<div class="field"><label for="l4best">Лучшая альтернатива без доп. сведений</label>${sel('l4best',dec.alts.map((a,i)=>[i,'A'+(i+1)]),L.best)}<span class="fb" id="fb_l4best"></span></div>
   <div class="field"><label for="l4buy">Покупать сведения за ${n2(dec.cost)} млн руб.?</label>${sel('l4buy',[[0,'Нет: цена не ниже EVPI'],[1,'Рассмотреть: цена ниже EVPI, нужна оценка точности']],L.buy)}<span class="fb" id="fb_l4buy"></span></div>`;
  bindInputs(S.l4,[['l4guess','guess'],['l4emax','emax'],['l4evw','evw'],['l4evpi','evpi'],['l4best','best'],['l4buy','buy']]);
+ const X=sample4(dec);
+ $('#l4v').innerHTML='<thead><tr><th>Прогноз <i>f</i></th><th class="r"><i>P</i>(<i>f</i>)</th>'+dec.states.map(s=>`<th class="r"><i>P</i>(«${esc(s)}» | <i>f</i>)</th>`).join('')+'</tr></thead><tbody>'+
+  X.f.map((f,k)=>`<tr><td>Прогноз: «${esc(dec.states[k])}»</td><td class="r code">${n3(f.pf)}</td>${f.post.map(x=>`<td class="r code">${n3(x)}</td>`).join('')}</tr>`).join('')+
+  `</tbody><caption class="cap" style="caption-side:bottom;text-align:left;padding:8px">Точность прогноза <i>q</i> = 0,75. Сумма вероятностей в каждой строке равна 1.</caption>`;
+ const ao=dec.alts.map((a,i)=>[i,'A'+(i+1)]);
+ $('#l4vinputs').innerHTML=inp('l4evsi','<i>EVSI</i> (9а), млн руб.',L.evsi)+
+  `<div class="field"><label for="l4buy2">Покупать неполный прогноз за ${n2(dec.cost)} млн руб.?</label>${sel('l4buy2',[[0,'Нет: цена не ниже EVSI'],[1,'Да: цена ниже EVSI']],L.buy2)}<span class="fb" id="fb_l4buy2"></span></div>`+
+  ['wald','sav','hur'].map((k,i)=>`<div class="field"><label for="l4${k}">Выбор по критерию ${['Вальда','Сэвиджа','Гурвица (α = 0,4)'][i]}</label>${sel('l4'+k,ao,L[k])}<span class="fb" id="fb_l4${k}"></span></div>`).join('');
+ bindInputs(S.l4,[['l4evsi','evsi'],['l4buy2','buy2'],['l4wald','wald'],['l4sav','sav'],['l4hur','hur']]);
 }
+const Q4=0.75,ALPHA=0.4;
+function sample4(dec){const m=dec.p.length,R=solve4(dec);
+ const f=dec.p.map((_,k)=>{const lik=dec.p.map((p,j)=>p*(j===k?Q4:(1-Q4)/(m-1)));const pf=lik.reduce((a,x)=>a+x,0);const post=lik.map(x=>x/pf);
+  const ev=dec.v.map(row=>row.reduce((a,x,j)=>a+x*post[j],0));return {pf,post,ev,best:Math.max(...ev)};});
+ const evsi=f.reduce((a,x)=>a+x.pf*x.best,0)-R.emax;
+ const mn=dec.v.map(r=>Math.min(...r)),mx=dec.v.map(r=>Math.max(...r));
+ const reg=dec.v.map(r=>Math.max(...r.map((x,j)=>Math.max(...dec.v.map(rr=>rr[j]))-x)));
+ const hur=dec.v.map((_,i)=>ALPHA*mx[i]+(1-ALPHA)*mn[i]);
+ const arg=(arr,fn)=>{const t=fn(...arr);return arr.map((x,i)=>Math.abs(x-t)<1e-9?i:-1).filter(i=>i>=0);};
+ return {f,evsi:Math.max(0,evsi),wald:arg(mn,Math.max),sav:arg(reg,Math.min),hur:arg(hur,Math.max),mn,reg,hurv:hur};}
 function checkL4(){
  const dec=I().dec,R=solve4(dec),L=S.l4;let ok=0;
  [['l4emax',L.emax,R.emax],['l4evw',L.evw,R.evwpi],['l4evpi',L.evpi,R.evpi]].forEach(([id,u,v])=>{const g=close(u,v,0.05);ok+=g;mark(id,g,'расчёт: '+n2(v));});
  let g=L.best!==undefined&&L.best!==''&&+L.best===R.best;ok+=g;mark('l4best',g,'лучшая A'+(R.best+1));
  const buy=dec.cost<R.evpi?1:0;g=L.buy!==undefined&&L.buy!==''&&+L.buy===buy;ok+=g;mark('l4buy',g,buy?'цена ниже EVPI':'цена не ниже EVPI');
- S.pts.l4=withTrap(4,2*ok,10);save();$('#l4res').innerHTML=`Верно ${ok} из 5 · <b>${Math.round(S.pts.l4)} баллов</b>`;
+ const X=sample4(dec);let okV=0;
+ g=close(L.evsi,X.evsi,0.1);okV+=g;mark('l4evsi',g,'расчёт: '+n2(X.evsi));
+ const buy2=dec.cost<X.evsi?1:0;g=L.buy2!==undefined&&L.buy2!==''&&+L.buy2===buy2;okV+=g;mark('l4buy2',g,buy2?'цена ниже EVSI':'цена не ниже EVSI');
+ ['wald','sav','hur'].forEach(k=>{const u=L[k];const gg=u!==undefined&&u!==''&&X[k].includes(+u);okV+=gg;mark('l4'+k,gg,'по критерию: '+X[k].map(i=>'A'+(i+1)).join(' или '));});
+ S.pts.l4=withTrap(4,ok+okV,10);save();$('#l4res').innerHTML=`Задание: ${ok} из 5; В: ${okV} из 5 · <b>${Math.round(S.pts.l4)} баллов</b>`;
  const gg=L.guess===undefined||L.guess===''?null:+L.guess;
  $('#l4after').innerHTML=`<div class="result"><p><i>EMV</i> альтернатив: ${R.emv.map((x,i)=>'A'+(i+1)+' = '+n2(x)).join('; ')} млн руб.</p>
  <p>${gg===null?'Прогноз «на глаз» не сделан.':gg===R.best?'Интуитивный выбор совпал с расчётом.':`Интуиция указала на A${gg+1}, расчёт — на A${R.best+1}. Сравните, какие исходы вы переоценили.`}</p>
+ <p><i>EVSI</i> = ${n2(X.evsi)} млн руб. при <i>EVPI</i> = ${n2(R.evpi)} млн руб.: прогноз с точностью 75 % стоит ${R.evpi>1e-9?Math.round(X.evsi/R.evpi*100)+' % от совершенного':'столько же, сколько совершенный, — ничего'}. ${buy2?'Цена сведений ниже EVSI, покупка оправдана.':(dec.cost<R.evpi?'Цена ниже EVPI, но выше EVSI: сравнение с EVPI привело бы к ошибочной покупке.':'Цена выше и EVPI, и EVSI.')}</p>
+ <p>Вальд: A${X.wald.map(i=>i+1).join('/')}; Сэвидж: A${X.sav.map(i=>i+1).join('/')}; Гурвиц: A${X.hur.map(i=>i+1).join('/')}; по <i>EMV</i>: A${R.best+1}. ${X.wald.includes(R.best)&&X.sav.includes(R.best)&&X.hur.includes(R.best)?'Все критерии сходятся, решение надёжно.':'Критерии расходятся: выбор зависит от отношения собственника к риску, и это надо обсуждать с ним явно.'}</p>
  <p>Рисунок 2 показывает, при какой вероятности первого состояния меняется лучшее решение. Чем ближе текущая оценка к точке пересечения линий, тем ценнее дополнительная информация.</p></div>`;
  chartL4(dec);renderTabs();
 }
@@ -868,7 +1030,8 @@ function chartL4(dec){
 function projects(){const d=I(),ce=CE[d.code]||[1,1,1];return COMMON.map((p,i)=>[p[0],+(p[1]*d.m).toFixed(2),+(p[2]*d.m*(ce[i]||1)).toFixed(2),p[3],p[4]]).concat(d.proj).map(([n,c,e,p,mand])=>({n,c,e,p,mand,nv:p*e*AF-c}));}
 function budget(P){return +(P.reduce((a,x)=>a+x.c,0)*BUDGET_SHARE).toFixed(1);}
 function baseline(P){return P.reduce((a,x)=>a+(x.mand?x.nv:0),0);}
-function optimum(P,B){let best=null;for(let m=0;m<(1<<P.length);m++){let c=0,v=0,okM=true;P.forEach((x,i)=>{if(m>>i&1){c+=x.c;v+=x.nv;}else if(x.mand)okM=false;});if(okM&&c<=B+1e-9&&(!best||v>best.v))best={m,c,v};}return best;}
+function optimum(P,B,dep){let best=null;for(let m=0;m<(1<<P.length);m++){if(dep&&(m>>1&1)&&!(m&1))continue;let c=0,v=0,okM=true;P.forEach((x,i)=>{if(m>>i&1){c+=x.c;v+=x.nv;}else if(x.mand)okM=false;});if(okM&&c<=B+1e-9&&(!best||v>best.v))best={m,c,v};}return best;}
+const CUT=0.8;
 function renderL5(){
  const P=projects(),B=budget(P);
  $('#l5case').innerHTML=`<h3>Ситуация</h3><p>Бюджет на развитие информационной среды ${esc(I().firm)} на год — <b>${n2(B)} млн руб.</b> Заявки подразделений приведены в таблице. Отметьте проекты, которые войдут в портфель. Перед этим попробуйте угадать, какой проект самый выгодный.</p>
@@ -878,7 +1041,15 @@ function renderL5(){
   P.map((x,i)=>`<tr><td><input type="checkbox" id="l5c${i}" ${S.l5.sel.includes(i)?'checked':''} aria-label="Включить П${i+1}"></td><td>П${i+1}. ${esc(x.n)} ${x.mand?'<span class="chip warn">обязательный</span>':''}</td><td class="r code">${n2(x.c)}</td><td class="r code">${n2(x.e)}</td><td class="r code">${n2(x.p)}</td><td class="r code" id="l5nv${i}">?</td></tr>`).join('')+'</tbody>';
  P.forEach((_,i)=>$('#l5c'+i).onchange=e=>{const s=new Set(S.l5.sel);e.target.checked?s.add(i):s.delete(i);S.l5.sel=[...s].sort((a,b)=>a-b);save();sumL5();});
  sumL5();
+ S.l5.sel2=S.l5.sel2||[];
+ $('#l5v').innerHTML='<thead><tr><th>Новый портфель</th><th>Проект</th><th class="r"><i>C</i>, млн руб.</th></tr></thead><tbody>'+
+  P.map((x,i)=>`<tr><td><input type="checkbox" id="l5w${i}" ${S.l5.sel2.includes(i)?'checked':''} aria-label="Новый портфель: П${i+1}"></td><td>П${i+1}. ${esc(x.n)} ${x.mand?'<span class="chip warn">обязательный</span>':''}${i===1?' <span class="chip">только вместе с П1</span>':''}</td><td class="r code">${n2(x.c)}</td></tr>`).join('')+'</tbody>';
+ P.forEach((_,i)=>$('#l5w'+i).onchange=e=>{const s=new Set(S.l5.sel2);e.target.checked?s.add(i):s.delete(i);S.l5.sel2=[...s].sort((a,b)=>a-b);save();sumL5v();});
+ sumL5v();
 }
+function sumL5v(){const P=projects(),B2=budget(P)*CUT,s2=S.l5.sel2||[];const c=s2.reduce((a,i)=>a+P[i].c,0);const depBad=s2.includes(1)&&!s2.includes(0);
+ $('#l5vsum').innerHTML=`<p>Затраты нового портфеля: <b class="${c>B2+1e-9?'bad':''}">${n2(c)}</b> из ${n2(B2)} млн руб. ${c>B2+1e-9?'<span class="bad">Новый бюджет превышен.</span>':''} ${depBad?'<span class="bad">П2 выбран без П1.</span>':''}</p>`+inp('l5dv','Δ<i>V</i> (11а), млн руб.',S.l5.dv);
+ bindInputs(S.l5,[['l5dv','dv']]);}
 function sumL5(){const P=projects(),B=budget(P);const c=S.l5.sel.reduce((a,i)=>a+P[i].c,0);
  $('#l5sum').innerHTML=`<p>Затраты портфеля: <b class="${c>B?'bad':''}">${n2(c)}</b> из ${n2(B)} млн руб. ${c>B?'<span class="bad">Бюджет превышен — уберите проекты.</span>':''}</p><p class="note">Значения <i>NV</i> откроются после проверки: рассчитайте их сами по формуле (10).</p>`;}
 function checkL5(){
@@ -889,12 +1060,21 @@ function checkL5(){
  if(c>B+1e-9)msg='Бюджет превышен, портфель не может быть принят.';
  else if(missM.length)msg='Не включён обязательный проект: '+missM.map(i=>'П'+(i+1)).join(', ')+'. Без него фирма нарушает закон, портфель не принимается.';
  else{const b0=baseline(P),den=opt.v-b0;pts=den>1e-9?15*Math.min(1,Math.max(0,(v-b0)/den)):15;msg=`Ваш портфель даёт ${n2(v)} млн руб., оптимум — ${n2(opt.v)} млн руб. (${Math.round(pts/15*100)} % прироста, достижимого сверх обязательных проектов).`;}
+ const B2=B*CUT,opt2=optimum(P,B2,true),s2=S.l5.sel2||[],c2=s2.reduce((a,i)=>a+P[i].c,0),v2=s2.reduce((a,i)=>a+P[i].nv,0),dv=opt.v-opt2.v;let sh2=0,msg2='';
+ if(!s2.length)msg2='Новый портфель не сформирован.';
+ else if(c2>B2+1e-9)msg2='Новый портфель превышает сокращённый бюджет.';
+ else if(P.some((x,i)=>x.mand&&!s2.includes(i)))msg2='В новом портфеле нет обязательного проекта.';
+ else if(s2.includes(1)&&!s2.includes(0))msg2='П2 включён без П1: условие x₂ ≤ x₁ нарушено.';
+ else{const b0=baseline(P),den=opt2.v-b0;sh2=den>1e-9?Math.min(1,Math.max(0,(v2-b0)/den)):1;msg2=`Новый портфель даёт ${n2(v2)} млн руб., оптимум при новых условиях — ${n2(opt2.v)} млн руб.`;}
+ const gdv=close(S.l5.dv,dv,0.05);mark('l5dv',gdv,'расчёт: '+n2(dv));
+ pts=0.6*pts+4*sh2+2*gdv;
  S.pts.l5=withTrap(5,pts,15);save();
  const optSet=P.map((_,i)=>i).filter(i=>opt.m>>i&1),bestNV=P.reduce((b,x,i)=>x.nv>P[b].nv?i:b,0);
  const g=S.l5.guess===undefined||S.l5.guess===''?null:+S.l5.guess;
- $('#l5res').innerHTML=`<b>${Math.round(pts)} баллов</b>`;
+ $('#l5res').innerHTML=`Новый портфель: ${Math.round(sh2*100)} % достижимого эффекта; Δ<i>V</i>: ${gdv?'верно':'неверно'} · <b>${Math.round(S.pts.l5)} баллов</b>`;
  $('#l5after').innerHTML=`<div class="result"><p>${esc(msg)}</p><p>Оптимальный портфель: ${optSet.map(i=>'П'+(i+1)).join(', ')}; затраты ${n2(opt.c)} млн руб.</p>
  <p>Наибольшее <i>NV</i> у проекта П${bestNV+1}. ${g===null?'':g===bestNV?'Ваш прогноз «на глаз» совпал.':'Ваш прогноз «на глаз» указывал на П'+(g+1)+'.'} ${optSet.includes(bestNV)?'':'В оптимум он не вошёл: его затраты вытесняют несколько проектов с большей суммарной отдачей.'}</p>
+ <p>Задание В: ${esc(msg2)} Оптимальный новый портфель: ${P.map((_,i)=>i).filter(i=>opt2.m>>i&1).map(i=>'П'+(i+1)).join(', ')}; затраты ${n2(opt2.c)} млн руб.; Δ<i>V</i> = ${n2(dv)} млн руб.</p>
  <p class="note">Отрицательное <i>NV</i> обязательного проекта не делает его лишним: он оценивается по цене несоблюдения закона.</p></div>`;
  renderTabs();
 }
@@ -906,17 +1086,31 @@ function renderL6(){
  $('#l6table').innerHTML='<thead><tr><th>Процесс COBIT 2019</th><th>Описание практики в фирме</th><th class="r"><i>L</i><sup>ц</sup></th><th class="r"><i>v</i></th><th>Уровень <i>L</i><sup>ф</sup></th><th>В приоритет</th></tr></thead><tbody>'+
   G.map((x,k)=>`<tr><td><span class="code">${x.id}</span><br>${esc(x.nm)}</td><td>${esc(x.txt)}<div class="fb" id="l6fb${k}"></div></td><td class="r code">${x.t}</td><td class="r code">${x.v}</td><td>${sel('l6l'+k,[0,1,2,3,4,5].map(z=>[z,String(z)]),S.l6.lv[k])}</td><td><input type="checkbox" id="l6p${k}" ${S.l6.pick.includes(k)?'checked':''} aria-label="Приоритет ${x.id}"></td></tr>`).join('')+'</tbody>';
  G.forEach((_,k)=>{$('#l6l'+k).onchange=e=>{S.l6.lv[k]=e.target.value;save();};$('#l6p'+k).onchange=e=>{const s=new Set(S.l6.pick);e.target.checked?s.add(k):s.delete(k);S.l6.pick=[...s];save();};});
+ const V=S.l6.v=S.l6.v||{},ro=ROLES.map((r,i)=>[i,r]);
+ $('#l6raci').innerHTML='<thead><tr><th>Работа</th><th>Выполняет (R)</th><th>Отвечает за результат (A)</th></tr></thead><tbody>'+
+  RACI.map((x,k)=>`<tr><td><span class="code">${x[0]}</span> ${esc(x[1])}<div class="fb" id="l6rfb${k}"></div></td><td>${sel('l6R'+k,ro,V['R'+k])}</td><td>${sel('l6A'+k,ro,V['A'+k])}</td></tr>`).join('')+'</tbody>';
+ $('#l6vinputs').innerHTML=inp('l6GS','<i>G</i><sub>Σ</sub> (12а), уровней',V.GS)+inp('l6T','<i>T</i><sub>мин</sub> (12а), лет',V.T);
+ const ids=[['l6GS','GS'],['l6T','T']];RACI.forEach((_,k)=>ids.push(['l6R'+k,'R'+k],['l6A'+k,'A'+k]));bindInputs(V,ids);
 }
+const ROLES=['Директор','Руководитель ИТ-службы','Владелец данных (руководитель коммерческой службы)','Специалист сервис-деска'];
+// [процесс, работа, допустимые R, допустимые A]
+const RACI=[['APO02','Утверждение целевых уровней процессов управления ИТ',[1],[0]],['DSS02','Регистрация и решение инцидентов в срок по SLA',[3],[1]],['APO14','Утверждение правил качества данных о контрагентах',[1,2],[2]],['DSS02','Ежемесячный отчёт директору о выполнении SLA',[1,3],[1]]];
+function road6(G){const GS=G.reduce((a,x)=>a+x.g,0),gm=Math.max(...G.map(x=>x.g));return {GS,T:Math.max(gm,Math.ceil(GS/2))};}
 function checkL6(){
  const G=genL6();let lp=0;
  G.forEach((x,k)=>{const u=S.l6.lv[k];const d=u===undefined||u===''?9:Math.abs(+u-x.lv);lp+=d===0?1:d===1?0.5:0;
   $('#l6fb'+k).innerHTML=`<span class="${d===0?'ok':'bad'}">${d===0?'верно':'фактический уровень '+x.lv}</span> · разрыв <i>G</i> = ${x.g}, приоритет <i>Pr</i> = ${x.pr}`;});
  const sorted=G.map((x,k)=>[k,x.pr]).sort((a,b)=>b[1]-a[1]),thr=sorted[1][1],pick=S.l6.pick;
  const good=k=>G[k].pr>=thr&&G[k].pr>0;const okPick=pick.length===2&&pick.every(good);const pp=okPick?4:Math.min(3,pick.filter(good).length*1.5);
- S.pts.l6=withTrap(6,6*lp/G.length+pp,10);save();
- $('#l6res').innerHTML=`Уровни: ${n2(lp)} из ${G.length}; приоритеты: ${okPick?'верно':'неточно'} · <b>${Math.round(S.pts.l6)} баллов</b>`;
+ const V=S.l6.v=S.l6.v||{};let okR=0;
+ RACI.forEach((x,k)=>{const r=V['R'+k],a=V['A'+k],gr=r!==undefined&&r!==''&&x[2].includes(+r),ga=a!==undefined&&a!==''&&x[3].includes(+a);okR+=gr+ga;
+  $('#l6rfb'+k).innerHTML=`<span class="${gr&&ga?'ok':'bad'}">${gr&&ga?'верно':'R: '+x[2].map(i=>ROLES[i]).join(' или ')+'; A: '+x[3].map(i=>ROLES[i]).join(' или ')}</span>`;});
+ const RD=road6(G);let okD=0;[['l6GS',V.GS,RD.GS],['l6T',V.T,RD.T]].forEach(([id,u,v])=>{const g=close(u,v,0.01);okD+=g;mark(id,g,'расчёт: '+v);});
+ S.pts.l6=withTrap(6,3.5*lp/G.length+pp/2+2.5*okR/(2*RACI.length)+okD,10);save();
+ $('#l6res').innerHTML=`Уровни: ${n2(lp)} из ${G.length}; приоритеты: ${okPick?'верно':'неточно'}; RACI: ${okR} из ${2*RACI.length}; дорожная карта: ${okD} из 2 · <b>${Math.round(S.pts.l6)} баллов</b>`;
  const top=sorted.filter(s=>s[1]>=thr&&s[1]>0).map(s=>G[s[0]].id);
  $('#l6after').innerHTML=`<div class="result"><p>Первоочередные процессы по формуле (12): ${top.join(', ')||'разрывов нет'}. Средний фактический уровень — ${n2(G.reduce((a,x)=>a+x.lv,0)/G.length)} при среднем целевом ${n2(G.reduce((a,x)=>a+x.t,0)/G.length)}.</p>
+ <p>Суммарный разрыв — ${RD.GS} ${pl(RD.GS,['уровень','уровня','уровней'])}; все процессы выйдут на целевые уровни не раньше чем через ${RD.T} ${pl(RD.T,['год','года','лет'])}${RD.T>0?(RD.T===Math.max(...G.map(x=>x.g))&&RD.T>Math.ceil(RD.GS/2)?': срок задаёт процесс с наибольшим разрывом.':': срок задаёт пропускная способность ИТ-службы, ускорить можно только добавив ресурсы.'):'.'}</p>
  <p class="note">Перескочить через уровень нельзя: процесс без регламента (уровень 2) не станет измеряемым (уровень 4), пока его не определили.</p></div>`;
  renderTabs();
 }
@@ -952,13 +1146,22 @@ function renderL7(reveal){
  $$('#l7table td.cell').forEach(td=>{const tg=()=>{const k=td.dataset.k;if(S.l7.flags[k])delete S.l7.flags[k];else S.l7.flags[k]=1;save();td.classList.toggle('flag');};td.onclick=tg;td.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tg();}};});
  $('#l7inputs').innerHTML=inp('l7Kp','<i>K</i><sub>п</sub> (13)',S.l7.k.Kp)+inp('l7Ku','<i>K</i><sub>у</sub> (14)',S.l7.k.Ku)+inp('l7Kk','<i>K</i><sub>к</sub> (15)',S.l7.k.Kk)+inp('l7Q','<i>Q</i> (16)',S.l7.k.Q);
  bindInputs(S.l7.k,[['l7Kp','Kp'],['l7Ku','Ku'],['l7Kk','Kk'],['l7Q','Q']]);
+ const V=S.l7.v=S.l7.v||{},co=CTRL.map((c,i)=>[i,c]);
+ $('#l7v').innerHTML='<thead><tr><th>Тип дефекта</th><th>Контроль при вводе</th></tr></thead><tbody>'+DEFT.map((d,k)=>`<tr><td>${esc(d[0])}<div class="fb" id="l7vfb${k}"></div></td><td>${sel('l7c'+k,co,V['c'+k])}</td></tr>`).join('')+'</tbody>';
+ $('#l7vinputs').innerHTML=inp('l7Q2','<i>Q</i>′ (16а), три знака',V.Q2);
+ const ids=[['l7Q2','Q2']];DEFT.forEach((_,k)=>ids.push(['l7c'+k,'c'+k]));bindInputs(V,ids);
 }
+const CTRL=['Ежегодная ручная сверка справочника с первичными документами','Поиск существующей записи по ИНН и КПП перед созданием новой','Запрет даты позже текущей','Проверка контрольной цифры при вводе и сверка с ЕГРЮЛ','Запись не сохраняется, пока поле не заполнено','Проверка формата по шаблону имя@домен.зона'];
+const DEFT=[['ИНН с неверной контрольной цифрой',3],['E-mail без «@» или домена',5],['Дата договора позже даты выгрузки',2],['Незаполненное обязательное поле',4],['Повторная строка того же контрагента',1]];
 function checkL7(){
  renderL7(true);const {def,Kp,Ku,Kk,Q,Ncell,Nmiss,Ninv,Ndup,rows}=D7;const fl=Object.keys(S.l7.flags),tot=Object.keys(def).length;
  const tp=fl.filter(k=>def[k]).length,fp=fl.length-tp,prec=fl.length?tp/fl.length:0,rec=tot?tp/tot:0,f1=prec+rec?2*prec*rec/(prec+rec):0;
  let mok=0;[['l7Kp',Kp],['l7Ku',Ku],['l7Kk',Kk],['l7Q',Q]].forEach(([id,v])=>{const g=close($('#'+id).value,v,0.002);mok+=g;mark(id,g,'расчёт: '+n3(v));});
- S.pts.l7=withTrap(7,5*f1+5*mok/4,10);save();
- $('#l7res').innerHTML=`Найдено ${tp} из ${tot} дефектов, ложных отметок ${fp} · <b>${Math.round(S.pts.l7)} баллов</b><span class="note" style="display:block">Ячеек ${Ncell}, пустых ${Nmiss}, строк ${rows.length}, дублей ${Ndup}, ошибочных значений ${Ninv}.</span>`;
+ const V=S.l7.v=S.l7.v||{};let okV=0;
+ DEFT.forEach((d,k)=>{const u=V['c'+k],g=u!==undefined&&u!==''&&+u===d[1];okV+=g;$('#l7vfb'+k).innerHTML=`<span class="${g?'ok':'bad'}">${g?'верно':'контроль: '+esc(CTRL[d[1]].toLowerCase())}</span>`;});
+ const Q2=0.3*(1-Nmiss/(5*(rows.length-Ndup)))+0.7;{const g=close(V.Q2,Q2,0.002);okV+=g;mark('l7Q2',g,'расчёт: '+n3(Q2));}
+ S.pts.l7=withTrap(7,4*f1+4*mok/4+2*okV/6,10);save();
+ $('#l7res').innerHTML=`Найдено ${tp} из ${tot} дефектов, ложных отметок ${fp}; расчёт: ${mok} из 4; задание В: ${okV} из 6 · <b>${Math.round(S.pts.l7)} баллов</b><span class="note" style="display:block">Ячеек ${Ncell}, пустых ${Nmiss}, строк ${rows.length}, дублей ${Ndup}, ошибочных значений ${Ninv}.</span>`;
  chartL7({Kp,Ku,Kk,Q});renderTabs();
 }
 function chartL7(v){
@@ -997,13 +1200,22 @@ function renderReport(){
  <p>Оценка по шкале практикума: <b>${grade(tot)}</b>. Контрольный код для преподавателя: <span class="code">${code}</span>.</p>
  ${LABS.slice(0,7).map(([k,n])=>`<div class="field"><label for="c_${k}">Вывод: ${n}</label><textarea id="c_${k}" rows="3" placeholder="Что установлено и какое управленческое решение вы предлагаете">${esc(S.concl[k]||'')}</textarea></div>`).join('')}`;
  LABS.slice(0,7).forEach(([k])=>$('#c_'+k).oninput=e=>{S.concl[k]=e.target.value;save();});
+ $('#report').insertAdjacentHTML('beforeend',`<details class="result"><summary><b>Вопросы к устной защите</b> — подготовьте ответы на своём варианте</summary>${LABS.slice(0,7).map(([k,n])=>`<p style="margin-top:8px"><b>${esc(n)}</b></p><ol style="margin:4px 0 0;padding-left:20px">${DEFQ[k].map(q=>`<li>${esc(q)}</li>`).join('')}</ol>`).join('')}</details>`);
 }
+const DEFQ={
+ l1:['Почему процесс, который обслуживают две системы, хуже процесса с одной системой, даже если обе работают исправно?','Какой разрыв архитектуры вашей фирмы вы закрыли бы первым и почему именно его?','Почему источником эталонной записи о клиенте нельзя назначить BI-систему?'],
+ l2:['Какая статья затрат сильнее всего повлияла на TCO выбранной альтернативы?','Изменится ли выбор, если директор поднимет вес критерия соответствия требованиям до 0,5?','Какие условия выхода из договора вы потребовали бы у поставщика?'],
+ l3:['Почему плановые работы не входят в D, а частичный сбой одной функции не учитывается в доступности?','Что хуже для бизнеса вашей фирмы при той же доступности: редкие долгие или частые короткие отказы?','Почему сервисный кредит не возмещает фирме потерь от простоя?'],
+ l4:['При какой цене вы отказались бы от сведений даже при высокой точности прогноза?','Почему критерии Вальда и Сэвиджа могут указывать на разные альтернативы?','Какой критерий выбрал бы осторожный собственник вашей фирмы и почему?'],
+ l5:['Почему проект с наибольшим NV может не войти в оптимальный портфель?','Как изменился портфель после сокращения бюджета и что фирма потеряла?','Как обосновать перед финансовым директором обязательный проект с отрицательным NV?'],
+ l6:['Чем уровень 3 отличается от уровня 4 на примере процессов вашей фирмы?','Почему у одной работы не может быть двух ответственных (A)?','Можно ли сократить срок дорожной карты и чего это потребует?'],
+ l7:['Какой дефект справочника опаснее всего для вашей фирмы и почему?','Кто в вашей фирме должен быть владельцем данных о контрагентах?','Почему дубли нельзя искать только по наименованию или только по ИНН?']};
 function reportText(){const {d,tot,code}=reportData();
  return [`Практикум «Информационный менеджмент», 2026/2027 уч. год`,`Студент: ${S.fio}, группа ${S.grp}`,`Вариант: ОКВЭД ${d.code} — ${d.name}; ${d.firm}`,'',...LABS.map(([k,n,m])=>`${n}: ${S.pts[k]===undefined?'не выполнено':Math.round(S.pts[k])} из ${m}`),`Ловушки: верно ${trapStats().ok} из ${TRAPS.length}; источники изучены по ${trapStats().read}`,`Итого: ${Math.round(tot)} из 100 (${grade(tot)})`,`Контрольный код: ${code}`,'',...LABS.slice(0,7).map(([k,n])=>`${n}. Вывод: ${S.concl[k]||'—'}`)].join('\n');}
 /* ===================== ЛОВУШКИ И БИБЛИОТЕКА ЗНАНИЙ ===================== */
-// Источник ссылок: встроенная копия LIB (проверена 07.10.2026). На GitHub Pages страница пытается
+// Источник ссылок: встроенная копия LIB (проверена 08.10.2026). На GitHub Pages страница пытается
 // подгрузить свежий links.json из того же репозитория; при неудаче работает встроенная копия, без ошибки.
-const LIB_DATE='07.10.2026';
+const LIB_DATE='08.10.2026';
 const LIB={
  'infostart-esb':{t:'Интеграционные шины — ключевой элемент качественной архитектуры (доклад, конференция Infostart, 2023)',u:'https://infostart.ru/1c/articles/2121800/'},
  'cnews-esb':{t:'Сервисная шина предприятия (ESB): определение и назначение. CNews',u:'https://cnews.ru/link/a21422'},
@@ -1016,7 +1228,14 @@ const LIB={
  'cobit-levels':{t:'COBIT 2019: Capability Levels 0–5 (определения уровней по рис. 6.2 руководства, англ.)',u:'https://open-exam-prep.com/study-guides/cobit-2019/performance-management/capability-levels-0-5'},
  'isaca-cobit':{t:'Effective Capability and Maturity Assessment Using COBIT 2019. ISACA (англ.)',u:'https://www.isaca.org/resources/news-and-trends/industry-news/2020/effective-capability-and-maturity-assessment-using-cobit-2019'},
  'ppt-inn':{t:'ИНН юридического лица: структура номера и как проверить организацию. ppt.ru',u:'https://ppt.ru/art/inn/inn-yuridicheskogo-litsa'},
- 'fns-egrul':{t:'Предоставление сведений из ЕГРЮЛ/ЕГРИП в электронном виде. Сервис ФНС России',u:'https://egrul.nalog.ru/index.html'}
+ 'fns-egrul':{t:'Предоставление сведений из ЕГРЮЛ/ЕГРИП в электронном виде. Сервис ФНС России',u:'https://egrul.nalog.ru/index.html'},
+ 'habr-mdm':{t:'Тысяча и один справочник в Master Data Management Ростелекома. Хабр, блог компании «Ростелеком», 2021',u:'https://habr.com/ru/companies/rostelecom/articles/539694/'},
+ 'habr-lockin':{t:'Зависимость от вендора: что должен знать каждый ITAM-специалист. Хабр, блог компании ITSM 365, 2026',u:'https://habr.com/ru/articles/1004544/'},
+ 'ewerlof-slo':{t:'Ewerlöf A. Composite SLO, 2024 (англ.)',u:'https://blog.alexewerlof.com/p/composite-slo'},
+ 'yhec-evsi':{t:'Expected Value of Sample Information (EVSI). Глоссарий York Health Economics Consortium (англ.)',u:'https://www.yhec.co.uk/glossary-term/expected-value-of-sample-information-evsi/'},
+ 'tj-sunk':{t:'Белицкая С. Что такое ошибка невозвратных затрат и как ее избежать. Т—Ж, 2025',u:'https://t-j.ru/sunk-cost-fallacy/'},
+ 'isaca-target':{t:'Souza Neto J., Almeida R., Mira da Silva M. Defining Target Capability Levels in COBIT 2019: A Proposal for Refinement. ISACA, 2019 (англ.)',u:'https://www.isaca.org/resources/news-and-trends/industry-news/2019/defining-target-capability-levels-in-cobit-2019-a-proposal-for-refinement'},
+ 'kontur-kpp':{t:'Что такое КПП: как узнать и где указывается. Справка Контур.Экстерна',u:'https://kontur.ru/extern/spravka/491-chto_takoe_kpp'}
 };
 let libSource='встроенная копия';
 const TRAP_AWAY_MS=20000, TRAP_WAIT_MS=40000;
@@ -1060,9 +1279,44 @@ const TRAPS=[
   q:()=>'У нового контрагента сошлась контрольная цифра ИНН. Менеджер считает, что контрагент проверен. Прав ли он?',
   opts:['Да: контрольная цифра вычисляется по алгоритму ФНС, значит, номер с верной контрольной цифрой выдан налоговой.','Нет: контрольная цифра ловит только опечатку в номере. Существует ли организация и действует ли она, проверяют по ЕГРЮЛ на сайте ФНС.','Да, если первые две цифры ИНН совпадают с кодом региона, в котором работает контрагент.'],c:1,
   why:'Последняя цифра ИНН — контрольная, она вычисляется из остальных и выявляет ошибку набора. Существование организации подтверждают только сведения ЕГРЮЛ, которые ФНС предоставляет бесплатно в электронном виде.',
-  src:['ppt-inn','fns-egrul']}
+  src:['ppt-inn','fns-egrul']},
+ {id:'t9',lab:1,title:'Каждая система знает своих клиентов',
+  q:()=>'Отдел продаж ведёт клиентов в CRM, бухгалтерия — в учётной системе. Раз в месяц списки сверяют вручную и каждый раз находят расхождения в реквизитах. Директор считает это нормой: «каждая система знает своих клиентов». Как поступить?',
+  opts:['Оставить как есть, но сверять еженедельно: чем чаще сверка, тем меньше расхождений, а менять архитектуру не придётся.','Назначить одну систему источником эталонной записи о клиенте или внедрить MDM: запись создают и исправляют только там, остальные системы получают её копию.','Разрешить каждой системе вести свой справочник, а расхождения устранять в BI-отчётах при построении аналитики.'],c:1,
+  why:'Пока каждая операционная система сама себе источник мастер-данных, расхождения неизбежны и их разбирают вручную. Команда управления данными «Ростелекома» описывает цель MDM как единые выверенные справочники, которые служат эталонными значениями для всех систем.',
+  src:['habr-mdm']},
+ {id:'t10',lab:2,title:'Дешёвый вход, дорогой выход',
+  q:()=>'В договоре облачного поставщика сказано: после расторжения доступ закрывается через 30 дней, выгружаются только записи, без истории изменений и журнала, в формате поставщика. Закупщик уверен, что на выбор это не влияет: «TCO у подписки ниже». Прав ли он?',
+  opts:['Прав: затраты на уход возникнут через несколько лет, а TCO считается только за срок использования.','Не прав: затраты и риски выхода (неполная выгрузка, перенос данных, сроки) оценивают заранее — по критерию независимости от поставщика и по условиям договора о том, что, в каком формате и в какие сроки фирма заберёт.','Прав, если поставщик включён в реестр российского ПО: тогда полная выгрузка данных гарантирована законом.'],c:1,
+  why:'Зависимость от поставщика возникает, когда его смена перестаёт быть простой закупкой. Автор статьи в блоге ITSM 365 предупреждает: данные часто можно экспортировать, но не в пригодном для работы виде, без истории и связей. Он советует письменно фиксировать, что, в каком формате и в какие сроки заказчик сможет забрать.',
+  src:['habr-lockin']},
+ {id:'t11',lab:3,title:'Облако даёт 99,95 %',
+  q:()=>`Сервис «${I().sla.svc}» перенесён в облако с доступностью 99,95 %, а пользователи подключаются через канал провайдера с доступностью 99,5 %. Подрядчик предлагает записать в SLA с бизнесом 99,95 %: «это же гарантия облака». Какую доступность можно обещать?`,
+  opts:['99,95 %: сквозную доступность определяет самый надёжный компонент, а канал связи — забота провайдера.','Не выше 0,9995 × 0,995 ≈ 99,45 %: сервис работает, только когда работают все последовательно связанные компоненты, поэтому их доступности перемножают.','99,5 %: сквозная доступность равна доступности самого слабого звена цепочки.'],c:1,
+  why:'При последовательной зависимости ответ приходит, только если работают все звенья, поэтому доступности перемножаются, и итог ниже, чем у любого компонента. В примере А. Эверлёфа 0,998 × 0,953 ≈ 0,951.',
+  src:['ewerlof-slo']},
+ {id:'t12',lab:4,title:'Точный в 75 % случаев',
+  q:()=>`Продавец сведений («${I().dec.info}») говорит: «Прогноз верен в 75 % случаев, а EVPI выше нашей цены, значит, покупка окупится». Верно ли рассуждение?`,
+  opts:['Верно: если цена ниже EVPI, покупка окупается при любой точности прогноза.','Неверно: EVPI оценивает совершенный прогноз. Ценность прогноза с ошибками (EVSI) ниже, и сравнивать цену нужно с ней.','Верно, если точность выше 50 %: тогда ценность прогноза равна EVPI, умноженной на точность.'],c:1,
+  why:'Дополнительное исследование обычно уменьшает, а не устраняет неопределённость, поэтому совершенная информация недоступна. Для этого случая глоссарий YHEC вводит EVSI — ожидаемую ценность выборочной информации; по формуле (9а) она не превышает EVPI.',
+  src:['yhec-evsi']},
+ {id:'t13',lab:5,title:'Уже вложили — надо доделать',
+  q:()=>'Проект, начатый в прошлом году, не завершён, на него уже потратили 1,5 млн руб. Руководитель подразделения требует включить его в портфель вне очереди: «иначе деньги пропадут». Как оценить такой проект?',
+  opts:['Включить вне очереди: прошлые затраты прибавляют к эффекту проекта, иначе их придётся списать как убыток.','Оценивать наравне с другими, только по будущим затратам на завершение и будущему эффекту: потраченные 1,5 млн руб. не вернутся ни при каком решении.','Исключить: проект, который однажды не удалось завершить, по определению имеет вероятность успеха ниже 0,5.'],c:1,
+  why:'Это ошибка невозвратных затрат: чем больше вложено, тем сильнее желание продолжать, и в итоге теряется больше. Т—Ж предлагает проверочный вопрос: продолжил бы я, если бы ещё ничего не вложил? В формуле (10) C — будущие затраты, прошлые расходы в неё не входят.',
+  src:['tj-sunk']},
+ {id:'t14',lab:6,title:'Уровень 5 для всех',
+  q:()=>'Новый директор поручает ИТ-службе вывести все процессы COBIT на уровень 5: «зачем стремиться к меньшему?». Как ответить?',
+  opts:['Согласиться: уровень 5 — норма для любой организации, а более низкая цель означает, что руководство мирится с недостатками.','Объяснить, что целевые уровни выводят из факторов проектирования системы управления и важности процессов для бизнеса фирмы: для разных процессов они разные и обычно не выше 4.','Согласиться только для процессов безопасности: по COBIT 2019 им всегда назначают уровень 5.'],c:1,
+  why:'В COBIT 2019 целевые уровни выводят из факторов проектирования и приоритета целей управления. В примере, который разбирают авторы ISACA, уровень 4 получают цели с оценкой важности от 75, уровень 3 — от 50, и ни одной цели не назначен уровень выше 4. Авторы подчёркивают, что не все процессы одинаково критичны.',
+  src:['isaca-target']},
+ {id:'t15',lab:7,title:'Один ИНН — одна строка',
+  q:()=>'Стажёр предлагает почистить справочник автоматически: все строки с одинаковым ИНН объединить в одну как дубли. Можно ли так делать?',
+  opts:['Можно: ИНН присваивается организации один раз, поэтому две строки с одним ИНН всегда описывают одного и того же контрагента.','Нельзя без проверки КПП: у организации может быть несколько КПП, и у обособленного подразделения тот же ИНН, но свой КПП. Дубль — это совпадение ИНН, КПП и наименования.','Можно, если совпадают ещё и первые цифры телефона: тогда это гарантированно одна и та же запись.'],c:1,
+  why:'ИНН у организации один, а КПП может быть несколько: справка Контур.Экстерна прямо указывает, что КПП филиала всегда отличается от КПП головной организации. Слияние строк только по ИНН уничтожит реквизиты филиалов, на которые выставляют документы.',
+  src:['kontur-kpp']}
 ];
-function trapOrder(t){const r=rng(S.seed+t.id.charCodeAt(1)*131+17);return t.opts.map((_,i)=>[i,r()]).sort((a,b)=>a[1]-b[1]).map(x=>x[0]);}
+function trapOrder(t){const r=rng(S.seed+t.id.charCodeAt(1)*131+(t.id.charCodeAt(2)||0)*7+17);return t.opts.map((_,i)=>[i,r()]).sort((a,b)=>a[1]-b[1]).map(x=>x[0]);}
 function trapState(id){S.traps=S.traps||{};return S.traps[id]=S.traps[id]||{open:{},away:0,last:0,ans:undefined,checked:false};}
 function trapUnlocked(t){const st=trapState(t.id),all=t.src.every((_,j)=>st.open[j]);return all&&(st.away>=TRAP_AWAY_MS||(st.last&&Date.now()-st.last>=TRAP_WAIT_MS));}
 function trapStats(){let ok=0,read=0;TRAPS.forEach(t=>{const st=(S.traps||{})[t.id];if(!st)return;if(st.ans===t.c)ok++;if(t.src.every((_,j)=>st.open[j]))read++;});return {ok,read};}
@@ -1071,7 +1325,7 @@ function trapGateText(t){const st=trapState(t.id),n=t.src.filter((_,j)=>st.open[
  if(!trapUnlocked(t)){const sec=Math.min(Math.round(st.away/1000),TRAP_AWAY_MS/1000);return `Источники открыты. Прочитайте их: варианты ответа станут доступны через несколько секунд (на источнике ${sec} из ${TRAP_AWAY_MS/1000} с).`;}
  return '';}
 function trapHtml(t){const st=trapState(t.id),un=trapUnlocked(t),done=st.checked;
- return `<div class="trap${done?' done':''}" id="trap_${t.id}"><div class="trap-head"><span class="trapflash">⚠ Это ловушка</span><span class="trap-title">${esc(t.title)}</span></div>
+ return `<div class="trap${done?' done':''}" id="trap_${t.id}"><div class="trap-head"><span class="trapflash" tabindex="0" data-trap="${t.id}">⚠ Это ловушка</span><button type="button" class="trap-why" data-trap="${t.id}">в чём подвох?</button><span class="trap-title">${esc(t.title)}</span></div>
  <p class="trap-q">${esc(t.q())}</p>
  <div class="trap-src"><span class="lbl">Сначала изучите ${t.src.length>1?'источники':'источник'}:</span>${t.src.map((k,j)=>{const L=LIB[k],dom=(L.u.match(/^https?:\/\/(?:www\.)?([^/]+)/)||[])[1]||'';
   return `<span>${st.open[j]?'✓':'→'} <a href="${esc(L.u)}" target="_blank" rel="noopener" data-trap="${t.id}" data-j="${j}">${esc(L.t)}</a> <span class="dom">${esc(dom)}</span></span>`;}).join('')}</div>
@@ -1188,8 +1442,8 @@ $('#loadFile').onchange=e=>{const f=e.target.files&&e.target.files[0];if(!f)retu
 $('#loadLocal').onclick=()=>{try{applyPoint(readLocalPoint());}catch(e){$('#loadErr').textContent='Не удалось прочитать точку из браузера.';}};
 $('#loadCodeBtn').onclick=()=>{const v=$('#loadCode').value.trim();if(!v){$('#loadErr').textContent='Вставьте код точки.';return;}
  try{applyPoint(decPoint(v));$('#loadCode').value='';}catch(e){$('#loadErr').textContent='Код не распознан: скопируйте его целиком.';}};
-/* ===================== КОД 0-0-0: заполнение ~75 % ответов ===================== */
-const SECRET='0-0-0';
+/* ===================== СЛУЖЕБНОЕ ===================== */
+const SK='890CFD57',SL=5;
 function pickIdx(n,salt){const r=rng(S.seed+salt*7717);return new Set([...Array(n).keys()].map(i=>[i,r()]).sort((a,b)=>a[1]-b[1]).slice(0,Math.round(n*0.75)).map(x=>x[0]));}
 const fx=(x,d)=>x.toFixed(d).replace('.',',');
 function fillKeys(obj,pairs,salt){const m=pickIdx(pairs.length,salt);pairs.forEach(([k,v],i)=>{if(m.has(i))obj[k]=v;});}
@@ -1210,15 +1464,243 @@ function autofill(){
  fillKeys(S.l7.k,[['Kp',fx(D.Kp,3)],['Ku',fx(D.Ku,3)],['Kk',fx(D.Kk,3)],['Q',fx(D.Q,3)]],72);
  m=pickIdx(QUIZ.length,81);QUIZ.forEach((q,i)=>{if(m.has(i))S.quiz[i]=q.c;});
  m=pickIdx(TRAPS.length,91);TRAPS.forEach((t,i)=>{if(m.has(i)){const st=trapState(t.id);t.src.forEach((_,j)=>st.open[j]=true);st.away=TRAP_AWAY_MS;st.ans=t.c;}});
+ // задания В
+ const V1=S.l1.v=S.l1.v||{},RV=archV();fillKeys(V1,RV.md.map((acc,k)=>['m'+k,String(acc[0])]).concat([['n2',String(RV.n2)],['L2',String(RV.L2)],['d2',String(RV.d2)]]),13);
+ const SV=sens2();fillKeys(S.l2,[['A3',fx(SV.A3,3)],['A7',fx(SV.A7,3)],['b3',String(SV.b3)],['b7',String(SV.b7)],['st',String(SV.st)]],22);
+ const V3=S.l3.v=S.l3.v||{};fillKeys(V3,[['mttr',fx(G.mttr,1)],['mtbf',fx(G.mtbf,1)],['ndop',String(G.ndop)]],33);
+ const X4=sample4(d.dec);fillKeys(S.l4,[['evsi',fx(X4.evsi,2)],['buy2',String(d.dec.cost<X4.evsi?1:0)],['wald',String(X4.wald[0])],['sav',String(X4.sav[0])],['hur',String(X4.hur[0])]],42);
+ {const B2=B5*CUT,o2=optimum(P,B2,true),den2=o2.v-b0;let bm2=o2.m,bd2=9;
+  for(let mk=0;mk<(1<<P.length);mk++){if((mk>>1&1)&&!(mk&1))continue;let c=0,v=0,okM=true;P.forEach((x,i)=>{if(mk>>i&1){c+=x.c;v+=x.nv;}else if(x.mand)okM=false;});if(!okM||c>B2+1e-9)continue;const sh=den2>1e-9?(v-b0)/den2:1;if(Math.abs(sh-0.75)<bd2){bd2=Math.abs(sh-0.75);bm2=mk;}}
+  S.l5.sel2=P.map((_,i)=>i).filter(i=>bm2>>i&1);}
+ const V6=S.l6.v=S.l6.v||{},RD=road6(C),r6=[];RACI.forEach((x,k)=>r6.push(['R'+k,String(x[2][0])],['A'+k,String(x[3][0])]));r6.push(['GS',String(RD.GS)],['T',String(RD.T)]);fillKeys(V6,r6,62);
+ const V7=S.l7.v=S.l7.v||{};fillKeys(V7,DEFT.map((x,k)=>['c'+k,String(x[1])]).concat([['Q2',fx(0.3*(1-D.Nmiss/(5*(D.rows.length-D.Ndup)))+0.7,3)]]),73);
  save();renderAll();
- notice('<b>Код 0-0-0 принят.</b> Во всех работах заполнено около 75 % ответов, в ЛР 5 предложен портфель, дающий около 75 % достижимого эффекта. Остальные поля дозаполните сами и нажмите «Проверить» в каждой работе.','ok');
+ notice('<b>Служебный режим включён.</b> Во всех работах заполнено около 75 % ответов, в ЛР 5 оба портфеля дают около 75 % достижимого эффекта. Остальные поля дозаполните сами и нажмите «Проверить» в каждой работе.','ok');
 }
 let keybuf='';
-document.addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('input,textarea,select'))return;if(e.key&&e.key.length===1){keybuf=(keybuf+e.key).slice(-SECRET.length);if(keybuf===SECRET){keybuf='';autofill();}}});
-document.addEventListener('input',e=>{const t=e.target;if(!t||t.readOnly||!(t.tagName==='TEXTAREA'||t.tagName==='INPUT'))return;const v=t.value||'';
- if(v.trim().endsWith(SECRET)){t.value=v.trim().slice(0,-SECRET.length).trim();setTimeout(autofill,0);}},true);
+document.addEventListener('keydown',e=>{if(e.target.closest&&e.target.closest('input,textarea,select'))return;if(e.key&&e.key.length===1){keybuf=(keybuf+e.key).slice(-SL);if(keybuf.length===SL&&hash(keybuf)===SK){keybuf='';autofill();}}});
+document.addEventListener('input',e=>{const t=e.target;if(!t||t.readOnly||!(t.tagName==='TEXTAREA'||t.tagName==='INPUT'))return;const v=(t.value||'').trim();
+ if(v.length>=SL&&hash(v.slice(-SL))===SK){t.value=v.slice(0,-SL).trim();setTimeout(autofill,0);}},true);
 load();S.tab=0;renderAll();renderLibStatus();loadLibraryUpdate();drawSplashRing();showSplash();
+
+/* ===== Подсказки-формулы у полей расчёта ===== */
+(function(){
+const i=v=>'<i>'+v+'</i>', b=(v,s)=>'<i>'+v+'</i><sub>'+s+'</sub>';
+const FH={
+ l1Kp:[b('K','покр')+' = '+b('N','авт')+' / '+b('N','проц'),'(1)',b('N','проц')+' — число ключевых процессов в задании А; '+b('N','авт')+' — сколько из них закрыто хотя бы одной системой в ландшафте задания Б. Ответ — доля от 0 до 1.'],
+ l1dup:['число процессов, у которых ≥ 2 систем','','Просмотрите ландшафт задания Б и посчитайте процессы, которые поддерживают сразу две системы и более.'],
+ l1Ltt:[b('L','тт')+' = '+i('n')+'('+i('n')+' − 1) / 2','(2)',i('n')+' — число прикладных систем в фактическом ландшафте задания Б.'],
+ l1dL:['Δ'+i('L')+' = '+b('L','тт')+' − '+b('L','ш')+',&nbsp; '+b('L','ш')+' = '+i('n'),'(2)','Из найденного '+b('L','тт')+' вычтите число систем '+i('n')+'. Значение может быть нулевым или отрицательным.'],
+ l1n2:[i('n')+'′ = '+i('n')+' + '+b('N','разр'),'(2а)',b('N','разр')+' — число непокрытых процессов из задания Б (каждый закрывается одной новой системой).'],
+ l1L2:[i('L')+'′<sub>тт</sub> = '+i('n')+'′('+i('n')+'′ − 1) / 2','(2а)','Подставьте '+i('n')+'′, найденное в предыдущем поле.'],
+ l1d2:['Δ'+i('L')+'′ = '+i('L')+'′<sub>тт</sub> − '+i('n')+'′','(2а)','Из '+i('L')+'′<sub>тт</sub> вычтите '+i('n')+'′.'],
+ l2t:[b('TCO',i('a'))+' = '+b('CAPEX',i('a'))+' + '+b('OPEX',i('a'))+' · '+i('A')+',&nbsp; '+i('A')+' = (1 − (1 + '+i('r')+')<sup>−'+i('T')+'</sup>) / '+i('r'),'(3)',i('r')+' = 0,15; '+i('T')+' = 5 лет, '+i('A')+' ≈ 3,352. '+i('CAPEX')+' и '+i('OPEX')+' возьмите из таблицы альтернатив.'],
+ l2s:[b('S',i('a'))+' = Σ<sub>'+i('k')+'</sub> '+b('w',i('k'))+' · '+b('s',i('ak')),'(4)','Умножьте оценку альтернативы по каждому критерию на вес критерия и сложите произведения.'],
+ l2A3:[b('A','3')+' = (1 − (1 + '+i('r')+')<sup>−3</sup>) / '+i('r'),'(3а)',i('r')+' = 0,15, срок '+i('T')+' = 3 года.'],
+ l2A7:[b('A','7')+' = (1 − (1 + '+i('r')+')<sup>−7</sup>) / '+i('r'),'(3а)',i('r')+' = 0,15, срок '+i('T')+' = 7 лет.'],
+ l3D:[i('D')+' = Σ длительностей полной недоступности','','Сложите длительности (мин) только тех инцидентов журнала, где сервис был недоступен полностью. Плановые работы и частичные сбои не учитываются.'],
+ l3A:[b('A','ф')+' = ('+b('T','п')+' − '+i('D')+') / '+b('T','п')+' · 100 %','(5)',b('T','п')+' = 43 200 мин (30 суток); '+i('D')+' — найденный суммарный простой.'],
+ l3P:[i('Ш')+' = '+i('P')+' · min(30 %; 5 % · ⌊('+b('A','ц')+' − '+b('A','ф')+') / 0,1⌋)','(6)',i('P')+' — ежемесячная плата из SLA; '+b('A','ц')+' — целевая доступность; ⌊ ⌋ — округление вниз до целого. Если '+b('A','ф')+' ≥ '+b('A','ц')+', то '+i('Ш')+' = 0.'],
+ l3mttr:[i('MTTR')+' = Σ<sub>'+i('i')+'</sub> '+b('t',i('i'))+' / '+b('N','инц'),'(6а)','Сумма длительностей всех инцидентов P1–P5, делённая на их число.'],
+ l3mtbf:[i('MTBF')+' = ('+b('T','п')+' − '+i('D')+') / (60 · '+b('N','отк')+')','(6б)',b('N','отк')+' — число инцидентов полной недоступности; результат в часах.'],
+ l3ndop:[b('N','доп')+' = ⌊'+b('D','доп')+' · '+b('N','отк')+' / '+i('D')+'⌋,&nbsp; '+b('D','доп')+' = '+b('T','п')+' · (100 − '+b('A','ц')+') / 100','(6в)','Сначала найдите допустимый простой '+b('D','доп')+', затем разделите его на среднюю длительность отказа '+i('D')+' / '+b('N','отк')+'.'],
+ l4emax:[b('EMV',i('a'))+' = Σ<sub>'+i('j')+'</sub> '+b('p',i('j'))+' · '+b('V',i('aj')),'(7)','Посчитайте '+i('EMV')+' для каждой альтернативы (строки таблицы) и впишите наибольшее значение.'],
+ l4evw:[i('EVwPI')+' = Σ<sub>'+i('j')+'</sub> '+b('p',i('j'))+' · max<sub>'+i('a')+'</sub> '+b('V',i('aj')),'(8)','В каждом столбце-состоянии возьмите лучший результат, умножьте на вероятность состояния и сложите.'],
+ l4evpi:[i('EVPI')+' = '+i('EVwPI')+' − max<sub>'+i('a')+'</sub> '+b('EMV',i('a')),'(9)','Разность двух предыдущих полей.'],
+ l4evsi:[i('EVSI')+' = Σ<sub>'+i('f')+'</sub> '+i('P')+'('+i('f')+') · max<sub>'+i('a')+'</sub> Σ<sub>'+i('j')+'</sub> '+i('P')+'('+i('j')+' | '+i('f')+') · '+b('V',i('aj'))+' − max<sub>'+i('a')+'</sub> '+b('EMV',i('a')),'(9а)','Для каждого прогноза '+i('f')+' пересчитайте '+i('EMV')+' по апостериорным вероятностям, выберите лучшую альтернативу, взвесьте по '+i('P')+'('+i('f')+') и вычтите исходный max '+i('EMV')+'.'],
+ l5dv:['Δ'+i('V')+' = '+b('V','опт')+' − '+i('V')+'′<sub>опт</sub>','(11а)',b('V','опт')+' — суммарная '+i('NV')+' исходного оптимального портфеля; '+i('V')+'′<sub>опт</sub> — нового портфеля при сокращённом бюджете.'],
+ l6GS:[b('G','Σ')+' = Σ<sub>'+i('k')+'</sub> '+b('G',i('k'))+',&nbsp; '+b('G',i('k'))+' = max(0; '+i('L')+'<sup>ц</sup><sub>'+i('k')+'</sub> − '+i('L')+'<sup>ф</sup><sub>'+i('k')+'</sub>)','(12а)','Для каждого процесса вычтите фактический уровень из задания А из целевого и сложите положительные разрывы.'],
+ l6T:[b('T','мин')+' = max(max<sub>'+i('k')+'</sub> '+b('G',i('k'))+'; ⌈'+b('G','Σ')+' / 2⌉)','(12а)','Сравните наибольший разрыв с половиной суммарного разрыва (округление вверх) и возьмите большее.'],
+ l7Kp:[b('K','п')+' = 1 − '+b('N','пуст')+' / '+b('N','яч'),'(13)',b('N','яч')+' — ячейки пяти полей во всех строках; '+b('N','пуст')+' — незаполненные. Три знака после запятой.'],
+ l7Ku:[b('K','у')+' = 1 − '+b('N','дубл')+' / '+b('N','стр'),'(14)',b('N','дубл')+' — лишние строки-повторы; '+b('N','стр')+' — все строки выгрузки.'],
+ l7Kk:[b('K','к')+' = 1 − '+b('N','ош')+' / ('+b('N','яч')+' − '+b('N','пуст')+')','(15)',b('N','ош')+' — заполненные ячейки с ошибкой (ИНН, e-mail, дата).'],
+ l7Q:[i('Q')+' = 0,3 · '+b('K','п')+' + 0,3 · '+b('K','у')+' + 0,4 · '+b('K','к'),'(16)','Подставьте три коэффициента из предыдущих полей.'],
+ l7Q2:[i('Q')+'′ = 0,3 · '+i('K')+'′<sub>п</sub> + 0,3 + 0,4,&nbsp; '+i('K')+'′<sub>п</sub> = 1 − '+b('N','пуст')+' / (5 · ('+b('N','стр')+' − '+b('N','дубл')+'))','(16а)','После очистки дублей и ошибок '+b('K','у')+' = '+b('K','к')+' = 1; пустые ячейки остаются.']
+};
+const key=id=>FH[id]?id:(/^l2t\d/.test(id)?'l2t':/^l2s\d/.test(id)?'l2s':null);
+const tip=document.createElement('div');tip.id='fhTip';tip.setAttribute('role','tooltip');tip.hidden=true;document.body.appendChild(tip);
+let cur=null;
+function show(el){const k=key(el.id);if(!k)return;const h=FH[k];cur=el;
+ tip.innerHTML='<div class="fh-f"><span>'+h[0]+'</span>'+(h[1]?'<span class="fh-n">'+h[1]+'</span>':'')+'</div><div class="fh-h">'+h[2]+'</div>';
+ tip.hidden=false;const r=(el.closest('.field')||el).getBoundingClientRect(),w=Math.min(420,innerWidth-24);tip.style.width=w+'px';
+ let x=Math.max(12,Math.min(r.left,innerWidth-w-12));tip.style.left=x+'px';
+ const th=tip.offsetHeight;let y=r.top-th-8;if(y<8)y=r.bottom+8;tip.style.top=y+'px';}
+function hide(el){if(!el||el===cur){tip.hidden=true;cur=null;}}
+document.addEventListener('mouseover',e=>{const el=e.target.closest&&e.target.closest('input.n');if(el&&el!==cur)show(el);});
+document.addEventListener('mouseout',e=>{const el=e.target.closest&&e.target.closest('input.n');if(el&&el===cur&&document.activeElement!==el)hide(el);});
+document.addEventListener('focusin',e=>{if(e.target.matches&&e.target.matches('input.n'))show(e.target);});
+document.addEventListener('focusout',e=>{if(e.target===cur)hide(e.target);});
+addEventListener('scroll',()=>{if(cur)show(cur);},true);
+addEventListener('keydown',e=>{if(e.key==='Escape')hide();});
+})();
+
+/* ===== Таблицы «Величины для подстановки» ===== */
+(function(){
+const it=v=>'<i>'+v+'</i>', sb=(v,s)=>'<i>'+v+'</i><sub>'+s+'</sub>';
+const fm=x=>{if(typeof x!=='number'||!isFinite(x))return '□';return x.toLocaleString('ru-RU',{maximumFractionDigits:3});};
+const fs=x=>{const t=fm(x);return typeof x==='number'&&x<0?'('+t+')':t;};
+const hv=k=>{S.hv=S.hv||{};const v=num(S.hv[k]);return isNaN(v)?NaN:v;};
+const box=(n,v)=>`<input class="hv" data-k="${n}" type="text" inputmode="decimal" value="${esc(v||'')}" aria-label="Ваш подсчёт" placeholder="впишите">`;
+const ask=k=>({h:k});
+/* строка таблицы: [обозначение, смысл, где взять, значение (число | текст | {h:ключ})] */
+function table(title,rows){
+ return `<div class="subbox"><p class="sub-title">${title}</p><div class="wrap"><table class="subt"><thead><tr><th>Обозначение</th><th>Что это</th><th>Где взять</th><th class="r">Значение</th></tr></thead><tbody>`+
+ rows.map(r=>{const v=r[3];const cell=v&&typeof v==='object'&&'h' in v?box(v.h,(S.hv||{})[v.h]):(typeof v==='number'?`<span class="code">${fm(v)}</span>`:v);
+  return `<tr><td class="sym">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td class="r">${cell}</td></tr>`;}).join('')+
+ `</tbody></table></div><p class="sub-note">Клетки «впишите» заполняете вы: подсчитайте величину по таблицам своего варианта. Ниже формулы покажут, куда её подставить. Итог считаете сами и вписываете в поля ответа.</p><div class="sublines" data-lines></div></div>`;}
+const line=(lhs,rhs,no)=>`<div class="subline"><span>${lhs} = ${rhs}</span>${no?`<span class="num">${no}</span>`:''}</div>`;
+
+const B={};
+/* ---------- ЛР 1 ---------- */
+B.sub_l1b={t:()=>{const a=I().arch;return table('Величины для подстановки в формулы (1)–(2)',[
+  [sb('N','проц'),'число ключевых процессов фирмы','строки П1–П'+a.proc.length+' в задании А',a.proc.length],
+  [sb('N','авт'),'процессы, которые поддерживает хотя бы одна система','столбцы П1–П'+a.proc.length+' таблицы задания Б: столбец, где есть хотя бы одна ●',ask('l1.Naut')],
+  [it('n'),'число прикладных систем фирмы','строки таблицы задания Б',a.land.length],
+  [sb('L','ш'),'подключения к интеграционной шине (каждая система — одно)','равно '+it('n'),a.land.length]]);},
+ l:()=>{const a=I().arch,n=a.land.length;return line(sb('K','покр'),fs(hv('l1.Naut'))+' / '+fm(a.proc.length),'(1)')+
+  line(sb('L','тт'),fm(n)+' · ('+fm(n)+' − 1) / 2','(2)')+line('Δ'+it('L'),sb('L','тт')+' − '+fm(n),'(2)');}};
+B.sub_l1v={t:()=>{const a=I().arch;return table('Величины для подстановки в формулу (2а)',[
+  [it('n'),'число систем в фактическом ландшафте','задание Б',a.land.length],
+  [sb('N','разр'),'непокрытые процессы: каждый закроет одна новая система','столбцы П1–П'+a.proc.length+' таблицы задания Б, где нет ни одной ●',ask('l1.Nr')]]);},
+ l:()=>{const n=I().arch.land.length;return line(it('n')+'′',fm(n)+' + '+fs(hv('l1.Nr')),'(2а)')+
+  line(it('L')+'′<sub>тт</sub>',it('n')+'′ · ('+it('n')+'′ − 1) / 2, где '+it('n')+'′ — из первой строки','(2а)')+line('Δ'+it('L')+'′',it('L')+'′<sub>тт</sub> − '+it('n')+'′','(2а)');}};
+/* ---------- ЛР 2 ---------- */
+B.sub_l2={t:()=>{const A=alts2(),w=I().tco.w;return table('Величины для подстановки в формулы (3)–(4)',[
+  [it('r'),'ставка дисконтирования','теория ЛР 2',RATE],[it('T'),'срок использования, лет','теория ЛР 2',HOR],
+  [it('A'),'коэффициент аннуитета при '+it('r')+' = 0,15 и '+it('T')+' = 5','формула (3)',+AF.toFixed(3)],
+  [it('CAPEX')+'<sub>'+it('a')+'</sub>','единовременные затраты, млн руб.','строка CAPEX таблицы',A.map((a,i)=>'A'+(i+1)+': <span class="code">'+fm(a.capx)+'</span>').join('<br>')],
+  [it('OPEX')+'<sub>'+it('a')+'</sub>','ежегодные затраты, млн руб./год','строка OPEX таблицы',A.map((a,i)=>'A'+(i+1)+': <span class="code">'+fm(a.opx)+'</span>').join('<br>')],
+  [sb('w',it('k')),'вес критерия','столбец «Вес» таблицы',w.map((x,k)=>'<i>w</i><sub>'+(k+1)+'</sub> = <span class="code">'+fm(x)+'</span>').join('<br>')],
+  [sb('s',it('ak')),'оценка альтернативы по критерию (1–5)','столбцы A1–A'+A.length+', строки критериев','в таблице выше']]);},
+ l:()=>{const A=alts2(),w=I().tco.w;return A.map((a,i)=>line(it('TCO')+'<sub>A'+(i+1)+'</sub>',fm(a.capx)+' + '+fm(a.opx)+' · '+fm(+AF.toFixed(3)),'(3)')).join('')+
+  A.map((a,i)=>line(sb('S','A'+(i+1)),a.s.map((x,k)=>fm(w[k])+' · '+fm(x)).join(' + '),'(4)')).join('')+
+  line(sb('R',it('a')),sb('S',it('a'))+' / '+it('TCO')+'<sub>'+it('a')+'</sub> — для каждой альтернативы, выбирают наибольшее','(4)');}};
+B.sub_l2v={t:()=>table('Величины для подстановки в формулу (3а)',[
+  [it('r'),'ставка дисконтирования','теория ЛР 2',RATE],[it('T'),'сокращённый и продлённый срок, лет','условие задания В','3 и 7'],
+  [it('CAPEX')+', '+it('OPEX')+', '+sb('S',it('a')),'те же, что в заданиях А–Б','таблица альтернатив и ваши '+it('S')+' выше','без изменений']]),
+ l:()=>{const A=alts2();return line(sb('A','3'),'(1 − (1 + 0,15)<sup>−3</sup>) / 0,15','(3а)')+line(sb('A','7'),'(1 − (1 + 0,15)<sup>−7</sup>) / 0,15','(3а)')+
+  A.map((a,i)=>line(it('TCO')+'<sub>A'+(i+1)+',<i>T</i></sub>',fm(a.capx)+' + '+fm(a.opx)+' · '+sb('A',it('T')),'(3а)')).join('')+
+  line(sb('R',it('a')+',<i>T</i>'),sb('S',it('a'))+' / '+it('TCO')+'<sub>'+it('a')+',<i>T</i></sub> — отдельно для '+it('T')+' = 3 и '+it('T')+' = 7','(4)');}};
+/* ---------- ЛР 3 ---------- */
+B.sub_l3={t:()=>{const sl=I().sla;return table('Величины для подстановки в формулы (5)–(6)',[
+  [sb('T','п'),'длительность месяца, мин (30 суток)','теория ЛР 3',43200],
+  [it('D'),'суммарный простой: длительности записей, где сервис недоступен <b>всем</b> пользователям; плановые работы и частичные сбои не входят','столбец «Длительность» журнала',ask('l3.D')],
+  [sb('A','ц'),'целевая доступность по SLA, %','ситуация ЛР 3',sl.t],
+  [it('P'),'ежемесячная плата за сервис, тыс. руб.','ситуация ЛР 3',sl.fee]]);},
+ l:()=>{const sl=I().sla,D=hv('l3.D');return line(sb('A','ф'),'(43 200 − '+fs(D)+') / 43 200 · 100','(5)')+
+  line(it('Ш'),fm(sl.fee)+' · min(30 %; 5 % · ⌊('+fm(sl.t)+' − '+sb('A','ф')+') / 0,1⌋); при '+sb('A','ф')+' ≥ '+fm(sl.t)+' кредит равен 0','(6)');}};
+B.sub_l3v={t:()=>{const sl=I().sla;return table('Величины для подстановки в формулы (6а)–(6в)',[
+  [sb('N','инц'),'число инцидентов P1–P5 (без плановых работ и запросов)','журнал, ваши приоритеты',ask('l3.Ninc')],
+  [it('Σt')+'<sub>'+it('i')+'</sub>','сумма длительностей этих инцидентов, мин','столбец «Длительность» журнала',ask('l3.St')],
+  [sb('N','отк'),'число записей полной недоступности','те же записи, что вошли в '+it('D'),ask('l3.Nout')],
+  [it('D'),'суммарный простой из задания Б, мин','ваш подсчёт выше',ask('l3.D')],
+  [sb('T','п')+', '+sb('A','ц'),'длительность месяца и цель SLA','ситуация ЛР 3','43 200; '+fm(sl.t)]]);},
+ l:()=>{const sl=I().sla,D=hv('l3.D'),No=hv('l3.Nout');return line(it('MTTR'),fs(hv('l3.St'))+' / '+fs(hv('l3.Ninc')),'(6а)')+
+  line(it('MTBF'),'(43 200 − '+fs(D)+') / (60 · '+fs(No)+')','(6б)')+line(sb('D','доп'),'43 200 · (100 − '+fm(sl.t)+') / 100','(6в)')+
+  line(sb('N','доп'),'⌊'+sb('D','доп')+' · '+fs(No)+' / '+fs(D)+'⌋','(6в)');}};
+/* ---------- ЛР 4 ---------- */
+B.sub_l4={t:()=>{const d=I().dec;return table('Величины для подстановки в формулы (7)–(9)',[
+  [sb('p',it('j')),'вероятность состояния среды','заголовки столбцов таблицы',d.states.map((s,j)=>'<i>p</i><sub>'+(j+1)+'</sub> = <span class="code">'+fm(d.p[j])+'</span>').join('<br>')],
+  [sb('V',it('aj')),'результат альтернативы '+it('a')+' в состоянии '+it('j')+', млн руб.','клетки таблицы: строка A'+it('a')+', столбец '+it('j'),'в таблице выше'],
+  ['max<sub>'+it('a')+'</sub> '+sb('V',it('aj')),'лучший результат в состоянии '+it('j'),'наибольшее число в каждом столбце',d.p.map((_,j)=>'столбец '+(j+1)+': '+box('l4.m'+j,(S.hv||{})['l4.m'+j])).join('<br>')]]);},
+ l:()=>{const d=I().dec;return d.v.map((row,i)=>line(it('EMV')+'<sub>A'+(i+1)+'</sub>',row.map((x,j)=>fm(d.p[j])+' · '+fs(x)).join(' + '),'(7)')).join('')+
+  line(it('EVwPI'),d.p.map((p,j)=>fm(p)+' · '+fs(hv('l4.m'+j))).join(' + '),'(8)')+line(it('EVPI'),it('EVwPI')+' − max('+d.v.map((_,i)=>it('EMV')+'<sub>A'+(i+1)+'</sub>').join('; ')+')','(9)');}};
+B.sub_l4v={t:()=>{const d=I().dec,X=sample4(d);return table('Величины для подстановки в формулы (9а)–(9б)',[
+  [it('P')+'('+it('f')+')','вероятность получить прогноз '+it('f'),'второй столбец таблицы задания В',X.f.map((f,k)=>'«'+esc(d.states[k])+'»: <span class="code">'+fm(+f.pf.toFixed(3))+'</span>').join('<br>')],
+  [it('P')+'('+it('j')+' | '+it('f')+')','вероятность состояния после прогноза','строка прогноза '+it('f')+' в таблице задания В','в таблице выше'],
+  ['max '+it('EMV'),'лучшая ожидаемая ценность без сведений','ваш ответ в задании Б',ask('l4.emax')],
+  ['α','коэффициент оптимизма Гурвица','теория ЛР 4',ALPHA]]);},
+ l:()=>{const d=I().dec,X=sample4(d);let s='';
+  X.f.map((f,k)=>{d.v.forEach((row,i)=>{s+=line(it('EV')+'<sub>A'+(i+1)+'</sub>(«'+esc(d.states[k])+'»)',row.map((x,j)=>fm(+f.post[j].toFixed(3))+' · '+fs(x)).join(' + '),'');});});
+  s+=line(it('EVSI'),X.f.map((f,k)=>fm(+f.pf.toFixed(3))+' · max<sub>'+(k+1)+'</sub>').join(' + ')+' − '+fs(hv('l4.emax'))+'; max<sub>'+it('f')+'</sub> — наибольшее '+it('EV')+' в группе прогноза','(9а)');
+  const L3=row=>row.map(fs).join('; ');
+  s+=d.v.map((row,i)=>line('Вальд, A'+(i+1),'min('+L3(row)+')','(9б)')).join('');
+  s+=d.v.map((row,i)=>line('Гурвиц, A'+(i+1),'0,4 · max('+L3(row)+') + 0,6 · min('+L3(row)+')','(9б)')).join('');
+  s+=line('Сэвидж, A'+it('a'),'max<sub>'+it('j')+'</sub> (max столбца '+it('j')+' − '+sb('V',it('aj'))+'); выбирают альтернативу с наименьшим значением','(9б)');
+  return s;}};
+/* ---------- ЛР 5 ---------- */
+B.sub_l5={t:()=>{const P=projects();return table('Величины для подстановки в формулы (10)–(11)',[
+  [it('A'),'коэффициент аннуитета из ЛР 2','формула (3)',+AF.toFixed(3)],
+  [it('B'),'бюджет на год, млн руб.','ситуация ЛР 5',budget(P)],
+  [sb('p',it('i'))+', '+sb('E',it('i'))+', '+sb('C',it('i')),'вероятность успеха, годовой эффект, затраты проекта','столбцы таблицы проектов','в таблице выше']]);},
+ l:()=>{const P=projects();return P.map((x,i)=>line(sb('NV','П'+(i+1)),fm(x.p)+' · '+fm(x.e)+' · '+fm(+AF.toFixed(3))+' − '+fm(x.c),'(10)')).join('')+
+  line('Σ '+sb('C',it('i')),'сумма '+it('C')+' отмеченных проектов ≤ '+fm(budget(P))+'; обязательные проекты включаются всегда','(11)');}};
+B.sub_l5v={t:()=>{const P=projects(),B0=budget(P);return table('Величины для подстановки в формулу (11а)',[
+  [it('B')+'′','сокращённый бюджет, млн руб.','0,8 · '+it('B'),+(B0*CUT).toFixed(2)],
+  [sb('V','опт'),'сумма '+it('NV')+' оптимального портфеля задания Б, млн руб.','ваши '+it('NV')+' по формуле (10); после проверки задания Б оптимум виден в итогах',ask('l5.V')],
+  [it('V')+'′<sub>опт</sub>','сумма '+it('NV')+' лучшего нового портфеля, млн руб.','перебор допустимых наборов при '+it('B')+'′ и условии П2 только с П1',ask('l5.V2')]]);},
+ l:()=>{const P=projects();return line('Σ '+sb('C',it('i')),'≤ '+fm(+(budget(P)*CUT).toFixed(2))+';&nbsp; '+sb('x','2')+' ≤ '+sb('x','1'),'(11а)')+line('Δ'+it('V'),fs(hv('l5.V'))+' − '+fs(hv('l5.V2')),'(11а)');}};
+/* ---------- ЛР 6 ---------- */
+B.sub_l6v={t:()=>{const G=genL6();return table('Величины для подстановки в формулу (12а)',
+  G.map((x,k)=>['<span class="code">'+x.id+'</span>','целевой уровень '+it('L')+'<sup>ц</sup> и ваш фактический '+it('L')+'<sup>ф</sup>','столбец '+it('L')+'<sup>ц</sup> и ваш выбор в задании А','<span data-l6="'+k+'"></span>']));},
+ l:()=>{const G=genL6();const lv=k=>{const u=S.l6.lv[k];return u===undefined||u===''?NaN:+u;};
+  document.querySelectorAll('[data-l6]').forEach(e=>{const k=+e.dataset.l6;e.innerHTML='<span class="code">'+G[k].t+' и '+fm(lv(k))+'</span>';});
+  return G.map((x,k)=>line(sb('G',x.id),'max(0; '+x.t+' − '+fm(lv(k))+')','(12)')).join('')+
+  line(sb('G','Σ'),G.map(x=>sb('G',x.id)).join(' + '),'(12а)')+line(sb('T','мин'),'max(наибольший '+sb('G',it('k'))+'; ⌈'+sb('G','Σ')+' / 2⌉)','(12а)');}};
+/* ---------- ЛР 7 ---------- */
+B.sub_l7={t:()=>{const D=genData();return table('Величины для подстановки в формулы (13)–(16)',[
+  [sb('N','стр'),'строки выгрузки, включая повторы','столбец № таблицы справочника',D.rows.length],
+  [sb('N','яч'),'ячейки пяти полей: наименование, ИНН, телефон, e-mail, дата','5 · '+sb('N','стр'),D.rows.length*5],
+  [sb('N','пуст'),'незаполненные ячейки (знак «—»)','таблица справочника',ask('l7.Np')],
+  [sb('N','дубл'),'лишние строки-повторы (тот же ИНН и наименование, что выше)','таблица справочника',ask('l7.Nd')],
+  [sb('N','ош'),'заполненные ячейки с ошибкой: ИНН с неверной контрольной цифрой, e-mail без «@» или домена, дата позже 01.10.2026','таблица справочника; ИНН проверьте калькулятором',ask('l7.No')]]);},
+ l:()=>{const D=genData(),Ns=D.rows.length,Nc=Ns*5,Np=hv('l7.Np'),Nd=hv('l7.Nd'),No=hv('l7.No');
+  return line(sb('K','п'),'1 − '+fs(Np)+' / '+fm(Nc),'(13)')+line(sb('K','у'),'1 − '+fs(Nd)+' / '+fm(Ns),'(14)')+
+  line(sb('K','к'),'1 − '+fs(No)+' / ('+fm(Nc)+' − '+fs(Np)+')','(15)')+line(it('Q'),'0,3 · '+sb('K','п')+' + 0,3 · '+sb('K','у')+' + 0,4 · '+sb('K','к'),'(16)');}};
+B.sub_l7v={t:()=>table('Величины для подстановки в формулу (16а)',[
+  [sb('N','пуст')+', '+sb('N','дубл'),'пустые ячейки и строки-повторы','ваш подсчёт в задании','из таблицы выше'],
+  [sb('N','стр'),'строки выгрузки','таблица справочника',genData().rows.length],
+  [sb('K','у')+', '+sb('K','к'),'после удаления дублей и исправления ошибок','теория ЛР 7','1 и 1']]),
+ l:()=>{const Ns=genData().rows.length;return line(it('K')+'′<sub>п</sub>','1 − '+fs(hv('l7.Np'))+' / (5 · ('+fm(Ns)+' − '+fs(hv('l7.Nd'))+'))','(16а)')+line(it('Q')+'′','0,3 · '+it('K')+'′<sub>п</sub> + 0,3 · 1 + 0,4 · 1','(16а)');}};
+
+function lines(){Object.entries(B).forEach(([id,b])=>{const el=document.getElementById(id);if(!el||!el.firstChild)return;const L=el.querySelector('[data-lines]');if(L)try{L.innerHTML='<p class="sub-lbl">Подстановка в формулы</p>'+b.l();}catch(e){}});}
+function renderSubs(){if(S.ind===null){Object.keys(B).forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='';});return;}
+ Object.entries(B).forEach(([id,b])=>{const el=document.getElementById(id);if(el)try{el.innerHTML=b.t();}catch(e){el.innerHTML='';}});lines();}
+document.addEventListener('input',e=>{const t=e.target;if(t.classList&&t.classList.contains('hv')){S.hv=S.hv||{};S.hv[t.dataset.k]=t.value;
+ document.querySelectorAll('input.hv[data-k="'+t.dataset.k+'"]').forEach(x=>{if(x!==t)x.value=t.value;});save();lines();}});
+document.addEventListener('change',e=>{if(e.target.id&&/^l6l\d/.test(e.target.id))setTimeout(lines,0);});
+const _ra=renderAll;renderAll=function(){_ra.apply(this,arguments);renderSubs();};
+renderSubs();
+})();
+
+/* ===== Пояснение «в чём подвох» у ловушек ===== */
+(function(){
+const TW={
+ t1:['общее правило «шина всегда сокращает число связей» применяют, не проверив, выполняется ли оно для вашей фирмы.','посчитайте по формуле (2) для своего числа систем и вспомните, что шина — ещё одна система со своей стоимостью владения.'],
+ t2:['цену подписки выдают за всю стоимость владения системой.','перечислите, какие работы фирма всё равно выполняет своими силами и за свой счёт, даже если платит поставщику подписку.'],
+ t3:['экономический критерий (минимум TCO) ставят выше правовых ограничений на выбор ПО.','выясните по источнику, какие нормы действуют при закупке ПО и при каких условиях от них можно отступить.'],
+ t4:['«работа восстановлена» подменяет «причина устранена».','различайте в ITIL управление инцидентами и управление проблемами: что делают с повторяющимися сбоями?'],
+ t5:['ценность информации подменяют ценой сведений или разбросом результатов.','спросите себя, может ли прогноз изменить выбор альтернативы. Информация ценна только тогда, когда она способна изменить решение.'],
+ t6:['правило отбора проектов по NV распространяют на проекты, которые обязательны по закону.','сравните отрицательный NV с последствиями неисполнения закона: штрафами и запретами.'],
+ t7:['«процесс измеряется» подменяет «процесс достиг уровня 4».','уровни COBIT нельзя перепрыгнуть. Проверьте, выполнены ли условия всех нижних уровней.'],
+ t8:['формально правильный номер выдают за доказательство того, что организация существует.','разберитесь, какую ошибку ловит контрольная цифра, а что проверяют только по государственному реестру.'],
+ t9:['частую сверку выдают за устранение причины расхождений.','подумайте, где запись о клиенте должна создаваться и где её разрешено исправлять.'],
+ t10:['будущие затраты на уход от поставщика считают не относящимися к выбору.','проверьте, учтены ли выгрузка данных, их перенос и условия договора на выход ещё до подписания.'],
+ t11:['доступность всей цепочки подменяют доступностью одного звена, самого надёжного или самого слабого.','подумайте, как работает сервис, если любое из последовательных звеньев отказало, и как складываются вероятности.'],
+ t12:['ценность совершенного прогноза (EVPI) применяют к прогнозу, который ошибается.','сравните EVPI и EVSI по теории ЛР 4: с какой из них сравнивают цену неточных сведений?'],
+ t13:['прошлые затраты, которые уже не вернуть, используют как довод в решении о будущем.','оценивайте проект только по будущим затратам и будущему эффекту, как и все остальные проекты.'],
+ t14:['максимальный уровень зрелости подменяет целевой уровень.','целевой уровень зависит от важности процесса для бизнеса. Нужен ли всем процессам один и тот же уровень?'],
+ t15:['ИНН принимают за уникальный ключ записи о контрагенте.','вспомните про обособленные подразделения: какой ещё реквизит отличает их записи?']
+};
+const pop=document.createElement('div');pop.id='trapTip';pop.setAttribute('role','tooltip');pop.hidden=true;document.body.appendChild(pop);
+let cur=null,pinned=false;
+const anchor=id=>{const f=document.querySelector('.trapflash[data-trap="'+id+'"]');return f?(f.closest('.trap-head')||f):null;};
+function show(id){const w=TW[id];if(!w)return;cur=id;const el=anchor(id);if(!el)return hide();
+ pop.innerHTML='<p class="tt-h">⚠ Что такое «ловушка»</p><p>В вопрос заложена типичная ошибка рассуждения: подмена понятий, «очевидный» вывод или ссылка на правило, которого нет. Неверные варианты звучат убедительно и опираются на бытовую логику, поэтому их легко выбрать не читая. Ваша задача — не попасться на эту подмену.</p>'+
+  '<p><b>Подмена в этом вопросе:</b> '+w[0]+'</p><p><b>Как не попасться:</b> '+w[1]+'</p><p class="tt-f">Варианты ответа откроются после того, как вы изучите источник. Вес ловушки — 20 % баллов работы.</p>';
+ pop.hidden=false;const r=el.getBoundingClientRect(),W=Math.min(460,innerWidth-24);pop.style.width=W+'px';
+ pop.style.left=Math.max(12,Math.min(r.left,innerWidth-W-12))+'px';const h=pop.offsetHeight;let y=r.bottom+8;if(y+h>innerHeight-8)y=Math.max(8,r.top-h-8);pop.style.top=y+'px';}
+function hide(){pop.hidden=true;cur=null;pinned=false;}
+const T=e=>{const el=e.target.closest&&e.target.closest('[data-trap]');return el?el.dataset.trap:null;};
+document.addEventListener('mouseover',e=>{const id=T(e);if(id&&!pinned&&id!==cur)show(id);});
+document.addEventListener('mouseout',e=>{if(pinned||!cur)return;const from=T(e),to=e.relatedTarget&&e.relatedTarget.closest&&e.relatedTarget.closest('[data-trap]');
+ if(from===cur&&!(to&&to.dataset.trap===cur)&&e.relatedTarget&&document.contains(e.relatedTarget))hide();});
+document.addEventListener('focusin',e=>{const id=T(e);if(id&&!pinned)show(id);});
+document.addEventListener('pointerdown',e=>{const id=T(e);if(id){if(pinned&&cur===id)hide();else{show(id);pinned=true;}}else if(pinned)hide();});
+setInterval(()=>{if(cur&&!pop.hidden)show(cur);},1000);
+addEventListener('scroll',()=>{if(cur)show(cur);},true);
+addEventListener('keydown',e=>{if(e.key==='Escape')hide();});
+})();
 </script>
 
-</body>
-</html>
+</body></html>

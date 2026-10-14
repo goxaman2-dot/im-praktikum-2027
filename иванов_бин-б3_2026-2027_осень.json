@@ -1,0 +1,209 @@
+{
+ "v": "im-praktikum-2026-v2",
+ "at": 1791974646236,
+ "S": {
+  "fio": "иванов",
+  "grp": "бин-б3",
+  "ind": 6,
+  "seed": 862448743,
+  "tab": 13,
+  "rot": 3398.885009904323,
+  "l1": {
+   "a": {
+    "0": "ERP",
+    "1": "CRM",
+    "2": "TMS",
+    "3": "SCM",
+    "4": "TMS",
+    "5": "IND"
+   },
+   "k": {
+    "Kp": "0,5",
+    "dup": "1",
+    "Ltt": "6",
+    "dL": "8"
+   },
+   "v": {
+    "m0": "0",
+    "m1": "2",
+    "m2": "3",
+    "n2": "5",
+    "L2": "10",
+    "d2": "5"
+   }
+  },
+  "l2": {},
+  "l3": {
+   "pr": {},
+   "k": {},
+   "v": {}
+  },
+  "l4": {},
+  "l5": {
+   "sel": [],
+   "sel2": []
+  },
+  "l6": {
+   "lv": {},
+   "pick": [],
+   "v": {}
+  },
+  "l7": {
+   "flags": {},
+   "k": {},
+   "v": {},
+   "sql": {}
+  },
+  "l8": {
+   "a": {},
+   "m": {},
+   "s": {},
+   "k": {}
+  },
+  "l9": {
+   "sel": [],
+   "k": {}
+  },
+  "l10": {
+   "g": {},
+   "c": {},
+   "k": {}
+  },
+  "l11": {
+   "q": {},
+   "k": {}
+  },
+  "traps": {
+   "t1": {
+    "open": {
+     "0": true,
+     "1": true
+    },
+    "away": 25043,
+    "last": 1791904671714,
+    "ans": 1,
+    "checked": true
+   },
+   "t2": {
+    "open": {},
+    "away": 0,
+    "last": 0,
+    "checked": false
+   },
+   "t3": {
+    "open": {},
+    "away": 0,
+    "last": 0,
+    "checked": false
+   },
+   "t4": {
+    "open": {},
+    "away": 0,
+    "last": 0,
+    "checked": false
+   },
+   "t5": {
+    "open": {},
+    "away": 0,
+    "last": 0,
+    "checked": false
+   },
+   "t6": {
+    "open": {},
+    "away": 0,
+    "last": 0,
+    "checked": false
+   },
+   "t7": {
+    "open": {},
+    "away": 0,
+    "last": 0,
+    "checked": false
+   },
+   "t8": {
+    "open": {},
+    "away": 0,
+    "last": 0,
+    "checked": false
+   },
+   "t9": {
+    "open": {
+     "0": true
+    },
+    "away": 7484,
+    "last": 1791904695600,
+    "ans": 1,
+    "checked": true
+   },
+   "t10": {
+    "open": {},
+    "away": 0,
+    "last": 0,
+    "checked": false
+   },
+   "t11": {
+    "open": {},
+    "away": 0,
+    "last": 0,
+    "checked": false
+   },
+   "t12": {
+    "open": {},
+    "away": 0,
+    "last": 0,
+    "checked": false
+   },
+   "t13": {
+    "open": {},
+    "away": 0,
+    "last": 0,
+    "checked": false
+   },
+   "t14": {
+    "open": {},
+    "away": 0,
+    "last": 0,
+    "checked": false
+   },
+   "t15": {
+    "open": {},
+    "away": 0,
+    "last": 0,
+    "checked": false
+   },
+   "t16": {
+    "open": {},
+    "away": 0,
+    "last": 0,
+    "checked": false
+   },
+   "t17": {
+    "open": {},
+    "away": 0,
+    "last": 0,
+    "checked": false
+   },
+   "t18": {
+    "open": {},
+    "away": 0,
+    "last": 0,
+    "checked": false
+   },
+   "t19": {
+    "open": {},
+    "away": 0,
+    "last": 0,
+    "checked": false
+   }
+  },
+  "quiz": {},
+  "concl": {},
+  "pts": {
+   "l1": 9
+  },
+  "hv": {
+   "l1.Naut": "3",
+   "l1.Nr": "1"
+  }
+ }
+}

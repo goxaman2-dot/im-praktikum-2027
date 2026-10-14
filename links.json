@@ -1,5 +1,5 @@
 {
- "updated": "07.10.2026",
+ "updated": "13.10.2026",
  "note": "Библиотека знаний практикума «Информационный менеджмент». Меняйте только поле u (адрес) или t (название); ключи не трогайте.",
  "links": {
   "infostart-esb": {
@@ -49,6 +49,34 @@
   "fns-egrul": {
    "t": "Предоставление сведений из ЕГРЮЛ/ЕГРИП в электронном виде. Сервис ФНС России",
    "u": "https://egrul.nalog.ru/index.html"
+  },
+  "habr-mdm": {
+   "t": "Тысяча и один справочник в Master Data Management Ростелекома. Хабр, блог компании «Ростелеком», 2021",
+   "u": "https://habr.com/ru/companies/rostelecom/articles/539694/"
+  },
+  "habr-lockin": {
+   "t": "Зависимость от вендора: что должен знать каждый ITAM-специалист. Хабр, блог компании ITSM 365, 2026",
+   "u": "https://habr.com/ru/articles/1004544/"
+  },
+  "ewerlof-slo": {
+   "t": "Ewerlöf A. Composite SLO, 2024 (англ.)",
+   "u": "https://blog.alexewerlof.com/p/composite-slo"
+  },
+  "yhec-evsi": {
+   "t": "Expected Value of Sample Information (EVSI). Глоссарий York Health Economics Consortium (англ.)",
+   "u": "https://www.yhec.co.uk/glossary-term/expected-value-of-sample-information-evsi/"
+  },
+  "tj-sunk": {
+   "t": "Белицкая С. Что такое ошибка невозвратных затрат и как ее избежать. Т—Ж, 2025",
+   "u": "https://t-j.ru/sunk-cost-fallacy/"
+  },
+  "isaca-target": {
+   "t": "Souza Neto J., Almeida R., Mira da Silva M. Defining Target Capability Levels in COBIT 2019: A Proposal for Refinement. ISACA, 2019 (англ.)",
+   "u": "https://www.isaca.org/resources/news-and-trends/industry-news/2019/defining-target-capability-levels-in-cobit-2019-a-proposal-for-refinement"
+  },
+  "kontur-kpp": {
+   "t": "Что такое КПП: как узнать и где указывается. Справка Контур.Экстерна",
+   "u": "https://kontur.ru/extern/spravka/491-chto_takoe_kpp"
   }
  }
 }
